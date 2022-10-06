@@ -1,7 +1,6 @@
 package hr.fer.oprpp1.custom.collections;
 
 public class Collection {
-    int size = 0;
     public Collection() {}
 
     public boolean isEmpty(){
