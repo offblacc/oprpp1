@@ -27,11 +27,11 @@ public class Collection {
         throw new UnsupportedOperationException();
     }
 
-    void forEach(Processor processor){
+    public void forEach(Processor processor){
         
     }
 
-    void addAll(Collection other) {
+    public void addAll(Collection other) {
         class LocalProcessor extends Processor {
             public void process(Object value) {
                 add(value);
@@ -40,7 +40,7 @@ public class Collection {
         other.forEach(new LocalProcessor());
     }
 
-    void clear(){
+    public void clear(){
 
     }
 }
