@@ -204,5 +204,3 @@ public class LinkedListIndexedCollection extends Collection {
         }
     }
 }
-
-// TODO size++;

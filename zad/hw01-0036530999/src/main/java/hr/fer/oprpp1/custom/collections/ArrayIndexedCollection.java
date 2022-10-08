@@ -1,9 +1,5 @@
 package hr.fer.oprpp1.custom.collections;
 
-
-// not implementing addAll here because it has a defined behaviour in Collection class
-// and here we were to implement methods with undefined behaviour # TODO implement addAll ?
-
 // TODO check do constructors set size correctly
 // TODO check that you use .equals(), not ==, where necessary
 public class ArrayIndexedCollection extends Collection {
@@ -89,23 +85,11 @@ public class ArrayIndexedCollection extends Collection {
         return -1;
     }
 
-    @Override // TODO fix this, size lets you know the numNotNull xd stupidass
+    @Override
     public Object[] toArray() {
-        int numNotNull = 0;
-        for (Object o : elements) {
-            if (o == null) {
-                continue;
-            }
-            numNotNull++;
-        }
-
-        Object[] arr = new Object[numNotNull];
-        int i = 0;
-        for (Object o : elements) {
-            if (o == null) {
-                continue;
-            }
-            arr[i++] = o;
+        Object[] arr = new Object[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = elements[i];
         }
         return arr;
     }
