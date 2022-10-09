@@ -1,8 +1,5 @@
 package hr.fer.oprpp1.custom.collections;
 
-// TODO check do constructors set size correctly
-// TODO check that you use .equals(), not ==, where necessary
-
 /**
  * Class that represents a resizable array-backed collection of objects.
  * Duplicate elements are allowed. Storage of null references, however, is not
@@ -81,7 +78,6 @@ public class ArrayIndexedCollection extends Collection {
             initialCapacity = other.size();
         }
 
-        size = other.size();
         elements = new Object[initialCapacity];
         addAll(other);
     }
@@ -127,7 +123,10 @@ public class ArrayIndexedCollection extends Collection {
      * @return true if the collection contains the given object, false otherwise.
      */
     @Override
-    public boolean contains(Object value) { // it is OK to ask if collection contains null
+    public boolean contains(Object value) {
+        if (value == null) {
+            return false;
+        }
         for (int i = 0; i < size; i++) {
             if (elements[i].equals(value)) {
                 return true;
@@ -147,7 +146,7 @@ public class ArrayIndexedCollection extends Collection {
             return -1;
         }
 
-        for (int i = 0; i < elements.length; i++) {
+        for (int i = 0; i < size; i++) {
             if (elements[i].equals(value)) {
                 return i;
             }
@@ -176,8 +175,12 @@ public class ArrayIndexedCollection extends Collection {
     @Override
     public void clear() {
         for (int i = 0; i < elements.length; i++) {
+            if (elements[i] == null) {
+                break;
+            }
             elements[i] = null;
         }
+        size = 0;
     }
 
     /**
@@ -188,7 +191,7 @@ public class ArrayIndexedCollection extends Collection {
      * @throws IndexOutOfBoundsException if the given index is out of bounds.
      */
     public Object get(int index) {
-        if (index < 0 || index > elements.length - 1) {
+        if (index < 0 || index > size - 1) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -271,11 +274,12 @@ public class ArrayIndexedCollection extends Collection {
             elements = newElements;
         }
 
-        for (int i = size - 1; i > position; i--) {
+        for (int i = size; i > position; i--) {
             elements[i] = elements[i - 1];
         }
 
         elements[position] = value;
+        size++;
     }
 
     /**
@@ -301,10 +305,9 @@ public class ArrayIndexedCollection extends Collection {
         class LocalProcessor extends Processor {
             public void process(Object value) {
                 add(value);
-                size++;
             }
         }
-        // seems redundant and bad TODO try improving this
+
         if (other instanceof LinkedListIndexedCollection) {
             other = (LinkedListIndexedCollection) other;
         } else if (other instanceof ArrayIndexedCollection) {

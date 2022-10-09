@@ -86,7 +86,7 @@ public class LinkedListIndexedCollection extends Collection {
      * @throws IndexOutOfBoundsException if the given position is not between 0 and
      *                                   size.
      */
-    public void insert(Object value, int position) { // TODO test this extensively
+    public void insert(Object value, int position) {
         if (position < 0 || position > size) {
             throw new IndexOutOfBoundsException();
         }
@@ -101,23 +101,20 @@ public class LinkedListIndexedCollection extends Collection {
         }
 
         ListNode newNode = new ListNode(value);
-        ListNode node = first;
-        for (int i = 0; i < position - 1; i++) {
-            node = node.next;
-        }
-        ListNode prev = new ListNode(node);
-        node = node.next;
-
-        if (position > 0) {
-            prev.next = newNode;
-            newNode.prev = prev;
-        } else {
-            first = newNode;
-        }
-
-        if (position < size) {
-            node.prev = newNode;
-            newNode.next = node;
+        for (ListNode node = first; node != null; node = node.next) {
+            if (position == 0) {
+                newNode.next = node;
+                newNode.prev = node.prev;
+                if (node.prev != null) {
+                    node.prev.next = newNode;
+                }
+                node.prev = newNode;
+                if (node == first) {
+                    first = newNode;
+                }
+                break;
+            }
+            position--;
         }
         size++;
     }
@@ -154,7 +151,7 @@ public class LinkedListIndexedCollection extends Collection {
      */
     public int indexOf(Object value) {
         ListNode node = first;
-        for (int i = 0; node != null; i++) {
+        for (int i = 0; node != null; i++, node = node.next) {
             if (node.value.equals(value)) {
                 return i;
             }
@@ -216,7 +213,7 @@ public class LinkedListIndexedCollection extends Collection {
         }
 
         ListNode node = first;
-        for (int i = 0; i <= index; i++) {
+        for (int i = 0; i < index; i++) {
             node = node.next;
         }
 
@@ -276,7 +273,7 @@ public class LinkedListIndexedCollection extends Collection {
                 add(value);
             }
         }
-        // seems redundant and bad TODO try improving this
+
         if (other instanceof LinkedListIndexedCollection) {
             other = (LinkedListIndexedCollection) other;
         } else if (other instanceof ArrayIndexedCollection) {

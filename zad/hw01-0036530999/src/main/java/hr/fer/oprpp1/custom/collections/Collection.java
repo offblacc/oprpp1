@@ -11,6 +11,7 @@ public class Collection {
      * Default constructor.
      */
     public Collection() {
+        // seems redundant and bad TODO try improving this
     }
 
     /**

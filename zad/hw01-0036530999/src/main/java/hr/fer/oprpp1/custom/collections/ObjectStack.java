@@ -1,7 +1,5 @@
 package hr.fer.oprpp1.custom.collections;
 
-import java.util.EmptyStackException;
-
 /**
  * Class that represents a stack structure, last-in-first-out (LIFO) principle.
  * Implemented using an ArrayIndexedCollection.
