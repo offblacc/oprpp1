@@ -1,100 +1,72 @@
 package hr.fer.oprpp1.custom.collections;
 
 /**
- * (Effectively abstract) class that serves as a base class for any collection
- * of objects. All methods that are documented as abstract are not in fact, in
- * Java sense, abstract, however they are meant to be abstract and must be
- * implemented in classes that extend this one.
+ * An interface that defines a set of methods every collection should implement.
  */
-public class Collection {
-    /**
-     * Default constructor.
-     */
-    public Collection() {
-        // seems redundant and bad TODO try improving this
-    }
-
+public interface Collection {
     /**
      * Returns true if the collection has no objects stored, false otherwise.
      *
      * @return true if the collection has no objects stored, false otherwise.
      */
-    public boolean isEmpty() {
+    public default boolean isEmpty() {
         return this.size() == 0;
     }
 
     /**
      * Returns the number of currently stored objects.
-     *
+     * 
      * @return the number of currently stored objects.
      */
-    public int size() {
-        return 0;
-    }
+    public int size();
 
     /**
-     * An abstract method. All subclases that implement this method add the
-     * parameter value to the collection.
+     * Adds the given object into this collection.
      * 
      * @param value - value to be added to the collection.
      */
-    public void add(Object value) {
-    }
+    public void add(Object value);
 
     /**
-     * An abstract method. All subclases that implement this method check if the
-     * collection contains the parameter value.
+     * Checks whether the collection contains the given object.
      * 
      * @param value - value to be checked if it is in the collection.
      * @return true if the collection contains the given value, false otherwise.
      */
-    public boolean contains(Object value) {
-        return false;
-    }
+    public boolean contains(Object value);
 
     /**
-     * An abstract method. All subclases that implement this method check if the
-     * collection contains the parameter value and removes the first occurrence of
-     * it.
+     * Removes the first occurrence of the given object from the collection.
      * 
      * @param value - value to be removed from the collection.
      * @return true if the collection contains the given value, false otherwise.
      */
-    public boolean remove(Object value) {
-        return false;
-    }
+    public boolean remove(Object value);
 
     /**
-     * An abstract method. All subclases that implement this method return an array
-     * of objects that are currently in the collection.
+     * Converts the collection into an array of objects.
      * 
      * @return an array of objects that are currently in the collection.
-     * @throws UnsupportedOperationException if the method is not implemented.
      */
-    public Object[] toArray() {
-        throw new UnsupportedOperationException();
-    }
+    public Object[] toArray();
 
     /**
-     * An abstract method. All subclases that implement this method call the
-     * processor's process() method for each element of the collection.
+     * Calls the processor's process method for each element of this collection.
      * 
      * @param processor - processor that will process each element of the
      *                  collection, defined by the user.
      */
-    public void forEach(Processor processor) {
-
-    }
+    public void forEach(Processor processor);
 
     /**
-     * An abstract method. All subclases that implement this method add all elements
-     * from the given collection to the current collection.
+     * Adds all elements from the given collection into this collection. The given
+     * collection is not modified.
      * 
      * @param other - collection from which all elements will be added to the
      *              current collection. Collection other is not changed.
      */
-    public void addAll(Collection other) {
-        class LocalProcessor extends Processor {
+    public default void addAll(Collection other) {
+        class LocalProcessor implements Processor {
             public void process(Object value) {
                 add(value);
             }
@@ -103,10 +75,10 @@ public class Collection {
     }
 
     /**
-     * An abstract method. All subclases that implement this method remove all
-     * elements from the current collection.
+     * Empties the collection.
      */
-    public void clear() {
+    public void clear();
 
-    }
+    // TODO write docs
+    public ElementsGetter createElementsGetter();
 }

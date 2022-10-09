@@ -10,9 +10,7 @@ public class Collection {
     /**
      * Default constructor.
      */
-    public Collection() {
-        // seems redundant and bad TODO try improving this
-    }
+    public Collection() {}
 
     /**
      * Returns true if the collection has no objects stored, false otherwise.

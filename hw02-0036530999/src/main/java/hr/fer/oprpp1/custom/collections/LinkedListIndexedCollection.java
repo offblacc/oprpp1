@@ -7,7 +7,7 @@ package hr.fer.oprpp1.custom.collections;
  * The order of elements is determined by the order in which the elements were
  * added.
  */
-public class LinkedListIndexedCollection extends Collection {
+public class LinkedListIndexedCollection implements Collection {
     /**
      * Number of elements currently stored in the collection.
      */
@@ -268,7 +268,7 @@ public class LinkedListIndexedCollection extends Collection {
      */
     @Override
     public void addAll(Collection other) {
-        class LocalProcessor extends Processor {
+        class LocalProcessor implements Processor {
             public void process(Object value) {
                 add(value);
             }
