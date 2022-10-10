@@ -10,11 +10,12 @@ public class Collection {
     /**
      * Default constructor.
      */
-    public Collection() {}
+    public Collection() {
+    }
 
     /**
      * Returns true if the collection has no objects stored, false otherwise.
-     *
+     * 
      * @return true if the collection has no objects stored, false otherwise.
      */
     public boolean isEmpty() {

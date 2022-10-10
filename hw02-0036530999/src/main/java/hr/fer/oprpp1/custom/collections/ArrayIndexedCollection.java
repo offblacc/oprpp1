@@ -1,5 +1,7 @@
 package hr.fer.oprpp1.custom.collections;
 
+import java.util.NoSuchElementException;
+
 /**
  * Class that represents a resizable array-backed collection of objects.
  * Duplicate elements are allowed. Storage of null references, however, is not
@@ -316,31 +318,70 @@ public class ArrayIndexedCollection implements Collection {
         other.forEach(new LocalProcessor());
     }
 
-    @Override
-    public ElementsGetter createElementsGetter() {
-        ElementsGetter getter = new ElementsGetter();
-        return getter;
-    }
+    private static class ArrayIndexedCollectionElementsGetter implements ElementsGetter {
+        /**
+         * Initially equal to the number of elements in the collection. It is decreased
+         * by 1 whenever the getNextElement() method is called. When it reaches 0 we
+         * have iterated through all elements.
+         */
+        private int indexReverse;
 
-    private static class ElementsGetter() {
-        private int index;
-        private ArrayIndexedCollection collection;
+        /**
+         * Reference to the collection whose elements we are iterating through.
+         */
+        private ArrayIndexedCollection col;
 
-        public ElementsGetter() {
-            this.collection = collection;
-            index = 0;
+        /**
+         * Constructor for the ArrayIndexedCollectionElementsGetter class.
+         * 
+         * @param inedxReverse - initially equal to the number of elements in the
+         *                     collection, counting down to 0. When it reaches zero we
+         *                     have iterated through all elements.
+         * @param col          - reference to collection whose elements we are iterating
+         *                     through.
+         */
+        private ArrayIndexedCollectionElementsGetter(int size, ArrayIndexedCollection col) {
+            indexReverse = size;
+            this.col = col;
         }
 
+        /**
+         * Returns true if the collection contains at least one more element, false
+         * otherwise.
+         * 
+         * @return true if the collection contains at least one more element, false
+         *         otherwise.
+         */
+        @Override
         public boolean hasNextElement() {
-            return index < collection.size;
+            return indexReverse > 0;
         }
 
+        /**
+         * Returns the next element in the collection.
+         * 
+         * @return the next element in the collection.
+         * @throws NoSuchElementException if the collection contains no more elements,
+         *                                but the next one was requested by calling this
+         *                                method.
+         */
+        @Override
         public Object getNextElement() {
             if (!hasNextElement()) {
                 throw new NoSuchElementException();
             }
-            return collection.elements[index++];
+            return col.elements[col.size - (indexReverse--)];
         }
+
     }
 
+    /**
+     * Creates a new ElementsGetter for this collection.
+     * 
+     * @return new ElementsGetter for this collection.
+     */
+    @Override
+    public ElementsGetter createElementsGetter() {
+        return new ArrayIndexedCollectionElementsGetter(size, this);
+    }
 }

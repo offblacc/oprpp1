@@ -1,5 +1,9 @@
 package hr.fer.oprpp1.custom.collections;
 
+import java.util.NoSuchElementException;
+
+import org.w3c.dom.NodeList;
+
 /**
  * Class that represents a resizable linked list collection.
  * Duplicate elements are allowed. Storage of null references, however, is not
@@ -350,5 +354,64 @@ public class LinkedListIndexedCollection implements Collection {
         private ListNode(ListNode node) {
             this(node.prev, node.next, node.value);
         }
+    }
+
+    /**
+     * Local class that implements ElementsGetter interface.
+     * It is used to iterate over the collection returning elements one by one.
+     */
+    private static class LinkedListElementsGetter implements ElementsGetter {
+        /**
+         * Node that is the current position of the iterator.
+         */
+        ListNode node;
+
+        /**
+         * Constructor that sets the current position of the iterator to the first
+         * node in the list storing it's reference.
+         * 
+         * @param first - first node in the list.
+         */
+        private LinkedListElementsGetter(ListNode first) {
+            node = new ListNode(null, first, null);
+        }
+
+        /**
+         * Returns true if the collection contains at least one more element, false
+         * otherwise.
+         * 
+         * @return true if there are more elements, false otherwise.
+         */
+        @Override
+        public boolean hasNextElement() {
+            return node.next != null;
+        }
+
+        /**
+         * Returns the next element in the collection.
+         * 
+         * @return next element in the collection.
+         * @throws NoSuchElementException if there are no more elements in the
+         *                                collection.
+         */
+        @Override
+        public Object getNextElement() {
+            if (!hasNextElement()) {
+                throw new NoSuchElementException();
+            }
+            node = node.next;
+            return node.value;
+        }
+
+    }
+
+    /**
+     * Creates a new ElementsGetter for this collection.
+     * 
+     * @return ElementsGetter for this collection.
+     */
+    @Override
+    public ElementsGetter createElementsGetter() {
+        return new LinkedListElementsGetter(first);
     }
 }

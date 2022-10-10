@@ -81,6 +81,8 @@ public interface Collection {
 
     /**
      * Creates and returns an ElementsGetter object for this collection.
+     * 
+     * @return an ElementsGetter object for this collection.`
      */
     public ElementsGetter createElementsGetter();
 }
