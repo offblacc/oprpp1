@@ -79,6 +79,8 @@ public interface Collection {
      */
     public void clear();
 
-    // TODO write docs
+    /**
+     * Creates and returns an ElementsGetter object for this collection.
+     */
     public ElementsGetter createElementsGetter();
 }

@@ -316,4 +316,31 @@ public class ArrayIndexedCollection implements Collection {
         other.forEach(new LocalProcessor());
     }
 
+    @Override
+    public ElementsGetter createElementsGetter() {
+        ElementsGetter getter = new ElementsGetter();
+        return getter;
+    }
+
+    private static class ElementsGetter() {
+        private int index;
+        private ArrayIndexedCollection collection;
+
+        public ElementsGetter() {
+            this.collection = collection;
+            index = 0;
+        }
+
+        public boolean hasNextElement() {
+            return index < collection.size;
+        }
+
+        public Object getNextElement() {
+            if (!hasNextElement()) {
+                throw new NoSuchElementException();
+            }
+            return collection.elements[index++];
+        }
+    }
+
 }

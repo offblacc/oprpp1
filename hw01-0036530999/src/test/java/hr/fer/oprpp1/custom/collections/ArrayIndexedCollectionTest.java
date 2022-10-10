@@ -206,6 +206,7 @@ public class ArrayIndexedCollectionTest {
                 () -> assertEquals(3, col.get(1)),
                 () -> assertEquals(2, col.size()));
     }
+ 
 
     @Test
     public void testRemoveByIndexOutOfBounds() {

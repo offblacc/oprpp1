@@ -1,7 +1,5 @@
 package hr.fer.oprpp1.custom.collections.demo;
 
-import java.text.Format;
-
 import hr.fer.oprpp1.custom.collections.ObjectStack;
 
 public class StackDemo {

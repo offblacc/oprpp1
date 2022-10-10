@@ -2,7 +2,6 @@ package hr.fer.oprpp1.custom.collections;
 
 import org.junit.jupiter.api.Test;
 
-import hr.fer.oprpp1.custom.collections.EmptyStackException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ObjectStackTest {
