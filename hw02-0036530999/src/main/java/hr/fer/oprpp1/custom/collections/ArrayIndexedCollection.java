@@ -1,5 +1,6 @@
 package hr.fer.oprpp1.custom.collections;
 
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
 /**
@@ -18,6 +19,8 @@ public class ArrayIndexedCollection implements Collection {
      * Array in which the elements of the collection are stored.
      */
     private Object[] elements;
+
+    private int modificationCount = 0;
 
     /**
      * Default constructor. Sets the initial capacity to 16.
@@ -114,7 +117,7 @@ public class ArrayIndexedCollection implements Collection {
             }
             elements = newElements;
         }
-
+        modificationCount++;
         elements[size++] = value;
     }
 
@@ -182,6 +185,7 @@ public class ArrayIndexedCollection implements Collection {
             }
             elements[i] = null;
         }
+        modificationCount++;
         size = 0;
     }
 
@@ -217,6 +221,7 @@ public class ArrayIndexedCollection implements Collection {
         }
         shiftLeft(index);
         size--;
+        modificationCount++;
         return true;
     }
 
@@ -231,6 +236,7 @@ public class ArrayIndexedCollection implements Collection {
             throw new IndexOutOfBoundsException();
         }
         shiftLeft(index);
+        modificationCount++;
         size--;
     }
 
@@ -282,6 +288,7 @@ public class ArrayIndexedCollection implements Collection {
 
         elements[position] = value;
         size++;
+        modificationCount++;
     }
 
     /**
@@ -331,6 +338,13 @@ public class ArrayIndexedCollection implements Collection {
          */
         private ArrayIndexedCollection col;
 
+
+        /**
+         * Modification count of the collection instance at the time of ElementsGetter creation.
+         * Used to check for concurrent modification.
+         */
+        private int savedModificationCount;
+
         /**
          * Constructor for the ArrayIndexedCollectionElementsGetter class.
          * 
@@ -340,9 +354,10 @@ public class ArrayIndexedCollection implements Collection {
          * @param col          - reference to collection whose elements we are iterating
          *                     through.
          */
-        private ArrayIndexedCollectionElementsGetter(int size, ArrayIndexedCollection col) {
+        private ArrayIndexedCollectionElementsGetter(ArrayIndexedCollection col, int size, int modificationCount) {
             indexReverse = size;
             this.col = col;
+            savedModificationCount = modificationCount;
         }
 
         /**
@@ -351,9 +366,13 @@ public class ArrayIndexedCollection implements Collection {
          * 
          * @return true if the collection contains at least one more element, false
          *         otherwise.
+         * @throws ConcurrentModificationException if the collection has been modified since creation of the ElementsGetter.
          */
         @Override
         public boolean hasNextElement() {
+            if (savedModificationCount != col.modificationCount) {
+                throw new ConcurrentModificationException();
+            }
             return indexReverse > 0;
         }
 
@@ -364,9 +383,13 @@ public class ArrayIndexedCollection implements Collection {
          * @throws NoSuchElementException if the collection contains no more elements,
          *                                but the next one was requested by calling this
          *                                method.
+         * @throws ConcurrentModificationException if the collection has been modified since creation of the ElementsGetter.
          */
         @Override
         public Object getNextElement() {
+            if (savedModificationCount != col.modificationCount) {
+                throw new ConcurrentModificationException();
+            }
             if (!hasNextElement()) {
                 throw new NoSuchElementException();
             }
@@ -382,6 +405,6 @@ public class ArrayIndexedCollection implements Collection {
      */
     @Override
     public ElementsGetter createElementsGetter() {
-        return new ArrayIndexedCollectionElementsGetter(size, this);
+        return new ArrayIndexedCollectionElementsGetter(this, size, modificationCount);
     }
 }

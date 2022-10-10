@@ -1,5 +1,6 @@
 package hr.fer.oprpp1.custom.collections;
 
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
 import org.w3c.dom.NodeList;
@@ -24,6 +25,11 @@ public class LinkedListIndexedCollection implements Collection {
      * Reference to the last node in the collection.
      */
     private ListNode last;
+
+    /**
+     * Used to check for concurrent modification.
+     */
+    private int modificationCount = 0;
 
     /**
      * Default constructor. Sets endnodes to null and size to 0.
@@ -78,6 +84,7 @@ public class LinkedListIndexedCollection implements Collection {
             last = newNode;
         }
         size++;
+        modificationCount++;
     }
 
     /**
@@ -121,6 +128,7 @@ public class LinkedListIndexedCollection implements Collection {
             position--;
         }
         size++;
+        modificationCount++;
     }
 
     /**
@@ -192,9 +200,14 @@ public class LinkedListIndexedCollection implements Collection {
         ListNode node = first;
         while (node != null) {
             if (node.value == value) {
-                (node.prev).next = node.next;
-                (node.next).prev = node.prev;
+                if (node.prev != null) {
+                    (node.prev).next = node.next;
+                }
+                if (node.next != null) {
+                    (node.next).prev = node.prev;
+                }
                 size--;
+                modificationCount++;
                 return true;
             }
 
@@ -227,6 +240,7 @@ public class LinkedListIndexedCollection implements Collection {
         if (node.next != null) {
             (node.next).prev = node.prev;
         }
+        modificationCount++;
         size--;
     }
 
@@ -295,6 +309,7 @@ public class LinkedListIndexedCollection implements Collection {
     public void clear() {
         first = last = null;
         size = 0;
+        modificationCount++;
     }
 
     /**
@@ -364,7 +379,18 @@ public class LinkedListIndexedCollection implements Collection {
         /**
          * Node that is the current position of the iterator.
          */
-        ListNode node;
+        private ListNode node;
+
+        /**
+         * Modification count of the collection instance at the time of ElementsGetter
+         * creation.
+         */
+        private int savedModificationCount;
+
+        /**
+         * Reference to the collection instance we're iterating through.
+         */
+        private LinkedListIndexedCollection col;
 
         /**
          * Constructor that sets the current position of the iterator to the first
@@ -372,8 +398,10 @@ public class LinkedListIndexedCollection implements Collection {
          * 
          * @param first - first node in the list.
          */
-        private LinkedListElementsGetter(ListNode first) {
+        private LinkedListElementsGetter(LinkedListIndexedCollection col, ListNode first, int modificationCount) {
             node = new ListNode(null, first, null);
+            savedModificationCount = modificationCount;
+            this.col = col;
         }
 
         /**
@@ -381,9 +409,14 @@ public class LinkedListIndexedCollection implements Collection {
          * otherwise.
          * 
          * @return true if there are more elements, false otherwise.
+         * @throws ConcurrentModificationException if the collection has been modified
+         *                                         since creation of the ElementsGetter.
          */
         @Override
         public boolean hasNextElement() {
+            if (savedModificationCount != col.modificationCount) {
+                throw new ConcurrentModificationException();
+            }
             return node.next != null;
         }
 
@@ -391,11 +424,16 @@ public class LinkedListIndexedCollection implements Collection {
          * Returns the next element in the collection.
          * 
          * @return next element in the collection.
-         * @throws NoSuchElementException if there are no more elements in the
-         *                                collection.
+         * @throws NoSuchElementException          if there are no more elements in the
+         *                                         collection.
+         * @throws ConcurrentModificationException if the collection has been modified
+         *                                         since creation of the ElementsGetter.
          */
         @Override
         public Object getNextElement() {
+            if (savedModificationCount != col.modificationCount) {
+                throw new ConcurrentModificationException();
+            }
             if (!hasNextElement()) {
                 throw new NoSuchElementException();
             }
@@ -412,6 +450,6 @@ public class LinkedListIndexedCollection implements Collection {
      */
     @Override
     public ElementsGetter createElementsGetter() {
-        return new LinkedListElementsGetter(first);
+        return new LinkedListElementsGetter(this, first, modificationCount);
     }
 }

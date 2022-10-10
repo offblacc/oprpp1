@@ -26,4 +26,17 @@ public interface ElementsGetter {
      *                                method.
      */
     public Object getNextElement();
+
+    /**
+     * Processes all remaining elements in the collection by calling the process
+     * method of the given processor.
+     * 
+     * @param p - processor that will process each element of the collection,
+     *          defined by the user.
+     */
+    public default void processRemaining(Processor p) {
+        while (hasNextElement()) {
+            p.process(getNextElement());
+        }
+    }
 }
