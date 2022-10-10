@@ -243,4 +243,17 @@ public class LinkedListIndexedCollectionTest {
                 () -> assertEquals(5, col.get(4)),
                 () -> assertEquals(6, col.get(5)));
     }
+
+    @Test
+    public void testRemoveByValueEdgeCases() {
+        LinkedListIndexedCollection col = new LinkedListIndexedCollection();
+        col.add(1);
+        col.add(2);
+        col.add(3);
+        assertAll(
+                () -> assertTrue(col.remove(Integer.valueOf(1))),
+                () -> assertTrue(col.remove(Integer.valueOf(3))),
+                () -> assertTrue(col.remove(Integer.valueOf(2))),
+                () -> assertFalse(col.remove(Integer.valueOf(4))));
+    }
 }

@@ -188,8 +188,12 @@ public class LinkedListIndexedCollection extends Collection {
         ListNode node = first;
         while (node != null) {
             if (node.value == value) {
-                (node.prev).next = node.next;
-                (node.next).prev = node.prev;
+                if (node.prev != null) {
+                    (node.prev).next = node.next;
+                }
+                if (node.next != null) {
+                    (node.next).prev = node.prev;
+                }
                 size--;
                 return true;
             }
