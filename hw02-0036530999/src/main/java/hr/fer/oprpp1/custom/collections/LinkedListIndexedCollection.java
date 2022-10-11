@@ -3,8 +3,6 @@ package hr.fer.oprpp1.custom.collections;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
-import org.w3c.dom.NodeList;
-
 /**
  * Class that represents a resizable linked list collection.
  * Duplicate elements are allowed. Storage of null references, however, is not
@@ -12,7 +10,7 @@ import org.w3c.dom.NodeList;
  * The order of elements is determined by the order in which the elements were
  * added.
  */
-public class LinkedListIndexedCollection implements Collection {
+public class LinkedListIndexedCollection implements List {
     /**
      * Number of elements currently stored in the collection.
      */
@@ -162,6 +160,9 @@ public class LinkedListIndexedCollection implements Collection {
      *         value is not found.
      */
     public int indexOf(Object value) {
+        if (value == null) {
+            return -1;
+        }
         ListNode node = first;
         for (int i = 0; node != null; i++, node = node.next) {
             if (node.value.equals(value)) {
@@ -220,9 +221,9 @@ public class LinkedListIndexedCollection implements Collection {
      * Removes the object at the given position from the collection.
      * 
      * @param index - position of the object to be removed. Must be between 0 and
-     *              size-1.
+     *              size - 1.
      * @throws IndexOutOfBoundsException if the given position is not between 0 and
-     *                                   size-1.
+     *                                   size - 1.
      */
     public void remove(int index) {
         if (index < 0 || index > size - 1) {
@@ -261,21 +262,6 @@ public class LinkedListIndexedCollection implements Collection {
             node = node.next;
         }
         return arr;
-    }
-
-    /**
-     * Method calls processor.process(.) for each element of this collection.
-     * 
-     * @param processor - processor that will process each element of the
-     *                  collection, defined by the user.
-     */
-    @Override
-    public void forEach(Processor processor) {
-        ListNode node = first;
-        while (node != null) {
-            processor.process(node.value);
-            node = node.next;
-        }
     }
 
     /**

@@ -56,7 +56,12 @@ public interface Collection {
      * @param processor - processor that will process each element of the
      *                  collection, defined by the user.
      */
-    public void forEach(Processor processor);
+    public default void forEach(Processor processor) {
+        ElementsGetter eg = this.createElementsGetter();
+        while (eg.hasNextElement()) {
+            processor.process(eg.getNextElement());
+        }
+    }
 
     /**
      * Adds all elements from the given collection into this collection. The given
@@ -85,4 +90,23 @@ public interface Collection {
      * @return an ElementsGetter object for this collection.`
      */
     public ElementsGetter createElementsGetter();
+
+    /**
+     * Adds all elements from another collection that satisfy tester's test to the
+     * collection calling this method.
+     * 
+     * @param col    - Collection object whose elements are added provided they pass
+     *               the tester.
+     * @param tester - Tester object whose test method gets called and determines
+     *               whether an object from col is added to the calling method.
+     */
+    public default void addAllSatisfying(Collection col, Tester tester) { // TODO add tests
+        ElementsGetter eg = col.createElementsGetter();
+        while (eg.hasNextElement()) {
+            Object elem = eg.getNextElement();
+            if (tester.test(elem)) {
+                this.add(elem);
+            }
+        }
+    }
 }

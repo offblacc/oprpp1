@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
  * The order of elements is determined by the order in which the elements were
  * added.
  */
-public class ArrayIndexedCollection implements Collection {
+public class ArrayIndexedCollection implements List {
     /**
      * Number of elements currently stored in the collection.
      */
@@ -292,18 +292,6 @@ public class ArrayIndexedCollection implements Collection {
     }
 
     /**
-     * Calls the processor's process method for each element of the collection.
-     * 
-     * @param processor - processor whose process method will be called.
-     */
-    @Override
-    public void forEach(Processor processor) {
-        for (int i = 0; i < size; i++) {
-            processor.process(elements[i]);
-        }
-    }
-
-    /**
      * Adds all elements of the given collection to this collection.
      * 
      * @param other - collection whose elements will be added to this collection.
@@ -338,9 +326,9 @@ public class ArrayIndexedCollection implements Collection {
          */
         private ArrayIndexedCollection col;
 
-
         /**
-         * Modification count of the collection instance at the time of ElementsGetter creation.
+         * Modification count of the collection instance at the time of ElementsGetter
+         * creation.
          * Used to check for concurrent modification.
          */
         private int savedModificationCount;
@@ -366,7 +354,8 @@ public class ArrayIndexedCollection implements Collection {
          * 
          * @return true if the collection contains at least one more element, false
          *         otherwise.
-         * @throws ConcurrentModificationException if the collection has been modified since creation of the ElementsGetter.
+         * @throws ConcurrentModificationException if the collection has been modified
+         *                                         since creation of the ElementsGetter.
          */
         @Override
         public boolean hasNextElement() {
@@ -380,10 +369,13 @@ public class ArrayIndexedCollection implements Collection {
          * Returns the next element in the collection.
          * 
          * @return the next element in the collection.
-         * @throws NoSuchElementException if the collection contains no more elements,
-         *                                but the next one was requested by calling this
-         *                                method.
-         * @throws ConcurrentModificationException if the collection has been modified since creation of the ElementsGetter.
+         * @throws NoSuchElementException          if the collection contains no more
+         *                                         elements,
+         *                                         but the next one was requested by
+         *                                         calling this
+         *                                         method.
+         * @throws ConcurrentModificationException if the collection has been modified
+         *                                         since creation of the ElementsGetter.
          */
         @Override
         public Object getNextElement() {
