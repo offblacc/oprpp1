@@ -1,12 +1,32 @@
 package hr.fer.oprpp1.hw02.prob1;
 
 public class Lexer { // TODO docs
-    private char[] data; // ulazni tekst
-    private Token token; // trenutni token
-    private int currentIndex; // indeks prvog neobrađenog znaka
+    /**
+     * Stores all characters passed to the constructor as a string.
+     */
+    private char[] data;
+    /**
+     * The last generated token.
+     */
+    private Token token;
+    /**
+     * Index of the first unprocessed character.
+     */
+    private int currentIndex;
+    /**
+     * Current state of the lexer. Can be one of the following:
+     * BASIC, EXTENDED
+     */
     LexerState state;
-    // konstruktor prima ulazni tekst koji se tokenizira
 
+    /**
+     * Creates a new Lexer object from the given text. Current index set to 0 and
+     * state set to BASIC.
+     * Token is set to null, and data is set to the given text. Token will be
+     * generated after the first nextToken() method call.
+     * 
+     * @param text text to be processed
+     */
     public Lexer(String text) {
         data = text.toCharArray();
         currentIndex = 0;
@@ -14,9 +34,14 @@ public class Lexer { // TODO docs
         state = LexerState.BASIC;
     }
 
-    // generira i vraća sljedeći token
-    // baca LexerException ako dođe do pogreške
-    public Token nextToken() { // TODO lexer exceptions, syntax errors!
+    /**
+     * Generates and returns the next token. Moves the current index as it is
+     * passing through the data array of characters.
+     * 
+     * @return next token
+     * @throws LexerException if the token cannot be generated
+     */
+    public Token nextToken() {
         if (token != null && token.getType() == TokenType.EOF) {
             throw new LexerException("No more tokens available.");
         }
@@ -89,12 +114,22 @@ public class Lexer { // TODO docs
         }
     }
 
-    // vraća zadnji generirani token; može se pozivati
-    // više puta; ne pokreće generiranje sljedećeg tokena
+    /**
+     * Returns the last generated token. Basically just a getter function.
+     * 
+     * @return the last generated token.
+     */
     public Token getToken() {
         return token;
     }
 
+    /**
+     * Sets the state of the lexer to the passed LexerState enum. Passing null as
+     * state will throw a NullPointerException.
+     * 
+     * @param state - state to be set
+     * @throws NullPointerException if passed state is null
+     */
     public void setState(LexerState state) {
         if (state == null) {
             throw new NullPointerException("Lexer state cannot be null");
@@ -102,6 +137,11 @@ public class Lexer { // TODO docs
         this.state = state;
     }
 
+    /**
+     * Sets the lexer state to the opposite, since there are only two states and the
+     * same symbol is responsible for the flip. Internally used method to help clean
+     * up the code.
+     */
     private void flipLexerState() {
         if (state == LexerState.BASIC) {
             state = LexerState.EXTENDED;
