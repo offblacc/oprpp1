@@ -29,39 +29,63 @@ public class Lexer { // TODO docs
             return nextToken();
         }
 
-        StringBuilder sb = new StringBuilder();
-        if (currentIndex == data.length - 1 && data[currentIndex] == '\\') {
-            throw new LexerException("Invalid escape ending.");
-        }
-        if (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
-            while (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
-                if (data[currentIndex] == '\\') {
-                    currentIndex++;
-                    if (Character.isLetter(data[currentIndex])) {
-                        throw new LexerException("Invalid escape sequence");
-                    }
-                }
-                sb.append(data[currentIndex]);
-                if (++currentIndex >= data.length) {
-                    break;
-                }
+        /*
+         * This block is triggered either when we're in LexerState.BASIC state and need
+         * to process # as a symbol and switch states, or when we were in extended state
+         * and the following block did not increase currentIndex after finding '#', so
+         * we return the WORD we processed in EXTENDED state, then switch states and,
+         * since we didn't increase our index, move on to the else block next time this
+         * method is called and tokenize '#' as a symbol
+         */
+        if (state == LexerState.EXTENDED && data[currentIndex] != '#') {
+            StringBuilder sb = new StringBuilder();
+            while (data[currentIndex] != ' ' && data[currentIndex] != '#') {
+                sb.append(data[currentIndex++]);
+            }
+            if (data[currentIndex] == '#') {
+                flipLexerState();
             }
             return new Token(TokenType.WORD, sb.toString());
-        } else if (Character.isDigit(data[currentIndex])) { // TODO what if double dot ?
-            while (Character.isDigit(data[currentIndex]) || data[currentIndex] == '.') {
-                sb.append(data[currentIndex]);
-                if (++currentIndex >= data.length) {
-                    break;
+
+        } else {
+
+            StringBuilder sb = new StringBuilder();
+            if (currentIndex == data.length - 1 && data[currentIndex] == '\\') {
+                throw new LexerException("Invalid escape ending.");
+            }
+            if (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
+                while (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
+                    if (data[currentIndex] == '\\') {
+                        currentIndex++;
+                        if (Character.isLetter(data[currentIndex])) {
+                            throw new LexerException("Invalid escape sequence");
+                        }
+                    }
+                    sb.append(data[currentIndex]);
+                    if (++currentIndex >= data.length) {
+                        break;
+                    }
                 }
+                return new Token(TokenType.WORD, sb.toString());
+            } else if (Character.isDigit(data[currentIndex])) { // TODO what if double dot ?
+                while (Character.isDigit(data[currentIndex]) || data[currentIndex] == '.') {
+                    sb.append(data[currentIndex]);
+                    if (++currentIndex >= data.length) {
+                        break;
+                    }
+                }
+                try {
+                    long num = Long.parseLong(sb.toString());
+                    return new Token(TokenType.NUMBER, Long.parseLong(sb.toString()));
+                } catch (NumberFormatException ex) {
+                    throw new LexerException("Number cannot be represented as Long");
+                }
+            } else { // meaning it is a TokenType.SYMBOL
+                if (data[currentIndex] == '#') {
+                    flipLexerState();
+                }
+                return new Token(TokenType.SYMBOL, data[currentIndex++]);
             }
-            try {
-                long num = Long.parseLong(sb.toString());
-                return new Token(TokenType.NUMBER, Long.parseLong(sb.toString()));
-            } catch (NumberFormatException ex) {
-                throw new LexerException("Number cannot be represented as Long");
-            }
-        } else { // meaning it is a TokenType.SYMBOL
-            return new Token(TokenType.SYMBOL, data[currentIndex++]);
         }
     }
 
@@ -72,6 +96,17 @@ public class Lexer { // TODO docs
     }
 
     public void setState(LexerState state) {
+        if (state == null) {
+            throw new NullPointerException("Lexer state cannot be null");
+        }
         this.state = state;
+    }
+
+    private void flipLexerState() {
+        if (state == LexerState.BASIC) {
+            state = LexerState.EXTENDED;
+        } else {
+            state = LexerState.BASIC;
+        }
     }
 }
