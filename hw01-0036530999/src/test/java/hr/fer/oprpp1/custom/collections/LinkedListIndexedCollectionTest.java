@@ -256,4 +256,14 @@ public class LinkedListIndexedCollectionTest {
                 () -> assertTrue(col.remove(Integer.valueOf(2))),
                 () -> assertFalse(col.remove(Integer.valueOf(4))));
     }
+
+    @Test
+    public void testInsertIntoEmpty() {
+        LinkedListIndexedCollection col = new LinkedListIndexedCollection();
+        col.insert(1, 0);
+        assertEquals(1, col.get(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            col.get(1);
+        });
+    }
 }

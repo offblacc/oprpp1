@@ -43,9 +43,8 @@ public class ArrayIndexedCollectionTest {
     @Test
     public void testConstructorWithEmptyLinkedList() {
         var col1 = new LinkedListIndexedCollection();
-        assertThrows(IllegalArgumentException.class, () -> {
-            new ArrayIndexedCollection(col1);
-        });
+        var col2 = new ArrayIndexedCollection(col1);
+        assertEquals(0, col2.size());
     }
 
     @Test
@@ -286,6 +285,16 @@ public class ArrayIndexedCollectionTest {
                 () -> assertEquals(5, col.get(4)),
                 () -> assertEquals(6, col.get(5)),
                 () -> assertEquals(6, col.size()));
+    }
+
+    @Test
+    public void testInsertIntoEmpty() {
+        ArrayIndexedCollection col = new ArrayIndexedCollection();
+        col.insert(1, 0);
+        assertEquals(1, col.get(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            col.get(1);
+        });
     }
 
 }
