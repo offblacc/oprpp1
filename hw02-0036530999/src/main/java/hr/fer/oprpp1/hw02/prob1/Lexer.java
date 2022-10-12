@@ -4,12 +4,14 @@ public class Lexer { // TODO docs
     private char[] data; // ulazni tekst
     private Token token; // trenutni token
     private int currentIndex; // indeks prvog neobrađenog znaka
+    LexerState state;
     // konstruktor prima ulazni tekst koji se tokenizira
 
     public Lexer(String text) {
         data = text.toCharArray();
         currentIndex = 0;
         token = null;
+        state = LexerState.BASIC;
     }
 
     // generira i vraća sljedeći token
@@ -28,10 +30,16 @@ public class Lexer { // TODO docs
         }
 
         StringBuilder sb = new StringBuilder();
+        if (currentIndex == data.length - 1 && data[currentIndex] == '\\') {
+            throw new LexerException("Invalid escape ending.");
+        }
         if (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
             while (Character.isLetter(data[currentIndex]) || data[currentIndex] == '\\') {
                 if (data[currentIndex] == '\\') {
                     currentIndex++;
+                    if (Character.isLetter(data[currentIndex])) {
+                        throw new LexerException("Invalid escape sequence");
+                    }
                 }
                 sb.append(data[currentIndex]);
                 if (++currentIndex >= data.length) {
@@ -46,15 +54,24 @@ public class Lexer { // TODO docs
                     break;
                 }
             }
-            return new Token(TokenType.NUMBER, Long.parseLong(sb.toString()));
+            try {
+                long num = Long.parseLong(sb.toString());
+                return new Token(TokenType.NUMBER, Long.parseLong(sb.toString()));
+            } catch (NumberFormatException ex) {
+                throw new LexerException("Number cannot be represented as Long");
+            }
+        } else { // meaning it is a TokenType.SYMBOL
+            return new Token(TokenType.SYMBOL, data[currentIndex++]);
         }
-
-        return token;
     }
 
     // vraća zadnji generirani token; može se pozivati
     // više puta; ne pokreće generiranje sljedećeg tokena
     public Token getToken() {
         return token;
+    }
+
+    public void setState(LexerState state) {
+        this.state = state;
     }
 }

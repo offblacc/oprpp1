@@ -53,7 +53,7 @@ public class ArrayIndexedCollection implements List {
      * @throws NullPointerException if the given collection is null.
      */
     public ArrayIndexedCollection(Collection other) {
-        this(other, other.size());
+        this(other, 16);
     }
 
     /**
