@@ -277,12 +277,6 @@ public class LinkedListIndexedCollection implements List {
                 add(value);
             }
         }
-
-        if (other instanceof LinkedListIndexedCollection) {
-            other = (LinkedListIndexedCollection) other;
-        } else if (other instanceof ArrayIndexedCollection) {
-            other = (ArrayIndexedCollection) other;
-        }
         other.forEach(new LocalProcessor());
     }
 
