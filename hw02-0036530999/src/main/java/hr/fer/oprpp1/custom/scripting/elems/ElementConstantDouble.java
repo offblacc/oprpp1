@@ -9,6 +9,10 @@ public class ElementConstantDouble extends Element {
      */
     private double value;
 
+    public ElementConstantDouble(double value) {
+        this.value = value;
+    }
+
     /**
      * Return the value of the double as a string.
      * 

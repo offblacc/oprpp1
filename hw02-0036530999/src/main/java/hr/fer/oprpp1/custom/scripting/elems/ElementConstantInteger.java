@@ -9,6 +9,10 @@ public class ElementConstantInteger extends Element {
      */
     private int value;
 
+    public ElementConstantInteger(int value) {
+        this.value = value;
+    }
+
     /**
      * Return the value of the integer as a string.
      * 

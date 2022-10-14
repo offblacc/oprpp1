@@ -10,6 +10,15 @@ public class ElementString extends Element {
     private String value;
 
     /**
+     * Constructor that sets the value of the string.
+     * 
+     * @param value - value of the string
+     */
+    public ElementString(String value) {
+        this.value = value;
+    }
+
+    /**
      * Return the value of the string as a string.
      * 
      * @return value of the string

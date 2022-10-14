@@ -1,12 +1,14 @@
 package hr.fer.oprpp1.custom.scripting.lexer;
 
-public class SmartScriptToken {
-    private SmartScriptTokenType type;
-    private Object value;
+import hr.fer.oprpp1.custom.scripting.elems.Element;
 
-    public SmartScriptToken(SmartScriptTokenType type, Object value) {
+public class SmartScriptToken {
+    Element element;
+    SmartScriptTokenType type;
+
+    public SmartScriptToken(Element element, SmartScriptTokenType type) {
+        this.element = element;
         this.type = type;
-        this.value = value;
     }
 
     public SmartScriptTokenType getType() {
@@ -14,6 +16,7 @@ public class SmartScriptToken {
     }
 
     public Object getValue() {
-        return value;
-    }    
+        return element.asText();
+    }
+    
 }
