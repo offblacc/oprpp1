@@ -70,8 +70,7 @@ public class Lexer { // TODO docs
             if (data[currentIndex] == '#') {
                 flipLexerState();
             }
-            return new Token(TokenType.WORD, sb.toString());
-
+            token = new Token(TokenType.WORD, sb.toString());
         } else {
 
             StringBuilder sb = new StringBuilder();
@@ -91,7 +90,7 @@ public class Lexer { // TODO docs
                         break;
                     }
                 }
-                return new Token(TokenType.WORD, sb.toString());
+                token = new Token(TokenType.WORD, sb.toString());
             } else if (Character.isDigit(data[currentIndex])) { // TODO what if double dot ?
                 while (Character.isDigit(data[currentIndex]) || data[currentIndex] == '.') {
                     sb.append(data[currentIndex]);
@@ -100,8 +99,7 @@ public class Lexer { // TODO docs
                     }
                 }
                 try {
-                    long num = Long.parseLong(sb.toString());
-                    return new Token(TokenType.NUMBER, Long.parseLong(sb.toString()));
+                    token = new Token(TokenType.NUMBER, Long.parseLong(sb.toString()));
                 } catch (NumberFormatException ex) {
                     throw new LexerException("Number cannot be represented as Long");
                 }
@@ -109,9 +107,10 @@ public class Lexer { // TODO docs
                 if (data[currentIndex] == '#') {
                     flipLexerState();
                 }
-                return new Token(TokenType.SYMBOL, data[currentIndex++]);
+                token = new Token(TokenType.SYMBOL, data[currentIndex++]);
             }
         }
+        return token;
     }
 
     /**

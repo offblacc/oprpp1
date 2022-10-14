@@ -322,11 +322,11 @@ public class Prob1Test {
 		checkToken(lexer.nextToken(), new Token(TokenType.EOF, null));
 
 	}
-
+	
+	// Helper function
 	private void checkToken(Token actual, Token expected) {
 		String msg = "Token are not equal.";
 		assertEquals(expected.getType(), actual.getType(), msg);
 		assertEquals(expected.getValue(), actual.getValue(), msg);
 	}
-
 }
