@@ -43,14 +43,18 @@ public class SmartScriptLexer {
         if (state == SmartScriptLexerStates.BASIC) {
             return nextTokenBasic();
         } else {
-            throw new UnknownError("nexttoken tag state not implemented");
+            throw new UnknownError("next token tag state not implemented");
             // return null;
             // return nextTokenSpecial();
         }
     }
 
+    // \\ treat as \
+    // \{ treat as {
     private SmartScriptToken nextTokenBasic() {
-        if (data[currentIndex] == '{') {
+        // case if we are in basic state and read a tag - go to tag state return tag
+        // token with tag bound type
+        if ((data[currentIndex] == '{' && (currentIndex == 0 || data[currentIndex - 1] != '\\'))) {
             if (data[currentIndex + 1] == '$') {
                 state = SmartScriptLexerStates.TAG;
                 currentIndex += 2;
@@ -61,31 +65,45 @@ public class SmartScriptLexer {
             }
         }
 
-        // pročitaj sljedeći token
+        // van tagova je sve text
         StringBuilder sb = new StringBuilder();
-        while (currentIndex < data.length && data[currentIndex] != '{' && !Character.isWhitespace(data[currentIndex])) {
+        while (currentIndex < data.length
+                && (data[currentIndex] != '{' || (currentIndex > 0 && data[currentIndex - 1] == '\\' && data[currentIndex] == '{'))) 
+                && !Character.isWhitespace(data[currentIndex])) {
             sb.append(data[currentIndex]);
             currentIndex++;
-        }
+        } // TODO FIRST WHAT YOU NEED TO DO IS TREATING \\ AND \$, THEN MOVE ON
+        token = new SmartScriptToken(new ElementString(sb.toString()), SmartScriptTokenType.BASIC);
+        return token;
+    }
 
-        // ustanovi što je sljedeći token
-        try {
-            double d = Double.parseDouble(sb.toString());
-            token = new SmartScriptToken(new ElementConstantDouble(d), SmartScriptTokenType.BASIC);
+    private SmartScriptToken nextTokenSpecial() {
+        StringBuilder sb = new StringBuilder();
+        if (!Character.isDigit(sb.toString().charAt(0))) {
+            token = new SmartScriptToken(new ElementString(sb.toString()), SmartScriptTokenType.BASIC);
             return token;
-        } catch (NumberFormatException ex) {
-            try {
+        } else {
+            int dotCount = 0;
+            for (int i = 0; i < sb.length(); i++) {
+                if (sb.toString().charAt(i) == '.') {
+                    dotCount++;
+                }
+            }
+            if (dotCount == 1) {
+                double d = Double.parseDouble(sb.toString());
+                token = new SmartScriptToken(new ElementConstantDouble(d), SmartScriptTokenType.BASIC);
+                return token;
+            } else if (dotCount == 0) {
                 int i = Integer.parseInt(sb.toString());
                 token = new SmartScriptToken(new ElementConstantInteger(i), SmartScriptTokenType.BASIC);
                 return token;
-            } catch (NumberFormatException ex2) {
+            } else {
                 token = new SmartScriptToken(new ElementString(sb.toString()), SmartScriptTokenType.BASIC);
                 return token;
-            } catch (Exception ex3) {
-                throw new UnknownError();
             }
-        } catch (Exception ex4) {
-            throw new UnknownError();
+
         }
+        // ustanovi što je sljedeći token
+        // TODO in case of a double with a dot and then a dot at the end, fix!
     }
 }

@@ -15,6 +15,10 @@ public class SmartScriptToken {
         return type;
     }
 
+    public Element getElement() {
+        return element;
+    }
+
     public Object getValue() {
         return element.asText();
     }
