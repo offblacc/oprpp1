@@ -10,6 +10,14 @@ public class ElementVariable extends Element {
     private String name;
 
     /**
+     * Constructor that takes a name of the variable.
+     * @param name - name of the variable.
+     */
+    public ElementVariable(String name) {
+        this.name = name;
+    }
+
+    /**
      * Returns the name of the name variable
      * 
      * @return name of the variable

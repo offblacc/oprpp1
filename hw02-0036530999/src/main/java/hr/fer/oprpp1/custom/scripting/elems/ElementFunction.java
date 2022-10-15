@@ -10,6 +10,14 @@ public class ElementFunction extends Element {
     private String name;
 
     /**
+     * Constructor that takes a name of the function.
+     * @param word - name of the function.
+     */
+    public ElementFunction(String name) {
+        this.name = name;
+    }
+
+    /**
      * Returns the name of the function.
      * 
      * @return name of the function
