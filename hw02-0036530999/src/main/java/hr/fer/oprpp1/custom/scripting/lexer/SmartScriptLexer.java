@@ -35,11 +35,6 @@ public class SmartScriptLexer {
             return token;
         }
 
-        if (Character.isWhitespace(data[currentIndex])) {
-            currentIndex++;
-            return nextToken();
-        }
-
         if (state == SmartScriptLexerStates.BASIC) {
             return nextTokenBasic();
         } else {
@@ -54,25 +49,42 @@ public class SmartScriptLexer {
     private SmartScriptToken nextTokenBasic() {
         // case if we are in basic state and read a tag - go to tag state return tag
         // token with tag bound type
-        if ((data[currentIndex] == '{' && (currentIndex == 0 || data[currentIndex - 1] != '\\'))) {
+        StringBuilder sb = new StringBuilder();
+        if ((data[currentIndex] == '{')) {
             if (data[currentIndex + 1] == '$') {
                 state = SmartScriptLexerStates.TAG;
                 currentIndex += 2;
                 token = new SmartScriptToken(new ElementString("{$"), SmartScriptTokenType.BOUND);
                 return token;
-            } else {
-                throw new SmartScriptLexerException("Invalid tag bound.");
             }
         }
 
-        // van tagova je sve text
-        StringBuilder sb = new StringBuilder();
-        while (currentIndex < data.length
-                && (data[currentIndex] != '{' || (currentIndex > 0 && data[currentIndex - 1] == '\\' && data[currentIndex] == '{'))) 
-                && !Character.isWhitespace(data[currentIndex])) {
-            sb.append(data[currentIndex]);
-            currentIndex++;
-        } // TODO FIRST WHAT YOU NEED TO DO IS TREATING \\ AND \$, THEN MOVE ON
+        while (currentIndex < data.length) {
+            if (data[currentIndex] == '\\') {
+                if (currentIndex + 1 == data.length) {
+                    throw new SmartScriptLexerException("Invalid escape sequence.");
+                }
+                if (data[currentIndex + 1] == '{' || data[currentIndex + 1] == '\\') {
+                    sb.append(data[currentIndex + 1]);
+                    currentIndex += 2;
+                } else {
+                    throw new SmartScriptLexerException("Invalid escape sequence.");
+                }
+            } else {
+                if (data[currentIndex] == '{') {
+                    if (currentIndex + 1 == data.length) {
+                        throw new SmartScriptLexerException("Invalid escape sequence.");
+                    }
+                    if (data[currentIndex + 1] == '$') { // tag encountered, but let the next token handle it, here it
+                                                         // just means end of reading this token
+                        token = new SmartScriptToken(new ElementString(sb.toString()), SmartScriptTokenType.BASIC);
+                        return token;
+                    }
+                }
+                sb.append(data[currentIndex]);
+                currentIndex++;
+            }
+        }
         token = new SmartScriptToken(new ElementString(sb.toString()), SmartScriptTokenType.BASIC);
         return token;
     }

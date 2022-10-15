@@ -21,44 +21,40 @@ public class SmartScriptLexerTest {
     public void testBasicText() {
         SmartScriptLexer lexer = new SmartScriptLexer("This is sample text.");
         assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("This", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("is", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("sample", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("text.", lexer.getToken().getValue());
+        assertEquals("This is sample text.", lexer.getToken().getValue());
         assertTrue(lexer.getToken().getElement() instanceof ElementString);
         assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
     }
 
-    // TODO READING DOUBLES NEEDS TO BE MORE ADVANCED TO READ DOT AT THE END OF THE
-    // DOUBLE AS A STRING - EXIT READING DOUBLE WHEN SECOND DOT IS ENCOUNTERED
     @Test
     public void testBasicTestWithNumbers() {
-        SmartScriptLexer lexer = new SmartScriptLexer("This is sample text 123 1.23 .");
+        SmartScriptLexer lexer = new SmartScriptLexer("This is sample text 123 1.23.");
         assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("This", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("is", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("sample", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("text", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("123", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementConstantInteger);
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("1.23.", lexer.getToken().getValue());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+        assertEquals("This is sample text 123 1.23.", lexer.getToken().getValue());
 
+    }
+
+    @Test
+    public void testEscapeCharacters() {
+        SmartScriptLexer lexer = new SmartScriptLexer("This is sample text \\{ \\\\");
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("This is sample text { \\", lexer.getToken().getValue());
+    }
+
+    @Test
+    public void testInvalidEscapeCharacter() {
+        var lexer = new SmartScriptLexer("Hello this is text with invalid escape seq \\");
+        assertThrows(SmartScriptLexerException.class, () -> lexer.nextToken());
+        var lexer2 = new SmartScriptLexer("Hello this is text with in\\valid escape seq");
+        assertThrows(SmartScriptLexerException.class, () -> lexer2.nextToken());
+    }
+
+    @Test
+    public void testTextWithOpeningTag() {
+        SmartScriptLexer lexer = new SmartScriptLexer("This is sample text {$");
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("This is sample text ", lexer.getToken().getValue());
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
     }
 }
