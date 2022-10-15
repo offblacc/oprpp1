@@ -157,4 +157,88 @@ public class SmartScriptLexerTest {
         assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
     }
 
+    @Test
+    public void testWithTagAndEndTagAfter() {
+        SmartScriptLexer lexer = new SmartScriptLexer("{$=1$}{$END$}");
+        
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.ECHO, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("1", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementConstantInteger);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.END, lexer.nextToken().getType());
+        assertEquals("END", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
+    @Test
+    public void testWithTagAndEndTagAfterAndWhitespace() {
+        SmartScriptLexer lexer = new SmartScriptLexer("{$  =    1   $}{$  END \t $}");
+        
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.ECHO, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("1", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementConstantInteger);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.END, lexer.nextToken().getType());
+        assertEquals("END", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
 }

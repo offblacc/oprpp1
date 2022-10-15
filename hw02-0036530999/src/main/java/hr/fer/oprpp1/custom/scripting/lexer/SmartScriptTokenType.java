@@ -5,5 +5,5 @@ public enum SmartScriptTokenType {
     FOR,
     ECHO,
     BOUND,
-    EOF
+    EOF, END
 }

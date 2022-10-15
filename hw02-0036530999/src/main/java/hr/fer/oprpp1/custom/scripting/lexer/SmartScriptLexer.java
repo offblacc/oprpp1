@@ -1,12 +1,6 @@
 package hr.fer.oprpp1.custom.scripting.lexer;
 
-import hr.fer.oprpp1.custom.scripting.elems.ElementConstantDouble;
-import hr.fer.oprpp1.custom.scripting.elems.ElementConstantInteger;
-import hr.fer.oprpp1.custom.scripting.elems.ElementFunction;
-import hr.fer.oprpp1.custom.scripting.elems.ElementString;
-import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
-import hr.fer.oprpp1.hw02.prob1.LexerException;
-import hr.fer.oprpp1.hw02.prob1.Token;
+import hr.fer.oprpp1.custom.scripting.elems.*;
 
 public class SmartScriptLexer {
     private char[] data;
@@ -49,7 +43,6 @@ public class SmartScriptLexer {
     }
 
     private SmartScriptToken nextTokenTag() {
-        // TAG state, read end bound - switch state, return bound token
         String word = readNextToken();
         if (word.equals("$}")) {
             state = SmartScriptLexerState.BASIC;
@@ -66,8 +59,10 @@ public class SmartScriptLexer {
                     token = new SmartScriptToken(new ElementString("FOR"), SmartScriptTokenType.FOR);
                 } else if (word.equals("=")) {
                     token = new SmartScriptToken(new ElementString("="), SmartScriptTokenType.ECHO);
+                } else if (word.equalsIgnoreCase("END")) {
+                    token = new SmartScriptToken(new ElementString("END"), SmartScriptTokenType.END);
                 } else {
-                    throw new SmartScriptLexerException("Invalid tag name.");
+                    token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.BASIC);
                 }
             } else if (token.getType() == SmartScriptTokenType.FOR || token.getType() == SmartScriptTokenType.ECHO) {
                 token = new SmartScriptToken(new ElementVariable(word), SmartScriptTokenType.BASIC);
@@ -158,6 +153,13 @@ public class SmartScriptLexer {
     private String readNextToken() {
         while (currentIndex < data.length && Character.isWhitespace(data[currentIndex])) {
             currentIndex++;
+        }
+
+        if (currentIndex + 1 < data.length) {
+            if (data[currentIndex] == '$' && data[currentIndex + 1] == '}') {
+                currentIndex += 2;
+                return "$}";
+            }
         }
 
         if (data[currentIndex] == '=') {
