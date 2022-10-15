@@ -50,7 +50,7 @@ public class SmartScriptLexer {
 
     private SmartScriptToken nextTokenTag() {
         // TAG state, read end bound - switch state, return bound token
-        String word = readTagUntilWhitespace();
+        String word = readNextToken();
         if (word.equals("$}")) {
             state = SmartScriptLexerState.BASIC;
             token = new SmartScriptToken(new ElementString("$}"), SmartScriptTokenType.BOUND);
@@ -58,31 +58,32 @@ public class SmartScriptLexer {
         }
 
         if (Character.isDigit(word.charAt(0))) {
-            return parsePotentialNumber(word); // might even just paste that logic here - better put things below in methods
+            return parsePotentialNumber(word); // might even just paste that logic here - better put things below in
+                                               // methods
         } else {
             if (token.getType() == SmartScriptTokenType.BOUND) {
                 if (word.equalsIgnoreCase("FOR")) {
                     token = new SmartScriptToken(new ElementString("FOR"), SmartScriptTokenType.FOR);
-                    return token;
                 } else if (word.equals("=")) {
                     token = new SmartScriptToken(new ElementString("="), SmartScriptTokenType.ECHO);
-                    return token;
                 } else {
                     throw new SmartScriptLexerException("Invalid tag name.");
                 }
-            } else if (token.getType() == SmartScriptTokenType.FOR) {
-                // TODO na parseru je da provjeri valjanost varijable
+            } else if (token.getType() == SmartScriptTokenType.FOR || token.getType() == SmartScriptTokenType.ECHO) {
                 token = new SmartScriptToken(new ElementVariable(word), SmartScriptTokenType.BASIC);
             } else if (token.getType() == SmartScriptTokenType.BASIC) {
                 if (word.charAt(0) == '@') {
                     token = new SmartScriptToken(new ElementFunction(word), SmartScriptTokenType.BASIC);
                 } else {
-                    return parsePotentialNumber(word);
+                    if (word.charAt(0) == '"' && word.charAt(word.length() - 1) == '"') {
+                        token = new SmartScriptToken(new ElementString(word.substring(1, word.length() - 1)),
+                                SmartScriptTokenType.BASIC);
+                    } else {
+                        token = new SmartScriptToken(new ElementVariable(word), SmartScriptTokenType.BASIC);
+                    }
                 }
-            } else {
-                throw new UnknownError("Unknown error.");
             }
-            throw new UnknownError("Unknown error.");
+            return token;
         }
     }
 
@@ -150,37 +151,55 @@ public class SmartScriptLexer {
         return token;
     }
 
-    private String readTagWord() {
+    // Tollerable escape seqs
+    // \\ is a single \
+    // \" is a single ", and should not be treated as string start/stop
+    // any other escaping should result in an exception
+    private String readNextToken() {
         while (currentIndex < data.length && Character.isWhitespace(data[currentIndex])) {
             currentIndex++;
         }
-        StringBuilder sb = new StringBuilder();
-        while (currentIndex < data.length && !Character.isWhitespace(data[currentIndex])) {
-            sb.append(data[currentIndex]);
-            currentIndex++;
-        }
-        return sb.toString();
-    }
 
-    private String readTagUntilWhitespace() {
         if (data[currentIndex] == '=') {
             currentIndex++;
             return "=";
         }
-        while (currentIndex < data.length && Character.isWhitespace(data[currentIndex])) {
-            currentIndex++;
-        }
         StringBuilder sb = new StringBuilder();
-        while (currentIndex < data.length && !Character.isWhitespace(data[currentIndex])) {
-            sb.append(data[currentIndex]);
-            currentIndex++;
-            if (currentIndex + 1 < data.length) {
-                if (data[currentIndex] == '$' && data[currentIndex + 1] == '}') {
-                    break;
+        if (data[currentIndex] == '\\') {
+            // check if escape seq is valid
+            if (currentIndex + 1 == data.length) {
+                throw new SmartScriptLexerException("Invalid escape sequence.");
+            }
+            if (data[currentIndex + 1] == '\"' || data[currentIndex + 1] == '\\') {
+                sb.append(data[currentIndex + 1]);
+                currentIndex += 2;
+            } else {
+                throw new SmartScriptLexerException("Invalid escape sequence.");
+            }
+        }
+
+        if (data[currentIndex] == '"') {
+            sb.append(data[currentIndex++]);
+            while (currentIndex < data.length && data[currentIndex] != '"') {
+                sb.append(data[currentIndex++]);
+            }
+            if (currentIndex == data.length) {
+                throw new SmartScriptLexerException("Invalid string.");
+            }
+            if (data[currentIndex] == '"') {
+                sb.append(data[currentIndex++]);
+            }
+        } else {
+            while (currentIndex < data.length && !Character.isWhitespace(data[currentIndex])
+                    && data[currentIndex] != '\"') {
+                sb.append(data[currentIndex++]);
+                if (currentIndex + 1 < data.length) {
+                    if (data[currentIndex] == '$' && data[currentIndex + 1] == '}') {
+                        break;
+                    }
                 }
             }
         }
         return sb.toString();
     }
-
 }

@@ -8,6 +8,7 @@ import hr.fer.oprpp1.custom.scripting.elems.ElementConstantDouble;
 import hr.fer.oprpp1.custom.scripting.elems.ElementConstantInteger;
 import hr.fer.oprpp1.custom.scripting.elems.ElementFunction;
 import hr.fer.oprpp1.custom.scripting.elems.ElementString;
+import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
 
 public class SmartScriptLexerTest {
 
@@ -84,19 +85,13 @@ public class SmartScriptLexerTest {
         assertTrue(lexer.getToken().getElement() instanceof ElementString);
     }
     
-    // TODO FIRST WHEN YOU COME BACK
-    /*
-     * {$ FOR i-1.35bbb"1" $} -> {$ FOR i -1.35 bbb "1" $}
-     * that should be BOUND FOR VAR DOUBLE STRING STRING BOUDN
-     * fix (and find out) -> are all strings inside ECHO tag variables or what?
-     * and in for tag aswell, how to treat it?
-     * the very best of luck
-     */
+    
+    // {$ FOR i-1.35bbb"1" $} -> {$ FOR i -1.35 bbb "1" $}
+     
 
-    // new test not yet satisfied, first figure out how strings and vars are treated
     @Test
     public void testWithComplexEchoTag() {
-        SmartScriptLexer lexer = new SmartScriptLexer("This is text {$=1.23 @sin \"0.000\"$}");
+        SmartScriptLexer lexer = new SmartScriptLexer("This is text {$=1.23 @sin\"0.000\"$} još neki tekst.");
         
         assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
         assertEquals("This is text ", lexer.getToken().getValue());
@@ -123,7 +118,43 @@ public class SmartScriptLexerTest {
         assertEquals(SmartScriptLexerState.TAG, lexer.getState());
         assertTrue(lexer.getToken().getElement() instanceof ElementFunction);
 
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("0.000", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
 
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals(" još neki tekst.", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
+
+    @Test
+    public void testAnotherEcho() {
+        SmartScriptLexer lexer = new SmartScriptLexer("Banana split: \" onda do Rovinja \\{");
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("Banana split: \" onda do Rovinja {", lexer.getToken().getValue());
+    }
+
+    // test sa { bez $, ponaša li se normalno ako ne slijedi $?
+    @Test
+    public void testHalfTagWithoutDollarSign() {
+        SmartScriptLexer lexer = new SmartScriptLexer("Testiram nasumični tekst { je usred njega i ovo je sve jedan $ test.");
+        
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("Testiram nasumični tekst { je usred njega i ovo je sve jedan $ test.", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
     }
 
 }
