@@ -62,22 +62,23 @@ public class SmartScriptLexer {
                 } else {
                     token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.TAG);
                 }
-            } else if (token.getType() == SmartScriptTokenType.TAG) {
-                token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.BASIC);
-            } else if (token.getType() == SmartScriptTokenType.BASIC) {
+            } else {
                 if (word.charAt(0) == '@') {
                     token = new SmartScriptToken(new ElementFunction(word), SmartScriptTokenType.BASIC);
+                } else if (word.length() == 1 && (new String("+-*/^").indexOf(word.charAt(0)) != -1)) {
+                    token = new SmartScriptToken(new ElementOperator(word), SmartScriptTokenType.BASIC);
+                } else if (isString) {
+                    token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.BASIC);
                 } else {
-                    if (isString) {
-                        token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.BASIC);
-                    } else {
-                        token = new SmartScriptToken(new ElementVariable(word), SmartScriptTokenType.BASIC);
-                    }
+                    token = new SmartScriptToken(new ElementVariable(word), SmartScriptTokenType.BASIC);
                 }
             }
-            return token;
         }
+        return token;
+
     }
+
+    
 
     private SmartScriptToken parsePotentialNumber(String word) {
         int dotCount = 0;
@@ -163,6 +164,10 @@ public class SmartScriptLexer {
             currentIndex++;
             return "=";
         }
+
+        if (new String("+*/^").indexOf(data[currentIndex]) != -1 || (data[currentIndex] == '-' && data[currentIndex + 1] == ' ')) {
+            return Character.toString(data[currentIndex++]);
+        }
         StringBuilder sb = new StringBuilder();
 
         while (currentIndex < data.length) {
@@ -198,8 +203,7 @@ public class SmartScriptLexer {
             } else {
                 while (!Character.isWhitespace(data[currentIndex]) && data[currentIndex] != '$'
                         && data[currentIndex] != '"') {
-                    sb.append(data[currentIndex]);
-                    currentIndex++;
+                    sb.append(data[currentIndex++]);
                 }
                 return sb.toString();
             }

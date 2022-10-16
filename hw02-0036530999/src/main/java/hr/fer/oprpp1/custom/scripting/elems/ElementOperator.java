@@ -9,6 +9,10 @@ public class ElementOperator extends Element {
      */
     private String symbol;
 
+    public ElementOperator(String symbol) {
+        this.symbol = symbol;
+    }
+
     /**
      * Returns the symbol of the operator.
      * 

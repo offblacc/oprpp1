@@ -375,6 +375,53 @@ public class SmartScriptLexerTest {
         assertThrows(SmartScriptParserException.class, () -> lexer.nextToken());
     }
 
+    @Test
+    public void testEchoPDFVersion() {
+        var lexer = new SmartScriptLexer("{$= i i * @sin @decfmt $}");
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("i", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementVariable);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("i", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementVariable);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("*", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementOperator);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("@sin", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementFunction);
+
+        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
+        assertEquals("@decfmt", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementFunction);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
     // helper method
     private String readExample(int n) {
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("extra/primjer" + n + ".txt")) {
