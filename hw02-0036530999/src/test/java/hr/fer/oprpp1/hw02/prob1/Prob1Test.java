@@ -12,19 +12,6 @@ import org.junit.jupiter.api.Test;
 import hr.fer.oprpp1.hw02.prob1.*;
 
 public class Prob1Test {
-
-	private String readExample(int n) {
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("extra/primjer" + n + ".txt")) {
-			if (is == null)
-				throw new RuntimeException("Datoteka extra/primjer" + n + ".txt je nedostupna.");
-			byte[] data = is.readAllBytes();
-			String text = new String(data, StandardCharsets.UTF_8);
-			return text;
-		} catch (IOException ex) {
-			throw new RuntimeException("Greška pri čitanju datoteke.", ex);
-		}
-	}
-
 	@Test
 	public void testNotNull() {
 		Lexer lexer = new Lexer("");

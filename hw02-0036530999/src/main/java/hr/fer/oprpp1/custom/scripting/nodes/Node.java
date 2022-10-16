@@ -46,4 +46,11 @@ public class Node {
         }
         return (Node) children.get(index);
     }
+
+    public void printElementsRecursively() {
+        System.out.println(this.toString());
+        for (int i = 0; i < numberOfChildren(); i++) {
+            getChild(i).printElementsRecursively();
+        }
+    }
 }
