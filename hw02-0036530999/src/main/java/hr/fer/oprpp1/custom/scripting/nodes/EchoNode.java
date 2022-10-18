@@ -8,4 +8,22 @@ import hr.fer.oprpp1.custom.scripting.elems.Element;
  */
 public class EchoNode extends Node {
     private Element[] elements;
+
+    public EchoNode(Element[] elements) {
+        this.elements = elements;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ECHO ");
+        for (Element element : elements) {
+            sb.append(element.asText() + " ");
+        }
+        return sb.toString();
+    }
+
+    
+
+    
 }

@@ -5,6 +5,8 @@ import hr.fer.oprpp1.custom.scripting.nodes.*;
 
 import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
 
+import hr.fer.oprpp1.custom.collections.ArrayIndexedCollection;
+import hr.fer.oprpp1.custom.collections.EmptyStackException;
 import hr.fer.oprpp1.custom.collections.ObjectStack; // TODO will need others
 import hr.fer.oprpp1.custom.scripting.elems.*;
 
@@ -15,10 +17,8 @@ public class SmartScriptParser {
     private ObjectStack stack;
     private SmartScriptToken token; // current token
     private SmartScriptParserState parserState;
-    private String currentTagName;
 
     public SmartScriptParser(String text) {
-        System.out.println("Pozvan konstruktor");
         documentNode = new DocumentNode();
         lexer = new SmartScriptLexer(text);
         stack = new ObjectStack();
@@ -29,8 +29,7 @@ public class SmartScriptParser {
     public void parse() {
         stack.push(documentNode);
         while ((token = lexer.nextToken()).getType() != SmartScriptTokenType.EOF) {
-            if (parserState == SmartScriptParserState.INIT) { // INIT state - outside of tags; expecting text or {$ (tag
-                                                              // opening)
+            if (parserState == SmartScriptParserState.INIT) {
                 if (token.getType() == SmartScriptTokenType.BASIC) {
                     ((Node) stack.peek()).addChildNode(new TextNode((ElementString) token.getElement()));
                 } else if (token.getType() == SmartScriptTokenType.BOUND) {
@@ -39,13 +38,12 @@ public class SmartScriptParser {
                     throw new SmartScriptParserException("Unknown parsing exception.");
                 }
             } else if (parserState == SmartScriptParserState.EXPECT_TAG_NAME) {
-                String tagName = token.getValue().toString();
-                if (isValidTagName(tagName)) {
-                    if (isForTag(tagName)) {
-                        processForLoop();
-                    } else {
-                        processNamedTag();
-                    }
+                processTag();
+            } else if (parserState == SmartScriptParserState.UNCLOSED_FOR_TAG) {
+                if (token.getValue().equals("$}")) {
+                    parserState = SmartScriptParserState.INIT;
+                } else {
+                    throw new SmartScriptParserException("Unclosed for loop tag.");
                 }
             }
         }
@@ -54,40 +52,84 @@ public class SmartScriptParser {
         }
     }
 
-    private void processForLoop() {
-        ElementVariable var = (ElementVariable) (token = lexer.nextToken()).getElement();
-
-        if (!isValidVariableName(var.asText())) {
-            throw new SmartScriptParserException(
-                    String.format("Invalid variable name %s inside for loop", var.asText()));
-        }
-
-        if (!canBeForLoopParameter((token = lexer.nextToken()).getElement())) {
-            throw new SmartScriptParserException("For loop starting integer parsing error.");
-        }
-        int startInteger = (int) token.getValue();
-        
-        if (!canBeForLoopParameter((token = lexer.nextToken()).getElement())) {
-            throw new SmartScriptParserException("For loop end integer parsing error.");
-        }
-        int endInteger = (int) token.getValue();
-
-        if (!canBeForLoopParameter((token = lexer.nextToken()).getElement())) {
-            if (token.getValue() != "$}") {
-                throw new SmartScriptParserException("For loop end integer parsing error.");
+    private void processTag() {
+        String tagName = token.getValue().toString();
+        if (isValidTagName(tagName)) {
+            if (isForTag(tagName)) {
+                processForLoop();
+            } else if (isEndTag(tagName)) {
+                processEndTag();
+            } else if (tagName.equals("=")){
+                processNamedTag();
             } else {
-                parserState = SmartScriptParserState.INIT;
+                throw new UnsupportedOperationException("Undefined behaviour for tag name: " + tagName);
             }
         }
-        int stepInteger = (int) token.getValue();
-
-        parserState = SmartScriptParserState.UNCLOSED_FOR_TAG; // will check if next token is closing tag bound, else
-                                                               // exception, too many arguments
-
     }
 
     private void processNamedTag() {
-        throw new UnsupportedOperationException("processNamedTag not implemented"); // TODO implement
+        ArrayIndexedCollection elements = new ArrayIndexedCollection();
+        while (!token.getValue().equals("$}")) {
+            throwExceptionIfEOF(token);
+            elements.add(token.getElement());
+            token = lexer.nextToken();
+        }
+        
+        
+        Element[] elementsArray = new Element[elements.size()];
+        for (int i = 0; i < elements.size(); i++) {
+            elementsArray[i] = (Element) elements.get(i);
+        }
+
+        EchoNode echoNode = new EchoNode(elementsArray);
+        ((Node) stack.peek()).addChildNode(echoNode);
+        parserState = SmartScriptParserState.INIT;
+    }
+
+    private void processForLoop() {
+        ElementVariable var = (ElementVariable) (token = lexer.nextToken()).getElement();
+        throwExceptionIfEOF(token);
+        throwExceptionIfEndBound(var);
+        throwExceptionIfInvalidVariableName(var.asText());
+
+        Element startExpression = (token = lexer.nextToken()).getElement();
+        throwExceptionIfEOF(token);
+        throwExceptionIfEndBound(startExpression);
+        throwExceptionIfInvalidForLoopParameter(startExpression);
+
+        Element endExpression = (token = lexer.nextToken()).getElement();
+        throwExceptionIfEOF(token);
+        throwExceptionIfEndBound(endExpression);
+        throwExceptionIfInvalidForLoopParameter(endExpression);
+
+        Element stepExpression = (token = lexer.nextToken()).getElement();
+        throwExceptionIfEOF(token);
+        throwExceptionIfInvalidStepExpression(stepExpression);
+        if (isEndBound(stepExpression)) {
+            parserState = SmartScriptParserState.INIT; // because we exited the for loop tag
+            stepExpression = null;
+        }
+
+        ForLoopNode forLoopNode = new ForLoopNode(var, startExpression, endExpression, stepExpression);
+        ((Node) stack.peek()).addChildNode(forLoopNode);
+        documentNode.addChildNode(forLoopNode);
+
+        parserState = SmartScriptParserState.UNCLOSED_FOR_TAG;
+    }
+
+    private void processEndTag() {
+        try {
+            stack.pop();
+        } catch (EmptyStackException ex) {
+            throw new SmartScriptParserException("There are extra END tags.");
+        }
+
+        while (token.getValue() != "$}") {
+            if ((token = lexer.nextToken()).getType() == SmartScriptTokenType.EOF) {
+                throw new SmartScriptParserException("End tag has no right bound.");
+            }
+        }
+        parserState = SmartScriptParserState.INIT;
     }
 
     private static boolean isValidVariableName(String variableName) {
@@ -105,16 +147,22 @@ public class SmartScriptParser {
     }
 
     private static boolean isValidTagName(String variableName) {
-        if (variableName.length() == 1 && variableName.equals("="))
-            return true;
-        return isValidTagName(variableName);
+        return variableName.length() == 1 && variableName.equals("=");
     }
 
     private static boolean isForTag(String tagName) {
         return tagName.equalsIgnoreCase("for");
     }
 
-    private static boolean canBeForLoopParameter(Element element) {
+    private static boolean isEndTag(String tagName) {
+        return tagName.equalsIgnoreCase("end");
+    }
+
+    private static boolean isEndBound(Element element) {
+        return element.asText().equals("$}");
+    }
+
+    private static boolean isValidForLoopParameter(Element element) {
         if (element instanceof ElementVariable)
             return true;
         if (element instanceof ElementConstantInteger)
@@ -124,5 +172,74 @@ public class SmartScriptParser {
         if (element instanceof ElementString)
             return true;
         return false;
+    }
+
+    private static void throwExceptionIfEndBound(Element element) {
+        if (isEndBound(element)) {
+            throw new SmartScriptParserException("Not enough for loop parameters.");
+        }
+    }
+
+    private static void throwExceptionIfInvalidForLoopParameter(Element element) {
+        if (!isValidForLoopParameter(element)) {
+            throw new SmartScriptParserException("Invalid for loop parameter");
+        }
+    }
+
+    private static void throwExceptionIfInvalidVariableName(String name) {
+        if (!isValidVariableName(name)) {
+            throw new SmartScriptParserException(
+                    String.format("Invalid variable name %s inside for loop", name));
+        }
+    }
+
+    private static void throwExceptionIfEOF(SmartScriptToken token) {
+        if (token.getType() == SmartScriptTokenType.EOF) {
+            throw new SmartScriptParserException("Unexpected end of file.");
+        }
+    }
+
+    private static void throwExceptionIfInvalidStepExpression(Element element) {
+        if (!isStepExpressionOrEndBound(element)) {
+            throw new SmartScriptParserException("Invalid for loop parameter");
+        }
+    }
+
+    private static boolean isStepExpressionOrEndBound(Element element) {
+        return isValidForLoopParameter(element) || isEndBound(element);
+    }
+
+    /**
+     * Used for testing purposes
+     * 
+     * param node - root node, count all children
+     * @return
+     */
+    public int countAllNodesRecursively(Node node) {
+        int nodes = 0;
+        for (int i = 0; i < node.numberOfChildren(); i++) {
+            nodes += countAllNodesRecursively(node.getChild(i));
+        }
+        return node.numberOfChildren();
+    }
+
+    public DocumentNode getDocumentNode() {
+        return documentNode;
+    }
+
+    public int countTextNodesRecursively(Node node) {
+        int textNodes = 0;
+        for (int i = 0; i < node.numberOfChildren(); i++) {
+            textNodes += countTextNodesRecursively(node.getChild(i));
+        }
+        if (node instanceof TextNode) {
+            textNodes++;
+        }
+        return textNodes;
+    }
+
+    @Override
+    public String toString() {
+        return null;
     }
 }

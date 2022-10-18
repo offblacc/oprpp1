@@ -47,10 +47,19 @@ public class Node {
         return (Node) children.get(index);
     }
 
-    public void printElementsRecursively() {
-        System.out.println(this.toString());
-        for (int i = 0; i < numberOfChildren(); i++) {
-            getChild(i).printElementsRecursively();
+    /**
+     * Testing purposes only. // TODO remove later
+     */
+    public void printChildrenRecursively(Integer indent, Node node) {
+        if (indent == null) {
+            indent = 0;
+        }
+        for (int i = 0; i < indent; i++) {
+            System.out.print("  ");
+        }
+        System.out.println(node.toString());
+        for (int i = 0; i < node.numberOfChildren(); i++) {
+            printChildrenRecursively(indent + 2, node.getChild(i));
         }
     }
 }

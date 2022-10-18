@@ -441,7 +441,7 @@ public class SmartScriptLexerTest {
         var lexer = new SmartScriptLexer(docBody);
 
         assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("Ovo je \nsve jedan text node\n", lexer.getToken().getValue());
+        assertEquals("Ovo je \nsve jedan text node", lexer.getToken().getValue());
     }
 
     @Test
@@ -450,7 +450,7 @@ public class SmartScriptLexerTest {
         var lexer = new SmartScriptLexer(docBody);
 
         assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("Ovo je \nsve jedan {$ text node\n", lexer.getToken().getValue());
+        assertEquals("Ovo je \nsve jedan {$ text node", lexer.getToken().getValue());
     }
 
     @Test
@@ -459,7 +459,7 @@ public class SmartScriptLexerTest {
         var lexer = new SmartScriptLexer(docBody);
 
         assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("Ovo je \nsve jedan \\{$text node\n", lexer.getToken().getValue());
+        assertEquals("Ovo je \nsve jedan \\{$text node", lexer.getToken().getValue());
     }
 
     @Test
@@ -508,11 +508,6 @@ public class SmartScriptLexerTest {
         assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
         assertTrue(lexer.getToken().getElement() instanceof ElementString);
 
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("\n", lexer.getToken().getValue());
-        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-
         assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
     }
 
@@ -543,11 +538,6 @@ public class SmartScriptLexerTest {
 
         assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
         assertEquals("$}", lexer.getToken().getValue());
-        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
-        assertTrue(lexer.getToken().getElement() instanceof ElementString);
-
-        assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
-        assertEquals("\n", lexer.getToken().getValue());
         assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
         assertTrue(lexer.getToken().getElement() instanceof ElementString);
 

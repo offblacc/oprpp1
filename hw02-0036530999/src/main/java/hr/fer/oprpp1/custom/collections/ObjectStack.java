@@ -52,6 +52,7 @@ public class ObjectStack {
      * Removes the last value pushed onto the stack and returns it.
      * 
      * @return the last value pushed onto the stack.
+     * @throws EmptyStackException if the stack is empty
      */
     public Object pop() {
         if (array.size() == 0) {
