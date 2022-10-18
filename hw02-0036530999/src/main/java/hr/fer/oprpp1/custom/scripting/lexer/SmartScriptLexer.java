@@ -186,7 +186,12 @@ public class SmartScriptLexer {
                                 && (data[currentIndex + 1] == '\\' || data[currentIndex + 1] == '"')) {
                             sb.append(data[currentIndex + 1]);
                             currentIndex += 2;
-                        } else {
+                        } else if (currentIndex < data.length - 1 && data[currentIndex + 1] == 'n'){
+                            sb.append('\n');
+                            currentIndex += 2;
+                        }
+                        
+                        else {
                             throw new SmartScriptParserException("Invalid escape sequence.");
                         }
                         // -----------------------------------------

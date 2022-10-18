@@ -11,7 +11,22 @@ public class ForLoopNode extends Node {
     Element startExpression;
     Element endExpression;
     Element stepExpression; // only one here that can be null
+
     
+    
+    public ForLoopNode(ElementVariable variable, Element startExpression, Element endExpression,
+            Element stepExpression) {
+        this.variable = variable;
+        this.startExpression = startExpression;
+        this.endExpression = endExpression;
+        this.stepExpression = stepExpression;
+    }
+
+    public ForLoopNode(ElementVariable variable, Element startExpression, Element endExpression) {
+        this(variable, startExpression, endExpression, null);
+    }
+
+
     /** // TODO are these getters needed?
      * Returns ElementVariable variable.
      * @return - ElementVariable variable
