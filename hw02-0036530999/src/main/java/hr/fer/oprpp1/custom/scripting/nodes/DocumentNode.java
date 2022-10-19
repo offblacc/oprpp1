@@ -15,10 +15,7 @@ public class DocumentNode extends Node {
 
     private String buildDocument(Node node) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < node.numberOfChildren(); i++) {
-            sb.append(buildDocument(node.getChild(i)));
-        }
-        
+
         if (node instanceof TextNode) {
             sb.append(addEscapeCharacterToTextNode(((TextNode) node).getText()));
         } else if (node instanceof ForLoopNode) {
@@ -26,12 +23,19 @@ public class DocumentNode extends Node {
         } else if (node instanceof EchoNode) {
             sb.append(buildEchoNode((EchoNode) node));
         }
+
+        for (int i = 0; i < node.numberOfChildren(); i++) {
+            sb.append(buildDocument(node.getChild(i)));
+        }
+        if (node instanceof ForLoopNode) {
+            sb.append("{$END$}");
+        }
         return sb.toString();
     }
 
     private String buildEchoNode(EchoNode node) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{$= ");
+        sb.append("{$");
         for (Element element : node.getElements()) {
             sb.append(addEscapeCharacterToTagString(element) + " ");
         }

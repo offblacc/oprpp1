@@ -6,8 +6,7 @@ import hr.fer.oprpp1.custom.scripting.parser.*;
 public class TestParserManually {
 
     public static void main(String[] args) {
-        String docBody = "Neki random test {$ FOR i 1 10 1 $} text {$END$} {$= i $} {$ FOR i 0 10 2 $} text {$END$} {$= i $}";
-        docBody = "{$ FOR aaaaaa 1 10 1 $} text {$END$}";
+        String docBody = "Bok Patriče \\{$Macola {$= kakoJe $} legendo {$ FOR i 1 10 1 $} dijete for-a {$END$}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
         DocumentNode document = parser.getDocumentNode();
         String originalDocumentBody = document.toString();

@@ -2,9 +2,6 @@ package hr.fer.oprpp1.custom.scripting.parser;
 
 import hr.fer.oprpp1.custom.scripting.lexer.*;
 import hr.fer.oprpp1.custom.scripting.nodes.*;
-
-import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
-
 import hr.fer.oprpp1.custom.collections.ArrayIndexedCollection;
 import hr.fer.oprpp1.custom.collections.EmptyStackException;
 import hr.fer.oprpp1.custom.collections.ObjectStack;
@@ -61,7 +58,7 @@ public class SmartScriptParser {
             } else if (tagName.equals("=")) {
                 processNamedTag();
             } else {
-                throw new UnsupportedOperationException("Undefined behaviour for tag name: " + tagName);
+                throw new SmartScriptParserException("Invalid tag name.");
             }
         }
     }
@@ -112,6 +109,7 @@ public class SmartScriptParser {
 
         ForLoopNode forLoopNode = new ForLoopNode(var, startExpression, endExpression, stepExpression);
         ((Node) stack.peek()).addChildNode(forLoopNode);
+        stack.push(forLoopNode);
     }
 
     private void processEndTag() {
