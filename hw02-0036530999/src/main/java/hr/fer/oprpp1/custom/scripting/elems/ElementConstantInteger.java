@@ -23,4 +23,11 @@ public class ElementConstantInteger extends Element {
         return Integer.toString(value);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return value == ((ElementConstantInteger) o).value;
+    }
+
 }

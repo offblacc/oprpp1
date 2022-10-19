@@ -21,5 +21,10 @@ public class TextNode extends Node {
         return text.asText();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return text.equals(((TextNode) o).text);    }
     
 }

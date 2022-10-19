@@ -56,17 +56,20 @@ public class SmartScriptParser {
             if (isEndTag(tagName)) {
                 processEndTag();
             } else if (tagName.equals("=")) {
-                processNamedTag();
+                processEchoTag();
             } else {
                 throw new SmartScriptParserException("Invalid tag name.");
             }
         }
     }
 
-    private void processNamedTag() {
+    private void processEchoTag() {
         ArrayIndexedCollection elements = new ArrayIndexedCollection();
         while (!token.getValue().equals("$}")) {
             throwExceptionIfEOF(token);
+            if (token.getValue().toString().charAt(0) == '@' && !isValidVariableName(token.getValue().toString().substring(1))) {
+                throw new SmartScriptParserException("Invalid function name");
+            }
             elements.add(token.getElement());
             token = lexer.nextToken();
         }

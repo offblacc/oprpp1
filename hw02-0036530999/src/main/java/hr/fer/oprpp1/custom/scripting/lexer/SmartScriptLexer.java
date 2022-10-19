@@ -68,7 +68,7 @@ public class SmartScriptLexer {
                 } else if (word.length() == 1 && (new String("+-*/^").indexOf(word.charAt(0)) != -1)) {
                     token = new SmartScriptToken(new ElementOperator(word), SmartScriptTokenType.BASIC);
                 } else if (isString) {
-                    token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.BASIC);
+                    token = new SmartScriptToken(new ElementString(word, true), SmartScriptTokenType.TAG_STRING);
                 } else {
                     token = new SmartScriptToken(new ElementVariable(word), SmartScriptTokenType.BASIC);
                 }
@@ -192,7 +192,7 @@ public class SmartScriptLexer {
                         }
                         
                         else {
-                            throw new SmartScriptParserException("Invalid escape sequence.");
+                            throw new SmartScriptParserException("Invalid escape sequence " + data[currentIndex + 1]);
                         }
                         // -----------------------------------------
                     } else {

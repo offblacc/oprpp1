@@ -6,13 +6,14 @@ import hr.fer.oprpp1.custom.scripting.parser.*;
 public class TestParserManually {
 
     public static void main(String[] args) {
-        String docBody = "Bok Patriče \\{$Macola {$= kakoJe $} legendo {$ FOR i 1 10 1 $} dijete for-a {$END$}";
+        String docBody = "Bok Patriče \\{$Macola {$= kakoJe \"string \\\"test\\\"  \\\\dalje\"$} legendo {$ FOR i 1 10 1 $} dijete for-a {$END$}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
         DocumentNode document = parser.getDocumentNode();
         String originalDocumentBody = document.toString();
-        System.out.println(docBody);
-        System.out.println("-------------------------------------------------");
-        System.out.println(originalDocumentBody);
-        // TODO also test with escape
+        SmartScriptParser parser2 = new SmartScriptParser(originalDocumentBody);
+        DocumentNode document2 = parser2.getDocumentNode();
+        // now document and document2 should be structurally identical trees
+        boolean same = document.equals(document2); // ==> "same" must be true
+        System.out.println(same);
     }
 }

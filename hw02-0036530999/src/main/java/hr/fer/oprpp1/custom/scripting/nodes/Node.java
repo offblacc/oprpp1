@@ -62,4 +62,9 @@ public class Node {
             printChildrenRecursively(indent + 2, node.getChild(i));
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        throw new UnsupportedOperationException("Can't compare nodes that are base class Node.");
+    }
 }

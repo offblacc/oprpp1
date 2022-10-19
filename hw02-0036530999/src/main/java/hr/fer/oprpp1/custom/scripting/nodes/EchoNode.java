@@ -26,4 +26,14 @@ public class EchoNode extends Node {
     public Element[] getElements() {
         return elements;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        for (int i = 0; i < elements.length; i++) {
+            if (!elements[i].equals(((EchoNode) o).elements[i])) return false;
+        }
+        return true;
+    }
 }

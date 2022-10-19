@@ -2,12 +2,13 @@ package hr.fer.oprpp1.custom.scripting.nodes;
 
 import hr.fer.oprpp1.custom.scripting.elems.Element;
 import hr.fer.oprpp1.custom.scripting.elems.ElementString;
+import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
 
 /**
  * Class that represents an entire document, inheriting Node.
  */
 public class DocumentNode extends Node {
-    
+
     @Override
     public String toString() {
         return buildDocument(this);
@@ -37,7 +38,13 @@ public class DocumentNode extends Node {
         StringBuilder sb = new StringBuilder();
         sb.append("{$");
         for (Element element : node.getElements()) {
-            sb.append(addEscapeCharacterToTagString(element) + " ");
+            if (element instanceof ElementString && ((ElementString) element).isTagString())
+                sb.append("\"");
+            sb.append(addEscapeCharacterToTagString(element));
+            if (element instanceof ElementString && ((ElementString) element).isTagString())
+                sb.append("\"");
+            sb.append(" ");
+            
         }
         sb.append("$}");
 
@@ -94,5 +101,24 @@ public class DocumentNode extends Node {
             }
         }
         return sb.toString();
+    }
+
+    // override equals
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        DocumentNode documentNode = (DocumentNode) o;
+        if (this.numberOfChildren() != documentNode.numberOfChildren())
+            return false;
+        for (int i = 0; i < this.numberOfChildren(); i++) {
+            if (!this.getChild(i).equals(documentNode.getChild(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

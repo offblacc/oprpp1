@@ -102,9 +102,9 @@ public class SmartScriptParserTest {
         SmartScriptParser parser = new SmartScriptParser(docBody);
         ForLoopNode forLoopNode = (ForLoopNode) parser.getDocumentNode().getChild(0);
         assertEquals("i", forLoopNode.getVariable().asText());
-        assertEquals(1, forLoopNode.getStartExpression().asText());
-        assertEquals(10, forLoopNode.getEndExpression().asText());
-        assertEquals(1, forLoopNode.getStepExpression().asText());
+        assertEquals("1", forLoopNode.getStartExpression().asText());
+        assertEquals("10", forLoopNode.getEndExpression().asText());
+        assertEquals("1", forLoopNode.getStepExpression().asText());
     }
 
 }

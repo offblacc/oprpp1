@@ -12,8 +12,6 @@ public class ForLoopNode extends Node {
     Element endExpression;
     Element stepExpression; // only one here that can be null
 
-    
-    
     public ForLoopNode(ElementVariable variable, Element startExpression, Element endExpression,
             Element stepExpression) {
         this.variable = variable;
@@ -26,9 +24,10 @@ public class ForLoopNode extends Node {
         this(variable, startExpression, endExpression, null);
     }
 
-
-    /** // TODO are these getters needed?
+    /**
+     * // TODO are these getters needed?
      * Returns ElementVariable variable.
+     * 
      * @return - ElementVariable variable
      */
     public ElementVariable getVariable() {
@@ -37,6 +36,7 @@ public class ForLoopNode extends Node {
 
     /**
      * Returns Element startExpression.
+     * 
      * @return - Element startExpression
      */
     public Element getStartExpression() {
@@ -45,6 +45,7 @@ public class ForLoopNode extends Node {
 
     /**
      * Returns Element endExpression.
+     * 
      * @return - Element endExpression
      */
     public Element getEndExpression() {
@@ -53,10 +54,40 @@ public class ForLoopNode extends Node {
 
     /**
      * Returns Element stepExpression.
+     * 
      * @return - Element stepExpression
      */
     public Element getStepExpression() {
         return stepExpression;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (!(obj instanceof ForLoopNode)) {
+            return false;
+        }
+        ForLoopNode other = (ForLoopNode) obj;
+        if (!this.variable.equals(other.variable)) {
+            return false;
+        }
+        if (!startExpression.equals(other.startExpression)) {
+            return false;
+        }
+        if (!endExpression.equals(other.endExpression)) {
+            return false;
+        }
+        if ((stepExpression == null && other.stepExpression == null) || !stepExpression.equals(other.stepExpression)) {
+            return false;
+        }
+        for (int i = 0; i < this.numberOfChildren(); i++) {
+            if (!this.getChild(i).equals(other.getChild(i))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

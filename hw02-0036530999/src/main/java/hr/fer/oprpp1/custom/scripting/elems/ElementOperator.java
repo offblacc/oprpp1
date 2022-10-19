@@ -23,4 +23,10 @@ public class ElementOperator extends Element {
         return symbol;
     }
     
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return symbol.equals(((ElementOperator) o).symbol);
+    }
 }
