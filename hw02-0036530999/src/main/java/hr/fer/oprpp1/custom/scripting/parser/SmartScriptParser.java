@@ -7,21 +7,54 @@ import hr.fer.oprpp1.custom.collections.EmptyStackException;
 import hr.fer.oprpp1.custom.collections.ObjectStack;
 import hr.fer.oprpp1.custom.scripting.elems.*;
 
+/**
+ * Parser for SmartScript. Uses the SmartScriptLexer for generation of tokens,
+ * generating a document tree.
+ */
 public class SmartScriptParser {
-    private SmartScriptLexer lexer;
-    private DocumentNode documentNode;
-    private ObjectStack stack;
+    /**
+     * Lexer used for token generation.
+     */
+    private final SmartScriptLexer lexer;
+    /**
+     * Document node of the document tree.
+     */
+    private final DocumentNode documentNode;
+    /**
+     * Stack used for storing nodes, especially useful when nesting tags is present.
+     */
+    private final ObjectStack stack;
+    /**
+     * The last generated token.
+     */
     private SmartScriptToken token;
+    /**
+     * State of the parser.
+     */
     private SmartScriptParserState parserState;
 
-    public SmartScriptParser(String text) {
+    /**
+     * Constructor that takes a document body as string, and generates a document
+     * tree.
+     *
+     * @param documentBody - body of the document as a String
+     */
+    public SmartScriptParser(String documentBody) {
         documentNode = new DocumentNode();
-        lexer = new SmartScriptLexer(text);
+        lexer = new SmartScriptLexer(documentBody);
         stack = new ObjectStack();
         parserState = SmartScriptParserState.INIT;
         parse();
     }
 
+    /**
+     * Generates a document tree from the document body. Makes use of the lexer and
+     * the stack, making decisions
+     * based on the current state of the parser. This method is the entry point into
+     * parsing, calling more specialised
+     * methods for parsing the different types of tokens based on the current
+     * context.
+     */
     public void parse() {
         stack.push(documentNode);
         while ((token = lexer.nextToken()).getType() != SmartScriptTokenType.EOF) {
@@ -46,8 +79,17 @@ public class SmartScriptParser {
         if (parserState != SmartScriptParserState.INIT) {
             throw new SmartScriptParserException("Parsing error. Possible unclosed tags.");
         }
+        if (stack.size() != 1) {
+            throw new SmartScriptParserException("Parsing error. Possible unclosed tags.");
+        }
     }
 
+    /**
+     * Processes the tag token. Based on the tag name, calls the appropriate method
+     * for parsing the tag.
+     *
+     * @throws SmartScriptParserException if the tag name is not valid
+     */
     private void processTag() {
         String tagName = token.getValue().toString();
         if (isForTag(tagName)) {
@@ -63,11 +105,18 @@ public class SmartScriptParser {
         }
     }
 
+    /**
+     * Processes the ECHO tag. Generates an EchoNode and adds it to the stack.
+     *
+     * @throws SmartScriptParserException if the tag is not closed properly or there
+     *                                    is an error in the tag body.
+     */
     private void processEchoTag() {
         ArrayIndexedCollection elements = new ArrayIndexedCollection();
-        while (!token.getValue().equals("$}")) {
+        while (token.getType() != SmartScriptTokenType.EOF && !token.getValue().equals("$}")) {
             throwExceptionIfEOF(token);
-            if (token.getValue().toString().charAt(0) == '@' && !isValidVariableName(token.getValue().toString().substring(1))) {
+            if (token.getValue().toString().charAt(0) == '@'
+                    && !isValidVariableName(token.getValue().toString().substring(1))) {
                 throw new SmartScriptParserException("Invalid function name");
             }
             elements.add(token.getElement());
@@ -84,8 +133,18 @@ public class SmartScriptParser {
         parserState = SmartScriptParserState.INIT;
     }
 
+    /**
+     * Processes the FOR tag. Generates a ForLoopNode and adds it to the stack. It
+     * is popped from the stack
+     * when the end tag is encountered. The node is also added to the parent node.
+     * Stack is only utilized
+     * to keep track of everyone's the parent nodes and to check for unclosed tags.
+     */
     private void processForLoop() {
-        ElementVariable var = (ElementVariable) (token = lexer.nextToken()).getElement();
+        if (!((token = lexer.nextToken()).getElement() instanceof ElementVariable)) {
+            throw new SmartScriptParserException("Invalid for loop var.");
+        }
+        ElementVariable var = (ElementVariable) token.getElement();
         throwExceptionIfEOF(token);
         throwExceptionIfEndBound(var);
         throwExceptionIfInvalidVariableName(var.asText());
@@ -110,12 +169,22 @@ public class SmartScriptParser {
             parserState = SmartScriptParserState.UNCLOSED_FOR_TAG;
         }
 
-        ForLoopNode forLoopNode = new ForLoopNode(var, startExpression, endExpression, stepExpression);
+        ForLoopNode forLoopNode = new ForLoopNode(var, getIntegerFromElement(startExpression),
+                getIntegerFromElement(endExpression), getIntegerFromElement(stepExpression));
         ((Node) stack.peek()).addChildNode(forLoopNode);
         stack.push(forLoopNode);
     }
 
+    /**
+     * Processes the END tag. Pops the stack.
+     *
+     * @throws SmartScriptParserException if the tag is not closed properly or there
+     *                                    is an error in the tag body.
+     */
     private void processEndTag() {
+        if (stack.peek() instanceof DocumentNode) {
+            throw new SmartScriptParserException("There are extra END tags.");
+        }
         try {
             stack.pop();
         } catch (EmptyStackException ex) {
@@ -130,6 +199,75 @@ public class SmartScriptParser {
         parserState = SmartScriptParserState.INIT;
     }
 
+    /**
+     * Generates an integer element a for loop parameter, since a for loop parameter
+     * can be of any type Element.
+     * 
+     * @param element - the element to be converted to an integer
+     * @return - the ElementConstantInteger object built from the element
+     * @throws SmartScriptParserException if the element is not an integer
+     */
+    private ElementConstantInteger getIntegerFromElement(Element element) {
+        if (element instanceof ElementConstantInteger)
+            return (ElementConstantInteger) element;
+        if (element instanceof ElementConstantDouble)
+            return new ElementConstantInteger((int) ((ElementConstantDouble) element).getValue());
+        if (element instanceof ElementString) {
+            try {
+                return new ElementConstantInteger(Integer.parseInt(element.asText()));
+            } catch (NumberFormatException ex) {
+                throw new SmartScriptParserException("Invalid for loop parameter.");
+            }
+        }
+        if (element == null)
+            return null;
+        throw new SmartScriptParserException("Invalid for loop parameter.");
+    }
+
+    /**
+     * Counts all the text nodes in the document node and returns the number of
+     * them.
+     * Used for testing.
+     * 
+     * @param node - the starting, root node
+     * @return - the number of text nodes, including the root node if it is a text
+     *         node
+     */
+    public int countTextNodesRecursively(Node node) {
+        int textNodes = 0;
+        for (int i = 0; i < node.numberOfChildren(); i++) {
+            textNodes += countTextNodesRecursively(node.getChild(i));
+        }
+        if (node instanceof TextNode) {
+            textNodes++;
+        }
+        return textNodes;
+    }
+
+    /**
+     * Checks if the parameter is a valid for loop parameter.
+     * 
+     * @param element - the element to be checked
+     * @return - true if the element is a valid for loop parameter, false otherwise
+     */
+    private static boolean isValidForLoopParameter(Element element) {
+        if (element instanceof ElementVariable)
+            return true;
+        if (element instanceof ElementConstantInteger)
+            return true;
+        if (element instanceof ElementConstantDouble)
+            return true;
+        if (element instanceof ElementString)
+            return true;
+        return false;
+    }
+
+    /**
+     * Checks if a string is a valid variable name.
+     * 
+     * @param variableName - the string to be checked
+     * @return - true if the string is a valid variable name, false otherwise
+     */
     private static boolean isValidVariableName(String variableName) {
         if (variableName.length() == 0)
             return false;
@@ -144,46 +282,38 @@ public class SmartScriptParser {
         return true;
     }
 
-    private static boolean isValidTagName(String variableName) {
-        return isValidVariableName(variableName) || (variableName.length() == 1 && variableName.equals("="));
-    }
+    /**
+     * Throws an exception if the element is an end bound.ž
+     * 
+     * @param element - the element to be checked
+     * @throws SmartScriptParserException if the element is an end bound
+     */
 
-    private static boolean isForTag(String tagName) {
-        return tagName.equalsIgnoreCase("for");
-    }
-
-    private static boolean isEndTag(String tagName) {
-        return tagName.equalsIgnoreCase("end");
-    }
-
-    private static boolean isEndBound(Element element) {
-        return element.asText().equals("$}");
-    }
-
-    private static boolean isValidForLoopParameter(Element element) {
-        if (element instanceof ElementVariable)
-            return true;
-        if (element instanceof ElementConstantInteger)
-            return true;
-        if (element instanceof ElementConstantDouble)
-            return true;
-        if (element instanceof ElementString)
-            return true;
-        return false;
-    }
-
-    private static void throwExceptionIfEndBound(Element element) {
+    protected static void throwExceptionIfEndBound(Element element) {
         if (isEndBound(element)) {
             throw new SmartScriptParserException("Not enough for loop parameters.");
         }
     }
 
+    /**
+     * Throws an exception if the element is an invalid for loop parameter.
+     * 
+     * @param element - the element to be checked
+     * @throws SmartScriptParserException if the element is an invalid for loop
+     *                                    parameter
+     */
     private static void throwExceptionIfInvalidForLoopParameter(Element element) {
         if (!isValidForLoopParameter(element)) {
             throw new SmartScriptParserException("Invalid for loop parameter");
         }
     }
 
+    /**
+     * Throws an exception if the element is an invalid variable name.
+     * 
+     * @param name - the name to be checked
+     * @throws SmartScriptParserException if name is an invalid variable name
+     */
     private static void throwExceptionIfInvalidVariableName(String name) {
         if (!isValidVariableName(name)) {
             throw new SmartScriptParserException(
@@ -191,49 +321,88 @@ public class SmartScriptParser {
         }
     }
 
+    /**
+     * Throws an exception if the current token is an EOF token.
+     * 
+     * @param token - the token to be checked
+     * @throws SmartScriptParserException if the token is an EOF token
+     */
     private static void throwExceptionIfEOF(SmartScriptToken token) {
         if (token.getType() == SmartScriptTokenType.EOF) {
             throw new SmartScriptParserException("Unexpected end of file.");
         }
     }
 
+    /**
+     * Throws an exception if the element is an invalid step expression.
+     * 
+     * @param element - the element to be checked
+     * @throws SmartScriptParserException if the element is an invalid step
+     *                                    expression
+     */
     private static void throwExceptionIfInvalidStepExpression(Element element) {
         if (!isStepExpressionOrEndBound(element)) {
             throw new SmartScriptParserException("Invalid for loop parameter");
         }
     }
 
+    /**
+     * Checks if the element is an end bound or step expression.
+     * 
+     * @param element - the element to be checked
+     * @return - true if the element is an end bound or a valid for loop parameter,
+     *         false otherwise
+     */
     private static boolean isStepExpressionOrEndBound(Element element) {
         return isValidForLoopParameter(element) || isEndBound(element);
     }
 
     /**
-     * Used for testing purposes
+     * Checks if a string is a valid tag name.
      * 
-     * param node - root node, count all children
-     * 
-     * @return
+     * @param variableName - the string to be checked
+     * @return - true if the string is a valid tag name, false otherwise
      */
-    public int countAllNodesRecursively(Node node) {
-        int nodes = 0;
-        for (int i = 0; i < node.numberOfChildren(); i++) {
-            nodes += countAllNodesRecursively(node.getChild(i));
-        }
-        return node.numberOfChildren();
+    private static boolean isValidTagName(String variableName) {
+        return isValidVariableName(variableName) || (variableName.length() == 1 && variableName.equals("="));
     }
 
+    /**
+     * Checks if the string is equal to "for".
+     * 
+     * @param tagName - the string to be checked
+     * @return - true if the string is equal to "for", false otherwise
+     */
+    private static boolean isForTag(String tagName) {
+        return tagName.equalsIgnoreCase("for");
+    }
+
+    /**
+     * Checks if the string is equal to "end".
+     * 
+     * @param tagName - the string to be checked
+     * @return - true if the string is equal to "end", false otherwise
+     */
+    private static boolean isEndTag(String tagName) {
+        return tagName.equalsIgnoreCase("end");
+    }
+
+    /**
+     * Checks if the string is equal to "$}".
+     * 
+     * @param element - the string to be checked
+     * @return - true if the string is equal to "$}", false otherwise
+     */
+    private static boolean isEndBound(Element element) {
+        return element.asText().equals("$}");
+    }
+
+    /**
+     * Document node getter.
+     * 
+     * @return - the document node
+     */
     public DocumentNode getDocumentNode() {
         return documentNode;
-    }
-
-    public int countTextNodesRecursively(Node node) {
-        int textNodes = 0;
-        for (int i = 0; i < node.numberOfChildren(); i++) {
-            textNodes += countTextNodesRecursively(node.getChild(i));
-        }
-        if (node instanceof TextNode) {
-            textNodes++;
-        }
-        return textNodes;
     }
 }

@@ -7,15 +7,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
-import hr.fer.oprpp1.custom.scripting.elems.*;
+import hr.fer.oprpp1.custom.scripting.elems.ElementConstantInteger;
+import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
 import hr.fer.oprpp1.custom.scripting.nodes.ForLoopNode;
-import hr.fer.oprpp1.custom.scripting.parser.SmartScriptParserException;
 
 public class SmartScriptParserTest {
-    // TODO za primjere{1, 2, 3, 4, 5, 6, 7, 8, 9} assertaj točno jedan TextNode
-    // TODO je li END case sensitive?
-
     private String readExample(int n) {
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("extra/primjer" + n + ".txt")) {
             if (is == null)
@@ -91,7 +89,7 @@ public class SmartScriptParserTest {
     @Test
     public void testExample9() {
         String docBody = readExample(9);
-            assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
     }
 
     // ----------------------------------------------------------
@@ -105,6 +103,152 @@ public class SmartScriptParserTest {
         assertEquals("1", forLoopNode.getStartExpression().asText());
         assertEquals("10", forLoopNode.getEndExpression().asText());
         assertEquals("1", forLoopNode.getStepExpression().asText());
+        assertEquals(" text ", forLoopNode.getChild(0).toString());
     }
 
+    @Test
+    public void testForLoopNodeTooManyArguments() {
+        String docBody = "{$ FOR i 1 10 1 1 $} text {$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testForLoopNodeTooFewArguments() {
+        String docBody = "{$ FOR i 1 $} text {$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testForLoopNodeWithStringArguments() {
+        String docBody = "{$ FOR i \"1\" \"10\" \"1\" $} text {$END$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        ForLoopNode forLoopNode = (ForLoopNode) parser.getDocumentNode().getChild(0);
+
+        assertEquals("i", forLoopNode.getVariable().asText());
+        assertTrue(forLoopNode.getVariable() instanceof ElementVariable);
+
+        assertEquals("1", forLoopNode.getStartExpression().asText());
+        assertTrue(forLoopNode.getStartExpression() instanceof ElementConstantInteger);
+
+        assertEquals("10", forLoopNode.getEndExpression().asText());
+        assertTrue(forLoopNode.getStartExpression() instanceof ElementConstantInteger);
+
+        assertEquals("1", forLoopNode.getStepExpression().asText());
+        assertTrue(forLoopNode.getStartExpression() instanceof ElementConstantInteger);
+
+        assertEquals(" text ", forLoopNode.getChild(0).toString());
+    }
+
+    @Test
+    public void testForLoopWithNumberAsVariable() {
+        String docBody = "{$ FOR 1 1 10 1 $} text {$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testForLoopWithNoEndTag() {
+        String docBody = "{$ FOR i 1 10 1 $} text";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testForLoopTwoEndTags() {
+        String docBody = "{$ FOR i 1 10 1 $} text {$END$}{$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testOnlyEndTag() {
+        String docBody = "{$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+
+    }
+
+    @Test
+    public void testUnclosedForTag() {
+        String docBody = "{$ FOR i 1 10 1 $}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+
+    }
+
+    @Test
+    public void testUnclosedForTagAndText() {
+        String docBody = "{$ FOR i 1 10 1 $} text";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testUnclosedForTagAndTextBeforeAndAfterTag() {
+        String docBody = "neki tekst {$ FOR i 1 10 1 $} text";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testUnclosedEchoTag() {
+        String docBody = "{$= i";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testEchoTagWithEndTag() {
+        String docBody = "{$= i $}{$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testEndTagWithText() {
+        String docBody = "{$END$} text";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testEndTagWithEchoTag() {
+        String docBody = "{$END$}{$= i $}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testEscapePartialTag() {
+        String docBody = "\\{= i $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals("\\{= i $}", parser.getDocumentNode().toString());
+    }
+
+    @Test
+    public void testEscapeForTag() {
+        String docBody = "\\{$ FOR i 1 10 1 $} text";
+        assertEquals("\\{$ FOR i 1 10 1 $} text", new SmartScriptParser(docBody).getDocumentNode().toString());
+    }
+
+    @Test
+    public void testEscapeEchoTag() {
+        String docBody = "\\{$= i $}";
+        assertEquals("\\{$= i $}", new SmartScriptParser(docBody).getDocumentNode().toString());
+    }
+
+    @Test
+    public void testExamplePDF() {
+        String docBody = "This is sample text.\n{$ FOR i 1 10 1 $}\n This is {$= i $}-th time this message is generated.\n{$END$}\n{$FOR i 0 10 2 $}\n sin({$=i$}^2) = {$= i i * @sin \"0.000\" @decfmt $}\n{$END$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        System.out.println(parser.getDocumentNode().toString());
+        System.out.println("----------");
+        assertTrue(parser.getDocumentNode().toString().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode().toString()));}
+
+    //test out of bounds checks for { tag, if it starts a tag or is just plain text
+
+    @Test
+    public void testFakeTagOpenThoroughly1() {
+        String docBody = "{{This is {oh, it's, not, { again, not {";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertTrue(parser.getDocumentNode().toString().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode().toString()));
+    }
+
+    @Test
+    public void testFakeTagOpenThoroughly() {
+        String docBody = "{{This is {oh, it's, not, { again, not {{{";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertTrue(parser.getDocumentNode().toString().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode().toString()));
+    }
+
+    
 }

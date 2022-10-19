@@ -9,6 +9,11 @@ public class ElementConstantDouble extends Element {
      */
     private double value;
 
+    /**
+     * Constructor that sets the value of the double.
+     * 
+     * @param value - value of the double
+     */
     public ElementConstantDouble(double value) {
         this.value = value;
     }
@@ -23,10 +28,32 @@ public class ElementConstantDouble extends Element {
         return Double.toString(value);
     }
 
+    // override hashcode
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        return value == ((ElementConstantDouble) o).value;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        ElementConstantDouble that = (ElementConstantDouble) o;
+
+        return Double.compare(that.value, value) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        long temp = Double.doubleToLongBits(value);
+        return (int) (temp ^ (temp >>> 32));
+    }
+
+    /**
+     * Returns the value of the double.
+     * 
+     * @return - value of the double
+     */
+    public double getValue() {
+        return value;
     }
 }

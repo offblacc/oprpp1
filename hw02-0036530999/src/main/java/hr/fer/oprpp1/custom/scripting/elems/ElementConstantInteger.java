@@ -9,6 +9,11 @@ public class ElementConstantInteger extends Element {
      */
     private int value;
 
+    /**
+     * Constructor that sets the value of the integer.
+     * 
+     * @param value - value of the integer
+     */
     public ElementConstantInteger(int value) {
         this.value = value;
     }
@@ -25,9 +30,15 @@ public class ElementConstantInteger extends Element {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         return value == ((ElementConstantInteger) o).value;
     }
 
+    @Override
+    public int hashCode() {
+        return value;
+    }
 }

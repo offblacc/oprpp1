@@ -11,6 +11,7 @@ public class ElementVariable extends Element {
 
     /**
      * Constructor that takes a name of the variable.
+     * 
      * @param name - name of the variable.
      */
     public ElementVariable(String name) {
@@ -29,8 +30,15 @@ public class ElementVariable extends Element {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         return name.equals(((ElementVariable) o).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 }

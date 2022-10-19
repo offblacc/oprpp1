@@ -11,7 +11,8 @@ public class ElementFunction extends Element {
 
     /**
      * Constructor that takes a name of the function.
-     * @param word - name of the function.
+     * 
+     * @param name - name of the function.
      */
     public ElementFunction(String name) {
         this.name = name;
@@ -29,9 +30,15 @@ public class ElementFunction extends Element {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         return name.equals(((ElementFunction) o).name);
     }
 
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

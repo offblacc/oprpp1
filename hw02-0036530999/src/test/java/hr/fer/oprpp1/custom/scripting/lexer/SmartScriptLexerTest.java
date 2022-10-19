@@ -588,8 +588,8 @@ public class SmartScriptLexerTest {
         assertTrue(lexer.getToken().getElement() instanceof ElementString);
 
         assertThrows(SmartScriptParserException.class, () -> lexer.nextToken());    
-
-
     }
+
+    // TODO try brute force breaKING It
 
 }

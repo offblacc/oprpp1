@@ -7,8 +7,16 @@ import hr.fer.oprpp1.custom.scripting.elems.Element;
  * dynamically, inheriting Node.
  */
 public class EchoNode extends Node {
-    private Element[] elements;
+    /**
+     * Used to store elements belonging to the echo node.
+     */
+    private final Element[] elements;
 
+    /**
+     * Constructor that takes an array of elements.
+     * 
+     * @param elements - array of elements
+     */
     public EchoNode(Element[] elements) {
         this.elements = elements;
     }
@@ -16,23 +24,31 @@ public class EchoNode extends Node {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("ECHO ");
+        sb.append("= ");
         for (Element element : elements) {
-            sb.append(element.asText() + " ");
+            sb.append(element.asText()).append(" ");
         }
         return sb.toString();
     }
 
+    /**
+     * Getter for the elements array.
+     * 
+     * @return - elements array
+     */
     public Element[] getElements() {
         return elements;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         for (int i = 0; i < elements.length; i++) {
-            if (!elements[i].equals(((EchoNode) o).elements[i])) return false;
+            if (!elements[i].equals(((EchoNode) o).elements[i]))
+                return false;
         }
         return true;
     }

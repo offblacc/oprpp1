@@ -7,11 +7,33 @@ import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
  * Class that represents a for loop node, inheriting Node.
  */
 public class ForLoopNode extends Node {
+    /**
+     * Variable of the for loop.
+     */
     ElementVariable variable;
+    /**
+     * Start expression of the for loop.
+     */
     Element startExpression;
+    /**
+     * End expression of the for loop.
+     */
     Element endExpression;
-    Element stepExpression; // only one here that can be null
+    /**
+     * Step expression of the for loop. Can be null, in which case it is assumed to
+     * be 1.
+     */
+    Element stepExpression;
 
+    /**
+     * Constructor that takes a variable, start expression, end expression and step
+     * expression.
+     * 
+     * @param variable        - variable of the for loop
+     * @param startExpression - start expression of the for loop
+     * @param endExpression   - end expression of the for loop
+     * @param stepExpression  - step expression of the for loop
+     */
     public ForLoopNode(ElementVariable variable, Element startExpression, Element endExpression,
             Element stepExpression) {
         this.variable = variable;
@@ -20,12 +42,19 @@ public class ForLoopNode extends Node {
         this.stepExpression = stepExpression;
     }
 
+    /**
+     * Constructor that takes a variable, start expression and end expression, and
+     * sets step expression to null.
+     * 
+     * @param variable        - variable of the for loop
+     * @param startExpression - start expression of the for loop
+     * @param endExpression   - end expression of the for loop
+     */
     public ForLoopNode(ElementVariable variable, Element startExpression, Element endExpression) {
         this(variable, startExpression, endExpression, null);
     }
 
     /**
-     * // TODO are these getters needed?
      * Returns ElementVariable variable.
      * 
      * @return - ElementVariable variable
@@ -89,5 +118,4 @@ public class ForLoopNode extends Node {
 
         return true;
     }
-
 }

@@ -6,12 +6,26 @@ import hr.fer.oprpp1.custom.scripting.elems.*;
  * Class that represents a text node, inheriting Node.
  */
 public class TextNode extends Node {
+    /**
+     * Text of the text node.
+     */
     private ElementString text;
+
+    /**
+     * Constructor that takes a text.
+     * 
+     * @param text - text of the text node
+     */
 
     public TextNode(ElementString text) {
         this.text = text;
     }
 
+    /**
+     * Returns the text of the text node.
+     *
+     * @return text of the text node
+     */
     public ElementString getText() {
         return text;
     }
@@ -23,8 +37,11 @@ public class TextNode extends Node {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        return text.equals(((TextNode) o).text);    }
-    
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        return text.equals(((TextNode) o).text);
+    }
+
 }
