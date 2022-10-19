@@ -23,7 +23,7 @@ public class EchoNode extends Node {
         return sb.toString();
     }
 
-    
-
-    
+    public Element[] getElements() {
+        return elements;
+    }
 }

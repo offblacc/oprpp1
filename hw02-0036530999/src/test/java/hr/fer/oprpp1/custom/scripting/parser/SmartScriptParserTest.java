@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 import hr.fer.oprpp1.custom.scripting.elems.*;
+import hr.fer.oprpp1.custom.scripting.nodes.ForLoopNode;
 import hr.fer.oprpp1.custom.scripting.parser.SmartScriptParserException;
 
 public class SmartScriptParserTest {
@@ -92,4 +93,18 @@ public class SmartScriptParserTest {
         String docBody = readExample(9);
             assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
     }
+
+    // ----------------------------------------------------------
+
+    @Test
+    public void testForLoopNode() {
+        String docBody = "{$ FOR i 1 10 1 $} text {$END$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        ForLoopNode forLoopNode = (ForLoopNode) parser.getDocumentNode().getChild(0);
+        assertEquals("i", forLoopNode.getVariable().asText());
+        assertEquals(1, forLoopNode.getStartExpression().asText());
+        assertEquals(10, forLoopNode.getEndExpression().asText());
+        assertEquals(1, forLoopNode.getStepExpression().asText());
+    }
+
 }

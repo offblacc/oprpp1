@@ -7,15 +7,14 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
 
 import hr.fer.oprpp1.custom.collections.ArrayIndexedCollection;
 import hr.fer.oprpp1.custom.collections.EmptyStackException;
-import hr.fer.oprpp1.custom.collections.ObjectStack; // TODO will need others
+import hr.fer.oprpp1.custom.collections.ObjectStack;
 import hr.fer.oprpp1.custom.scripting.elems.*;
 
 public class SmartScriptParser {
     private SmartScriptLexer lexer;
     private DocumentNode documentNode;
-    private Node currentNode;
     private ObjectStack stack;
-    private SmartScriptToken token; // current token
+    private SmartScriptToken token;
     private SmartScriptParserState parserState;
 
     public SmartScriptParser(String text) {
@@ -54,12 +53,12 @@ public class SmartScriptParser {
 
     private void processTag() {
         String tagName = token.getValue().toString();
-        if (isValidTagName(tagName)) {
-            if (isForTag(tagName)) {
-                processForLoop();
-            } else if (isEndTag(tagName)) {
+        if (isForTag(tagName)) {
+            processForLoop();
+        } else if (isValidTagName(tagName)) {
+            if (isEndTag(tagName)) {
                 processEndTag();
-            } else if (tagName.equals("=")){
+            } else if (tagName.equals("=")) {
                 processNamedTag();
             } else {
                 throw new UnsupportedOperationException("Undefined behaviour for tag name: " + tagName);
@@ -74,8 +73,7 @@ public class SmartScriptParser {
             elements.add(token.getElement());
             token = lexer.nextToken();
         }
-        
-        
+
         Element[] elementsArray = new Element[elements.size()];
         for (int i = 0; i < elements.size(); i++) {
             elementsArray[i] = (Element) elements.get(i);
@@ -108,13 +106,12 @@ public class SmartScriptParser {
         if (isEndBound(stepExpression)) {
             parserState = SmartScriptParserState.INIT; // because we exited the for loop tag
             stepExpression = null;
+        } else {
+            parserState = SmartScriptParserState.UNCLOSED_FOR_TAG;
         }
 
         ForLoopNode forLoopNode = new ForLoopNode(var, startExpression, endExpression, stepExpression);
         ((Node) stack.peek()).addChildNode(forLoopNode);
-        documentNode.addChildNode(forLoopNode);
-
-        parserState = SmartScriptParserState.UNCLOSED_FOR_TAG;
     }
 
     private void processEndTag() {
@@ -147,7 +144,7 @@ public class SmartScriptParser {
     }
 
     private static boolean isValidTagName(String variableName) {
-        return variableName.length() == 1 && variableName.equals("=");
+        return isValidVariableName(variableName) || (variableName.length() == 1 && variableName.equals("="));
     }
 
     private static boolean isForTag(String tagName) {
@@ -213,6 +210,7 @@ public class SmartScriptParser {
      * Used for testing purposes
      * 
      * param node - root node, count all children
+     * 
      * @return
      */
     public int countAllNodesRecursively(Node node) {
@@ -236,10 +234,5 @@ public class SmartScriptParser {
             textNodes++;
         }
         return textNodes;
-    }
-
-    @Override
-    public String toString() {
-        return null;
     }
 }
