@@ -53,7 +53,7 @@ public class ElementConstantDouble extends Element {
      * 
      * @return - value of the double
      */
-    public double getValue() {
+    public Object getValue() {
         return value;
     }
 }

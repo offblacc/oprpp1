@@ -107,7 +107,16 @@ public class ForLoopNode extends Node {
         if (!endExpression.equals(other.endExpression)) {
             return false;
         }
-        if ((stepExpression == null && other.stepExpression == null) || !stepExpression.equals(other.stepExpression)) {
+        if (stepExpression == null && other.stepExpression == null) {
+            return true;
+        }
+        if (stepExpression == null && other.stepExpression != null) {
+            return false;
+        }
+        if (stepExpression != null && other.stepExpression == null) {
+            return false;
+        }
+        if (!stepExpression.equals(other.stepExpression)) {
             return false;
         }
         for (int i = 0; i < this.numberOfChildren(); i++) {

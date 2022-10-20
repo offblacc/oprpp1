@@ -12,4 +12,12 @@ public class Element {
     public String asText() {
         return "";
     }
+
+    /**
+     * Returns the element as a string.
+     * @return -  element as a string
+     */
+    public Object getValue() {
+        return null;
+    }
 }

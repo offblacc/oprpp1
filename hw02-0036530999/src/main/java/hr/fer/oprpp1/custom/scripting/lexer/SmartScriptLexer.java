@@ -191,9 +191,14 @@ public class SmartScriptLexer {
             token = new SmartScriptToken(new ElementConstantDouble(d), SmartScriptTokenType.BASIC);
             return token;
         } else if (dotCount == 0) {
-            int i = Integer.parseInt(word);
-            token = new SmartScriptToken(new ElementConstantInteger(i), SmartScriptTokenType.BASIC);
-            return token;
+            try {
+                int i = Integer.parseInt(word);
+                token = new SmartScriptToken(new ElementConstantInteger(i), SmartScriptTokenType.BASIC);
+                return token;
+            } catch (NumberFormatException ex) {
+                token = new SmartScriptToken(new ElementOperator(word), SmartScriptTokenType.TAG_STRING);
+                return token;
+            }
         } else {
             token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.BASIC);
             return token;
@@ -265,10 +270,28 @@ public class SmartScriptLexer {
             } else if (data[currentIndex] == '\\') {
                 throw new SmartScriptParserException("Illegal character.");
             } else {
-                while (currentIndex < data.length && !Character.isWhitespace(data[currentIndex])
-                        && data[currentIndex] != '$'
-                        && data[currentIndex] != '"') {
+                char first = data[currentIndex];
+                if (first == '$' && currentIndex + 1 < data.length && data[currentIndex + 1] == '}') {
+                    return sb.toString();
+                }
+                if (Character.isDigit(first) || first == '-') {
                     sb.append(data[currentIndex++]);
+                    while (currentIndex < data.length) {
+                        if (Character.isDigit(data[currentIndex]) || data[currentIndex] == '.') {
+                            sb.append(data[currentIndex++]);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                if (Character.isLetter(first)) {
+                    while (currentIndex < data.length) {
+                        if (Character.isWhitespace(data[currentIndex]) || (data[currentIndex] == '$'
+                                && currentIndex + 1 < data.length && data[currentIndex + 1] == '}' || data[currentIndex] == '-' || data[currentIndex] == '"')) {
+                            return sb.toString();
+                        }
+                        sb.append(data[currentIndex++]);
+                    }
                 }
                 return sb.toString();
             }

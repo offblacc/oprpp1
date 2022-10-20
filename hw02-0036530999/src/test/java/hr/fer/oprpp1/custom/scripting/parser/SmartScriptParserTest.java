@@ -230,9 +230,11 @@ public class SmartScriptParserTest {
     public void testExamplePDF() {
         String docBody = "This is sample text.\n{$ FOR i 1 10 1 $}\n This is {$= i $}-th time this message is generated.\n{$END$}\n{$FOR i 0 10 2 $}\n sin({$=i$}^2) = {$= i i * @sin \"0.000\" @decfmt $}\n{$END$}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));}
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+    }
 
-    //test out of bounds checks for { tag, if it starts a tag or is just plain text
+    // test out of bounds checks for { tag, if it starts a tag or is just plain text
 
     @Test
     public void testFakeTagOpenThoroughly1() {
@@ -241,8 +243,10 @@ public class SmartScriptParserTest {
         // this depends on implementation:
         assertEquals("\\{\\{This is \\{oh, it's, not, \\{ again, not \\{", parser.getDocumentNode().toString());
         // this must, however, always be true:
-        assertTrue(parser.getDocumentNode().toString().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode().toString()));
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode().toString()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode().toString()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
 
     }
 
@@ -253,8 +257,10 @@ public class SmartScriptParserTest {
         // this depends on implementation:
         assertEquals("\\{\\{This is \\{oh, it's, not, \\{ again, not \\{\\{\\{", parser.getDocumentNode().toString());
         // this must, however, always be true:
-        assertTrue(parser.getDocumentNode().toString().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode().toString()));
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode().toString()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode().toString()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
     }
 
     @Test
@@ -280,67 +286,183 @@ public class SmartScriptParserTest {
         String docBody = "\\ {$= i $} text";
         assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
     }
-    
+
     @Test
     public void testValidTextNodeEscape() {
         String docBody = "This is \\{$= i $} text";
         SmartScriptParser parser = new SmartScriptParser(docBody);
         assertEquals("This is \\{$= i $} text", parser.getDocumentNode().toString());
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
-        
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+
     }
 
     @Test
     public void testValidTextNodeEscape2() {
         String docBody = "This is \\\\{$= i $} text";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
         assertEquals("This is \\\\{$= i $} text", parser.getDocumentNode().toString());
     }
 
-    // TODO test escapes inside strings that are in tags
     @Test
+    public void testInvalidTagName() {
+        String docBody = "{$kaj 1 2 3$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
 
+    @Test
+    public void testValidTagEscape() {
+        String docBody = "{$= \"Hello \\\"over\\\" there\" $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals("{$= \"Hello \\\"over\\\" there\" $}", parser.getDocumentNode().toString());
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+    }
+
+    @Test
+    public void testInvalidTagEscape() {
+    }
 
     // --- different combinations of whitespaces inside tags testing ---
     public void testVariousWhitespaceCombinations() {
         String docBody = "{$FOR i\"1\"\"10\"\"1\"$} text {$END$}{$=i\"0.000\"@sin$}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
     }
 
     @Test
     public void testVariousWhitespaceCombinations2() {
         String docBody = "{$FOR i \"1\" \"10\" \"1\" $} text {$ END $} {$ = i \"0.000\" @sin $}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
     }
 
     @Test
     public void testVariousWhitespaceCombinations3() {
         String docBody = "{$FOR i 1 10 1 $} text {$ END $} {$ = i 0.000 @sin $}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
     }
 
     @Test
     public void testVariousWhitespaceCombinations4() {
         String docBody = "{$   FOR    i     1      10 1 $} text {$   END    $} {$   =   i    0.000      @sin $}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
     }
 
     @Test
     public void testVariousWhitespaceCombinations5() {
-        String docBody = "{$  \t FOR \t   i \t    1      \t10 1 $} text {$  \t END\t    $} {$  \t = \t  i  \t  0.000 \t     @sin $}";   
+        String docBody = "{$  \t FOR \t   i \t    1      \t10 1 $} text {$  \t END\t    $} {$  \t = \t  i  \t  0.000 \t     @sin $}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
     }
 
     @Test
     public void testQuotationMarkNextToBounds() {
         String docBody = "{$= i \"0.000\" \"@sin\"$}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
-        assertTrue(parser.getDocumentNode().equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+    }
+
+    @Test
+    public void testValidFunctionNames() {
+        String docBody = "{$= @sin @S_in9 @s1n_$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+    }
+
+    @Test
+    public void testFunctionStartingWithDigit() {
+        String docBody = "{$= @1sin $}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testFunctionStartingWithUnderscore() {
+        String docBody = "{$= @_sin $}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testForLoopWithNoStepExpression() {
+        String docBody = "{$FOR i 1 10$} text {$END$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+    }
+
+    @Test
+    public void testForLoopWithNoStepExpression2() {
+        String docBody = "{$FOR i \"1\" \"10\"$} text {$END$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertTrue(parser.getDocumentNode()
+                .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
+    }
+
+    @Test
+    public void testEndTagWithNoRightBound() {
+        String docBody = "{$END$";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testEndTagWithNoRightBound2() {
+        String docBody = "{$END";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testEndTagWithNoRightBound3() {
+        String docBody = "{$END ";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testForLoopWithDoubleValues() {
+        String docBody = "{$FOR i 1.0 10.0 1.0$} text {$END$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testForLoopWithDoubleValues2() {
+        String docBody = "{$FOR i \"1.0\" \"10.0\" \"1.0\"$} text {$END$}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testForLoopWithInvalidStringParameter() {
+        String docBody = "{$FOR i \"1.0\" \"10b.0\" \"1.0\"$} text {$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testForLoopWithVariableInsteadOfNumber() {
+        String docBody = "{$FOR i a 10 1$} text {$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testInvalidVariableName() {
+        String docBody = "{$FOR i] 1 10 1$} text {$END$}";
+        assertThrows(SmartScriptParserException.class, () -> new SmartScriptParser(docBody));
+    }
+
+    @Test
+    public void testEchoWithAllRandomOperators() {
+        String docBody = "{$= i i * / - + ^ \"0.000\" @sin $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
     }
 }

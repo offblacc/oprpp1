@@ -3,9 +3,9 @@ package hr.fer.oprpp1.custom.scripting.parser;
 import hr.fer.oprpp1.custom.scripting.lexer.*;
 import hr.fer.oprpp1.custom.scripting.nodes.*;
 import hr.fer.oprpp1.custom.collections.ArrayIndexedCollection;
-import hr.fer.oprpp1.custom.collections.EmptyStackException;
 import hr.fer.oprpp1.custom.collections.ObjectStack;
 import hr.fer.oprpp1.custom.scripting.elems.*;
+import java.lang.Math;
 
 /**
  * Parser for SmartScript. Uses the SmartScriptLexer for generation of tokens,
@@ -185,13 +185,12 @@ public class SmartScriptParser {
         if (stack.peek() instanceof DocumentNode) {
             throw new SmartScriptParserException("There are extra END tags.");
         }
-        try {
-            stack.pop();
-        } catch (EmptyStackException ex) {
-            throw new SmartScriptParserException("There are extra END tags.");
-        }
 
-        while (token.getValue() != "$}") {
+        stack.pop();
+
+        while (token.getValue() != "$}")
+
+        {
             if ((token = lexer.nextToken()).getType() == SmartScriptTokenType.EOF) {
                 throw new SmartScriptParserException("End tag has no right bound.");
             }
@@ -211,17 +210,20 @@ public class SmartScriptParser {
         if (element instanceof ElementConstantInteger)
             return (ElementConstantInteger) element;
         if (element instanceof ElementConstantDouble)
-            return new ElementConstantInteger((int) ((ElementConstantDouble) element).getValue());
+            return new ElementConstantInteger((int) Math.round(Double.parseDouble(element.asText())));
+
         if (element instanceof ElementString) {
             try {
-                return new ElementConstantInteger(Integer.parseInt(element.asText()));
+                return new ElementConstantInteger((int) Math.round(Double.parseDouble(element.asText())));
             } catch (NumberFormatException ex) {
+                throw new SmartScriptParserException("Invalid for loop parameter " + element.asText());
+            } catch (ClassCastException e) {
                 throw new SmartScriptParserException("Invalid for loop parameter " + element.asText());
             }
         }
         if (element == null)
             return null;
-        throw new SmartScriptParserException("Invalid for loop parameter.");
+        throw new SmartScriptParserException("Invalid for loop parameter " + element.asText());
     }
 
     /**

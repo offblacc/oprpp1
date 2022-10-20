@@ -11,4 +11,12 @@ public class SmartScriptParserException extends RuntimeException {
     public SmartScriptParserException(String message) {
         super(message);
     }
+
+    public SmartScriptParserException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public SmartScriptParserException(Throwable cause) {
+        super(cause);
+    }
 }

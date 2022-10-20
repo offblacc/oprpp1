@@ -28,6 +28,15 @@ public class ElementConstantInteger extends Element {
         return Integer.toString(value);
     }
 
+    /**
+     * Returns the value of the integer.
+     * @return - value of the integer
+     */
+    @Override
+    public Object getValue() {
+        return value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
