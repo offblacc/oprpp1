@@ -7,6 +7,7 @@ public class TestParserManually {
 
     public static void main(String[] args) {
         String docBody = "Bok Patriče \\{$Macola {$= kakoJe \"string \\\"test\\\"  \\\\dalje\"$} legendo {$ FOR i 1 10 1 $} dijete for-a {$END$}";
+        docBody = "A tag follows {$= \"Joe \\\"Long\\\"  \\\\Smith\"$}.";
         SmartScriptParser parser = new SmartScriptParser(docBody);
         DocumentNode document = parser.getDocumentNode();
         String originalDocumentBody = document.toString();

@@ -216,7 +216,7 @@ public class SmartScriptParser {
             try {
                 return new ElementConstantInteger(Integer.parseInt(element.asText()));
             } catch (NumberFormatException ex) {
-                throw new SmartScriptParserException("Invalid for loop parameter.");
+                throw new SmartScriptParserException("Invalid for loop parameter " + element.asText());
             }
         }
         if (element == null)

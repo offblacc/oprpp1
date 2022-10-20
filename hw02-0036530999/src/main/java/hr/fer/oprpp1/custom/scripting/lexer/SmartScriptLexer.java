@@ -231,7 +231,11 @@ public class SmartScriptLexer {
 
         while (currentIndex < data.length) {
             if (data[currentIndex] == '@') {
-                while (!Character.isWhitespace(data[currentIndex]) && data[currentIndex] != '"') {
+                while (currentIndex < data.length && !Character.isWhitespace(data[currentIndex])
+                        && data[currentIndex] != '"') {
+                    if (data[currentIndex] == '$' && currentIndex + 1 < data.length && data[currentIndex + 1] == '}') {
+                        break;
+                    }
                     sb.append(data[currentIndex++]);
                 }
                 return sb.toString();
