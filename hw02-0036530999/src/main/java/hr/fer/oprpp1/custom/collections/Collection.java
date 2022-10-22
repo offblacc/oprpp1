@@ -100,7 +100,7 @@ public interface Collection {
      * @param tester - Tester object whose test method gets called and determines
      *               whether an object from col is added to the calling method.
      */
-    public default void addAllSatisfying(Collection col, Tester tester) { // TODO add tests
+    public default void addAllSatisfying(Collection col, Tester tester) {
         ElementsGetter eg = col.createElementsGetter();
         while (eg.hasNextElement()) {
             Object elem = eg.getNextElement();

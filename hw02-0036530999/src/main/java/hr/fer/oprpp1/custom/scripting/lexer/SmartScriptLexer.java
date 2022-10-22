@@ -8,7 +8,7 @@ public class SmartScriptLexer {
      * Data that is being processed. Constructor takes a string and converts it to a
      * char array called data.
      */
-    private char[] data;
+    private final char[] data;
     /**
      * Current position in the data array we're processing.
      */
@@ -148,7 +148,7 @@ public class SmartScriptLexer {
             return parsePotentialNumber(word);
         } else {
             if (token.getType() == SmartScriptTokenType.BOUND) {
-                if (word.equalsIgnoreCase("END")) { // TODO end should also be only of tag type
+                if (word.equalsIgnoreCase("END")) {
                     token = new SmartScriptToken(new ElementString("END"), SmartScriptTokenType.END);
                 } else {
                     token = new SmartScriptToken(new ElementString(word), SmartScriptTokenType.TAG);
@@ -182,7 +182,7 @@ public class SmartScriptLexer {
     private SmartScriptToken parsePotentialNumber(String word) {
         int dotCount = 0;
         for (int i = 0; i < word.length(); i++) {
-            if (word.toString().charAt(i) == '.') {
+            if (word.charAt(i) == '.') {
                 dotCount++;
             }
         }
@@ -228,7 +228,7 @@ public class SmartScriptLexer {
             return "=";
         }
 
-        if (new String("+*/^").indexOf(data[currentIndex]) != -1
+        if ("+*/^".indexOf(data[currentIndex]) != -1
                 || (data[currentIndex] == '-' && data[currentIndex + 1] == ' ')) {
             return Character.toString(data[currentIndex++]);
         }
@@ -250,14 +250,24 @@ public class SmartScriptLexer {
                 while (data[currentIndex] != '"') {
                     if (data[currentIndex] == '\\') {
                         // ----- escape seq inside string ----------
-                        if (currentIndex < data.length - 1
-                                && (data[currentIndex + 1] == '\\' || data[currentIndex + 1] == '"')) {
-                            sb.append(data[currentIndex + 1]);
-                            currentIndex += 2;
-                        } else if (currentIndex < data.length - 1 && data[currentIndex + 1] == 'n') {
-                            sb.append('\n');
-                            currentIndex += 2;
-                        } else {
+                        if (currentIndex < data.length - 1) {
+                            if (data[currentIndex + 1] == '\\' || data[currentIndex + 1] == '"') {
+                                sb.append(data[currentIndex + 1]);
+                                currentIndex += 2;
+                            } else if (data[currentIndex + 1] == 'n') {
+                                sb.append('\n');
+                                currentIndex += 2;
+                            } else if (data[currentIndex + 1] == 'r'){
+                                sb.append('\r');
+                                currentIndex += 2;
+                            } else if (data[currentIndex + 1] == 't') {
+                                sb.append('\t');
+                                currentIndex += 2;
+                            } else {
+                                throw new SmartScriptParserException("Invalid escape sequence" + data[currentIndex + 1]);
+                            }
+                        }
+                        else {
                             throw new SmartScriptParserException("Invalid escape sequence " + data[currentIndex + 1]);
                         }
                         // -----------------------------------------

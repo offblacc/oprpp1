@@ -75,12 +75,11 @@ public class LinkedListIndexedCollection implements List {
         ListNode newNode = new ListNode(value);
         if (first == null) {
             first = newNode;
-            last = newNode;
         } else {
             last.next = newNode;
             newNode.prev = last;
-            last = newNode;
         }
+        last = newNode;
         size++;
         modificationCount++;
     }
@@ -308,7 +307,7 @@ public class LinkedListIndexedCollection implements List {
         /**
          * Value of the node.
          */
-        private Object value;
+        private final Object value;
 
         /**
          * Default constructor, setting all references and the node's value to null.
@@ -365,12 +364,12 @@ public class LinkedListIndexedCollection implements List {
          * Modification count of the collection instance at the time of ElementsGetter
          * creation.
          */
-        private int savedModificationCount;
+        private final int savedModificationCount;
 
         /**
          * Reference to the collection instance we're iterating through.
          */
-        private LinkedListIndexedCollection col;
+        private final LinkedListIndexedCollection col;
 
         /**
          * Constructor that sets the current position of the iterator to the first

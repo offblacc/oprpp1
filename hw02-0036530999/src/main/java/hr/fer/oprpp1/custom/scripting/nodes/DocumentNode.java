@@ -2,7 +2,6 @@ package hr.fer.oprpp1.custom.scripting.nodes;
 
 import hr.fer.oprpp1.custom.scripting.elems.Element;
 import hr.fer.oprpp1.custom.scripting.elems.ElementString;
-import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
 
 /**
  * Class that represents an entire document, inheriting Node.

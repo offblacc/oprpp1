@@ -7,7 +7,7 @@ public class ElementVariable extends Element {
     /**
      * Name of the variable.
      */
-    private String name;
+    private final String name;
 
     /**
      * Constructor that takes a name of the variable.

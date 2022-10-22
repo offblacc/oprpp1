@@ -7,7 +7,7 @@ public class ElementOperator extends Element {
     /**
      * Operator.
      */
-    private String symbol;
+    private final String symbol;
 
     /**
      * Constructor that takes an operator as a string.

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConcurrentModificationThrowingTest {
-    // TODO test for all methods that modify collections, not all are here probably
     @Test
     public void testAdd() {
         Collection col = new ArrayIndexedCollection();
@@ -47,7 +46,6 @@ public class ConcurrentModificationThrowingTest {
         assertThrows(ConcurrentModificationException.class, () -> getter.getNextElement());
     }
 
-    // the same tests for linekdlistindexedcollection
     @Test
     public void testAddLinkedList() {
         Collection col = new LinkedListIndexedCollection();
@@ -86,6 +84,6 @@ public class ConcurrentModificationThrowingTest {
         col.add("Jasna");
         ElementsGetter getter = col.createElementsGetter();
         col.remove("Ivo");
-        assertThrows(ConcurrentModificationException.class, () -> getter.getNextElement());
+        assertThrows(ConcurrentModificationException.class, getter::getNextElement);
     }
 }

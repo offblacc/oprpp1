@@ -318,23 +318,26 @@ public class ArrayIndexedCollection implements List {
         /**
          * Reference to the collection whose elements we are iterating through.
          */
-        private ArrayIndexedCollection col;
+        private final ArrayIndexedCollection col;
 
         /**
          * Modification count of the collection instance at the time of ElementsGetter
          * creation.
          * Used to check for concurrent modification.
          */
-        private int savedModificationCount;
+        private final int savedModificationCount;
 
         /**
          * Constructor for the ArrayIndexedCollectionElementsGetter class.
          * 
-         * @param inedxReverse - initially equal to the number of elements in the
+         * @param indexReverse - initially equal to the number of elements in the
          *                     collection, counting down to 0. When it reaches zero we
          *                     have iterated through all elements.
          * @param col          - reference to collection whose elements we are iterating
          *                     through.
+         *
+         * @param savedModificationCount - modification count of the collection instance
+         *
          */
         private ArrayIndexedCollectionElementsGetter(ArrayIndexedCollection col, int size, int modificationCount) {
             indexReverse = size;

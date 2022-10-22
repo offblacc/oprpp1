@@ -1,15 +1,8 @@
 package hr.fer.oprpp1.hw02.prob1;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import hr.fer.oprpp1.hw02.prob1.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Prob1Test {
 	@Test
