@@ -12,8 +12,6 @@ public class z1p6Demo {
         Collection col4 = col2;
         col1.get(0);
         col2.get(0);
-        // col3.get(0); // neće se prevesti! Razumijete li zašto? -> Collection ne zna za get(int), stavimo li List umjesto Collection, prevede se
-        // col4.get(0); // neće se prevesti! Razumijete li zašto? -> Collection ne zna za get(int), stavimo li List umjesto Collection, prevede se
         col1.forEach(System.out::println); // Ivana
         col2.forEach(System.out::println); // Jasna
         col3.forEach(System.out::println); // Ivana

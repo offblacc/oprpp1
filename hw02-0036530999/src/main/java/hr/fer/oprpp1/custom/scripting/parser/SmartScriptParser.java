@@ -259,9 +259,7 @@ public class SmartScriptParser {
             return true;
         if (element instanceof ElementConstantDouble)
             return true;
-        if (element instanceof ElementString)
-            return true;
-        return false;
+        return element instanceof ElementString;
     }
 
     /**

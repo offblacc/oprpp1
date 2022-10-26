@@ -9,7 +9,7 @@ public class TextNode extends Node {
     /**
      * Text of the text node.
      */
-    private ElementString text;
+    private final ElementString text;
 
     /**
      * Constructor that takes a text.

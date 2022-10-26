@@ -7,7 +7,7 @@ public class ElementFunction extends Element {
     /**
      * Name of the function.
      */
-    private String name;
+    private final String name;
 
     /**
      * Constructor that takes a name of the function.

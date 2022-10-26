@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
  * The order of elements is determined by the order in which the elements were
  * added.
  */
-public class ArrayIndexedCollection implements List {
+public class ArrayIndexedCollection<T> implements List<T> {
     /**
      * Number of elements currently stored in the collection.
      */
@@ -18,7 +18,7 @@ public class ArrayIndexedCollection implements List {
     /**
      * Array in which the elements of the collection are stored.
      */
-    private Object[] elements;
+    private T[] elements;
 
     private int modificationCount = 0;
 
@@ -37,13 +37,15 @@ public class ArrayIndexedCollection implements List {
      * @throws IllegalArgumentException if the given initial capacity is less than
      *                                  one.
      */
+    @SuppressWarnings("unchecked") // TODO is this right?
     public ArrayIndexedCollection(int initialCapacity) {
         if (initialCapacity < 1) {
             throw new IllegalArgumentException("Array size should be at least 1!");
         }
 
         size = 0;
-        elements = new Object[initialCapacity];
+        // set elements to T array with initialcapacity
+        elements = (T[]) new Object[initialCapacity];
     }
 
     /**
@@ -52,7 +54,7 @@ public class ArrayIndexedCollection implements List {
      * @param other - collection to be copied.
      * @throws NullPointerException if the given collection is null.
      */
-    public ArrayIndexedCollection(Collection other) {
+    public ArrayIndexedCollection(Collection<? extends T> other) {
         this(other, 16);
     }
 
@@ -70,7 +72,7 @@ public class ArrayIndexedCollection implements List {
      * @throws IllegalArgumentException if the given initial capacity is less than
      *                                  one.
      */
-    public ArrayIndexedCollection(Collection other, int initialCapacity) { // double check this
+    public ArrayIndexedCollection(Collection<? extends T> other, int initialCapacity) { // double check this
         if (other == null) {
             throw new NullPointerException();
         }
@@ -83,7 +85,7 @@ public class ArrayIndexedCollection implements List {
             initialCapacity = other.size();
         }
 
-        elements = new Object[initialCapacity];
+        elements = (T[]) new Object[initialCapacity];
         addAll(other);
     }
 
@@ -104,15 +106,15 @@ public class ArrayIndexedCollection implements List {
      * @throws NullPointerException if the given object is null.
      */
     @Override
-    public void add(Object value) {
+    public void add(T value) {
         if (value == null) {
             throw new NullPointerException();
         }
 
         int i = 0;
         if (size == elements.length) {
-            Object[] newElements = new Object[2 * elements.length];
-            for (Object v : elements) {
+            T[] newElements = (T[]) new Object[2 * elements.length];
+            for (T v : elements) {
                 newElements[i++] = v;
             }
             elements = newElements;
@@ -128,7 +130,7 @@ public class ArrayIndexedCollection implements List {
      * @return true if the collection contains the given object, false otherwise.
      */
     @Override
-    public boolean contains(Object value) {
+    public boolean contains(T value) {
         if (value == null) {
             return false;
         }
@@ -146,7 +148,7 @@ public class ArrayIndexedCollection implements List {
      * @param value - object to be checked for its index.
      * @return index of the given object in the collection.
      */
-    public int indexOf(Object value) {
+    public int indexOf(T value) {
         if (value == null) {
             return -1;
         }
@@ -166,8 +168,8 @@ public class ArrayIndexedCollection implements List {
      * @return array of objects in the collection.
      */
     @Override
-    public Object[] toArray() {
-        Object[] arr = new Object[size];
+    public T[] toArray() { // TODO myb modify this
+        T[] arr = (T[]) new Object[size];
         for (int i = 0; i < size; i++) {
             arr[i] = elements[i];
         }
@@ -196,7 +198,7 @@ public class ArrayIndexedCollection implements List {
      * @return object at the given index in the collection.
      * @throws IndexOutOfBoundsException if the given index is out of bounds.
      */
-    public Object get(int index) {
+    public T get(int index) {
         if (index < 0 || index > size - 1) {
             throw new IndexOutOfBoundsException();
         }
@@ -213,7 +215,7 @@ public class ArrayIndexedCollection implements List {
      *         in the collection.
      */
     @Override
-    public boolean remove(Object value) {
+    public boolean remove(T value) {
         int index = indexOf(value);
 
         if (index == -1) {
@@ -264,7 +266,7 @@ public class ArrayIndexedCollection implements List {
      * @throws NullPointerException      if the given object is null.
      * @throws IndexOutOfBoundsException if the given position is out of bounds.
      */
-    public void insert(Object value, int position) {
+    public void insert(T value, int position) {
         if (position < 0 || position > size) {
             throw new IndexOutOfBoundsException();
         }
@@ -274,9 +276,9 @@ public class ArrayIndexedCollection implements List {
         }
 
         if (elements[elements.length - 1] != null) {
-            Object[] newElements = new Object[2 * elements.length];
+            T[] newElements = (T[]) new Object[2 * elements.length];
             int i = 0;
-            for (Object v : elements) {
+            for (T v : elements) {
                 newElements[i++] = v;
             }
             elements = newElements;
@@ -298,16 +300,16 @@ public class ArrayIndexedCollection implements List {
      *              Collection other is not modified.
      */
     @Override
-    public void addAll(Collection other) {
-        class LocalProcessor implements Processor {
-            public void process(Object value) {
+    public void addAll(Collection<? extends T> other) {
+        class LocalProcessor implements Processor<T> {
+            public void process(T value) {
                 add(value);
             }
         }
         other.forEach(new LocalProcessor());
     }
 
-    private static class ArrayIndexedCollectionElementsGetter implements ElementsGetter {
+    private static class ArrayIndexedCollectionElementsGetter<T> implements ElementsGetter<T> {
         /**
          * Initially equal to the number of elements in the collection. It is decreased
          * by 1 whenever the getNextElement() method is called. When it reaches 0 we
@@ -318,7 +320,7 @@ public class ArrayIndexedCollection implements List {
         /**
          * Reference to the collection whose elements we are iterating through.
          */
-        private final ArrayIndexedCollection col;
+        private final ArrayIndexedCollection<T> col;
 
         /**
          * Modification count of the collection instance at the time of ElementsGetter
@@ -339,7 +341,7 @@ public class ArrayIndexedCollection implements List {
          * @param savedModificationCount - modification count of the collection instance
          *
          */
-        private ArrayIndexedCollectionElementsGetter(ArrayIndexedCollection col, int size, int modificationCount) {
+        private ArrayIndexedCollectionElementsGetter(ArrayIndexedCollection<T> col, int size, int modificationCount) {
             indexReverse = size;
             this.col = col;
             savedModificationCount = modificationCount;
@@ -375,7 +377,7 @@ public class ArrayIndexedCollection implements List {
          *                                         since creation of the ElementsGetter.
          */
         @Override
-        public Object getNextElement() {
+        public T getNextElement() {
             if (savedModificationCount != col.modificationCount) {
                 throw new ConcurrentModificationException();
             }
@@ -393,7 +395,7 @@ public class ArrayIndexedCollection implements List {
      * @return new ElementsGetter for this collection.
      */
     @Override
-    public ElementsGetter createElementsGetter() {
-        return new ArrayIndexedCollectionElementsGetter(this, size, modificationCount);
+    public ElementsGetter<T> createElementsGetter() {
+        return new ArrayIndexedCollectionElementsGetter<T>(this, size, modificationCount);
     }
 }

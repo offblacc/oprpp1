@@ -7,7 +7,7 @@ public class ElementConstantInteger extends Element {
     /**
      * Value of the integer.
      */
-    private int value;
+    private final int value;
 
     /**
      * Constructor that sets the value of the integer.

@@ -1,10 +1,10 @@
 package hr.fer.oprpp1.hw02.prob1;
 
-public class Lexer { // TODO docs
+public class Lexer {
     /**
      * Stores all characters passed to the constructor as a string.
      */
-    private char[] data;
+    private final char[] data;
     /**
      * The last generated token.
      */
@@ -62,8 +62,8 @@ public class Lexer { // TODO docs
          * since we didn't increase our index, move on to the else block next time this
          * method is called and tokenize '#' as a symbol
          */
+        StringBuilder sb = new StringBuilder();
         if (state == LexerState.EXTENDED && data[currentIndex] != '#') {
-            StringBuilder sb = new StringBuilder();
             while (data[currentIndex] != ' ' && data[currentIndex] != '#') {
                 sb.append(data[currentIndex++]);
             }
@@ -73,7 +73,6 @@ public class Lexer { // TODO docs
             token = new Token(TokenType.WORD, sb.toString());
         } else {
 
-            StringBuilder sb = new StringBuilder();
             if (currentIndex == data.length - 1 && data[currentIndex] == '\\') {
                 throw new LexerException("Invalid escape ending.");
             }
@@ -91,7 +90,7 @@ public class Lexer { // TODO docs
                     }
                 }
                 token = new Token(TokenType.WORD, sb.toString());
-            } else if (Character.isDigit(data[currentIndex])) { // TODO what if double dot ?
+            } else if (Character.isDigit(data[currentIndex])) {
                 while (Character.isDigit(data[currentIndex]) || data[currentIndex] == '.') {
                     sb.append(data[currentIndex]);
                     if (++currentIndex >= data.length) {

@@ -3,7 +3,7 @@ package hr.fer.oprpp1.custom.collections;
 /**
  * An interface that defines a set of methods every collection should implement.
  */
-public interface Collection {
+public interface Collection<T> {
     /**
      * Returns true if the collection has no objects stored, false otherwise.
      *
@@ -25,7 +25,7 @@ public interface Collection {
      * 
      * @param value - value to be added to the collection.
      */
-    public void add(Object value);
+    public void add(T value);
 
     /**
      * Checks whether the collection contains the given object.
@@ -33,7 +33,7 @@ public interface Collection {
      * @param value - value to be checked if it is in the collection.
      * @return true if the collection contains the given value, false otherwise.
      */
-    public boolean contains(Object value);
+    public boolean contains(T value);
 
     /**
      * Removes the first occurrence of the given object from the collection.
@@ -41,14 +41,14 @@ public interface Collection {
      * @param value - value to be removed from the collection.
      * @return true if the collection contains the given value, false otherwise.
      */
-    public boolean remove(Object value);
+    public boolean remove(T value);
 
     /**
-     * Converts the collection into an array of objects.
+     * Converts the collection into a T array.
      * 
      * @return an array of objects that are currently in the collection.
      */
-    public Object[] toArray();
+    public T[] toArray();
 
     /**
      * Calls the processor's process method for each element of this collection.
@@ -56,8 +56,8 @@ public interface Collection {
      * @param processor - processor that will process each element of the
      *                  collection, defined by the user.
      */
-    public default void forEach(Processor processor) {
-        ElementsGetter eg = this.createElementsGetter();
+    public default void forEach(Processor<? super T> processor) {
+        ElementsGetter<T> eg = this.createElementsGetter();
         while (eg.hasNextElement()) {
             processor.process(eg.getNextElement());
         }
@@ -70,9 +70,10 @@ public interface Collection {
      * @param other - collection from which all elements will be added to the
      *              current collection. Collection other is not changed.
      */
-    public default void addAll(Collection other) {
-        class LocalProcessor implements Processor {
-            public void process(Object value) {
+    public default void addAll(Collection<? extends T> other) {
+        // TODO make sure this is right
+        class LocalProcessor implements Processor<T> {
+            public void process(T value) {
                 add(value);
             }
         }
@@ -87,9 +88,9 @@ public interface Collection {
     /**
      * Creates and returns an ElementsGetter object for this collection.
      * 
-     * @return an ElementsGetter object for this collection.`
+     * @return an ElementsGetter object for this collection.
      */
-    public ElementsGetter createElementsGetter();
+    public ElementsGetter<T> createElementsGetter();
 
     /**
      * Adds all elements from another collection that satisfy tester's test to the
@@ -100,10 +101,10 @@ public interface Collection {
      * @param tester - Tester object whose test method gets called and determines
      *               whether an object from col is added to the calling method.
      */
-    public default void addAllSatisfying(Collection col, Tester tester) {
-        ElementsGetter eg = col.createElementsGetter();
+    public default void addAllSatisfying(Collection<? extends T> col, Tester<T> tester) {
+        ElementsGetter<? extends T> eg = col.createElementsGetter();
         while (eg.hasNextElement()) {
-            Object elem = eg.getNextElement();
+            T elem = eg.getNextElement();
             if (tester.test(elem)) {
                 this.add(elem);
             }

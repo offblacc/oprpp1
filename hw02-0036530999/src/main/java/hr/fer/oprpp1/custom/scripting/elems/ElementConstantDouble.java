@@ -7,7 +7,7 @@ public class ElementConstantDouble extends Element {
     /**
      * Value of the double.
      */
-    private double value;
+    private final double value;
 
     /**
      * Constructor that sets the value of the double.

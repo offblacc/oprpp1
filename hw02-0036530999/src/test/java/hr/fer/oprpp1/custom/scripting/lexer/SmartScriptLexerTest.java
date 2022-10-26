@@ -428,8 +428,7 @@ public class SmartScriptLexerTest {
             if (is == null)
                 throw new RuntimeException("Datoteka extra/primjer" + n + ".txt je nedostupna.");
             byte[] data = is.readAllBytes();
-            String text = new String(data, StandardCharsets.UTF_8);
-            return text;
+            return new String(data, StandardCharsets.UTF_8);
         } catch (IOException ex) {
             throw new RuntimeException("Greška pri čitanju datoteke.", ex);
         }
@@ -548,7 +547,7 @@ public class SmartScriptLexerTest {
     public void testReadExample8() {
         String docBody = readExample(8);
         var lexer = new SmartScriptLexer(docBody);
-        
+
         assertEquals(SmartScriptTokenType.BASIC, lexer.nextToken().getType());
         assertEquals("Ovo se ruši ", lexer.getToken().getValue());
         assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
@@ -587,7 +586,7 @@ public class SmartScriptLexerTest {
         assertEquals(SmartScriptLexerState.TAG, lexer.getState());
         assertTrue(lexer.getToken().getElement() instanceof ElementString);
 
-        assertThrows(SmartScriptParserException.class, () -> lexer.nextToken());    
+        assertThrows(SmartScriptParserException.class, () -> lexer.nextToken());
     }
 
     @Test
@@ -631,6 +630,174 @@ public class SmartScriptLexerTest {
         assertTrue(lexer.getToken().getElement() instanceof ElementString);
 
         assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
-
     }
+
+    @Test
+    public void testValidStringEscapeNewline() {
+        String docBody = "{$= \"text\nnewline\" $}";
+        var lexer = new SmartScriptLexer(docBody);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG_STRING, lexer.nextToken().getType());
+        assertEquals("text\nnewline", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
+    @Test
+    public void testValidStringEscapeNewline2() {
+        String docBody = "{$= \"text\\nnewline\" $}";
+        var lexer = new SmartScriptLexer(docBody);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG_STRING, lexer.nextToken().getType());
+        assertEquals("text\nnewline", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
+    @Test
+    public void testValidStringEscapeCarriageReturn() {
+        String docBody = "{$= \"text\rCR\" $}";
+        var lexer = new SmartScriptLexer(docBody);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG_STRING, lexer.nextToken().getType());
+        assertEquals("text\rCR", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
+    @Test
+    public void testValidStringEscapeCarriageReturn2() {
+        String docBody = "{$= \"text\\rCR\" $}";
+        var lexer = new SmartScriptLexer(docBody);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG_STRING, lexer.nextToken().getType());
+        assertEquals("text\rCR", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
+    @Test
+    public void testValidStringEscapeTab() {
+        String docBody = "{$= \"text\tTAB\" $}";
+        var lexer = new SmartScriptLexer(docBody);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG_STRING, lexer.nextToken().getType());
+        assertEquals("text\tTAB", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
+    @Test
+    public void testValidStringEscapeTab2() {
+        String docBody = "{$= \"text\\tTAB\" $}";
+        var lexer = new SmartScriptLexer(docBody);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("{$", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG, lexer.nextToken().getType());
+        assertEquals("=", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.TAG_STRING, lexer.nextToken().getType());
+        assertEquals("text\tTAB", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.TAG, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.BOUND, lexer.nextToken().getType());
+        assertEquals("$}", lexer.getToken().getValue());
+        assertEquals(SmartScriptLexerState.BASIC, lexer.getState());
+        assertTrue(lexer.getToken().getElement() instanceof ElementString);
+
+        assertEquals(SmartScriptTokenType.EOF, lexer.nextToken().getType());
+    }
+
 }

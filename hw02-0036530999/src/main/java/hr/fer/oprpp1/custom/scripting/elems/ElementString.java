@@ -7,9 +7,9 @@ public class ElementString extends Element {
     /**
      * Value of the string.
      */
-    private String value;
+    private final String value;
 
-    private boolean isTagString;
+    private final boolean isTagString;
 
     /**
      * Constructor that sets the value of the string.

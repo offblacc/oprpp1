@@ -1,17 +1,15 @@
 package hr.fer.oprpp1.custom.scripting.parser;
 
-import static org.junit.jupiter.api.Assertions.*;
+import hr.fer.oprpp1.custom.scripting.elems.ElementConstantInteger;
+import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
+import hr.fer.oprpp1.custom.scripting.nodes.ForLoopNode;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-
-import hr.fer.oprpp1.custom.scripting.elems.ElementConstantInteger;
-import hr.fer.oprpp1.custom.scripting.elems.ElementVariable;
-import hr.fer.oprpp1.custom.scripting.nodes.ForLoopNode;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SmartScriptParserTest {
     private String readExample(int n) {
@@ -19,8 +17,7 @@ public class SmartScriptParserTest {
             if (is == null)
                 throw new RuntimeException("Datoteka extra/primjer" + n + ".txt je nedostupna.");
             byte[] data = is.readAllBytes();
-            String text = new String(data, StandardCharsets.UTF_8);
-            return text;
+            return new String(data, StandardCharsets.UTF_8);
         } catch (IOException ex) {
             throw new RuntimeException("Greška pri čitanju datoteke.", ex);
         }
@@ -321,11 +318,8 @@ public class SmartScriptParserTest {
                 .equals(new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode()));
     }
 
-    @Test
-    public void testInvalidTagEscape() {
-    }
-
     // --- different combinations of whitespaces inside tags testing ---
+    @Test
     public void testVariousWhitespaceCombinations() {
         String docBody = "{$FOR i\"1\"\"10\"\"1\"$} text {$END$}{$=i\"0.000\"@sin$}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
@@ -462,6 +456,48 @@ public class SmartScriptParserTest {
     @Test
     public void testEchoWithAllRandomOperators() {
         String docBody = "{$= i i * / - + ^ \"0.000\" @sin $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testNewlineInString() {
+        String docBody = "{$= \"\n\" $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testNewlineInString2() {
+        String docBody = "{$= \"\\n\" $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testCarriageReturnInString() {
+        String docBody = "{$= \"\r\" $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testCarriageReturnInString2() {
+        String docBody = "{$= \"\\r\" $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testTabInString() {
+        String docBody = "{$= \"\t\" $}";
+        SmartScriptParser parser = new SmartScriptParser(docBody);
+        assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
+    }
+
+    @Test
+    public void testTabInString2() {
+        String docBody = "{$= \"\\t\" $}";
         SmartScriptParser parser = new SmartScriptParser(docBody);
         assertEquals(parser.getDocumentNode(), new SmartScriptParser(parser.getDocumentNode().toString()).getDocumentNode());
     }
