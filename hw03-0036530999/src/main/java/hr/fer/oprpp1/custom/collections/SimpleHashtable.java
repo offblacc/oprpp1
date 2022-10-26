@@ -1,11 +1,12 @@
 package hr.fer.oprpp1.custom.collections;
 
 import java.lang.Math;
+import java.util.Iterator;
 
 /**
  * A simple hashtable implementation.
  */
-public class SimpleHashtable<K, V> {
+public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntry<K,V>> {
     /**
      * Slots in the hashtable.
      */
@@ -78,6 +79,15 @@ public class SimpleHashtable<K, V> {
         }
 
         TableEntry<K, V> entry = table[pos];
+        
+        // checks the first in the slot
+        if (entry.key.equals(key)) {
+            V oldValue = entry.value;
+            entry.value = value;
+            return oldValue;
+        }
+
+        // goes down the linked list in the slot
         while (entry.next != null) {
             if (entry.key.equals(key)) {
                 V oldValue = entry.value;
@@ -177,7 +187,7 @@ public class SimpleHashtable<K, V> {
             for (int i = 0; i < table.length; i++) {
                 entry = table[i];
                 while (entry != null) {
-                    if (entry.getValue().equals(value)) {
+                    if (entry.getValue() != null && entry.getValue().equals(value)) {
                         return true;
                     }
                     entry = entry.next;
@@ -207,13 +217,19 @@ public class SimpleHashtable<K, V> {
         }
 
         TableEntry<K, V> entry = table[pos];
-        while (entry.next != null) {
-            if (entry.next.key == key) {
-                V oldValue = entry.next.value;
-                entry.next = entry.next.next;
+        TableEntry<K, V> prevEntry = null;
+        while (entry != null) {
+            if (entry.key.equals(key)) {
+                V oldValue = entry.value;
+                if (prevEntry == null) {
+                    table[pos] = entry.next;
+                } else {
+                    prevEntry.next = entry.next;
+                }
                 size--;
                 return oldValue;
             }
+            prevEntry = entry;
             entry = entry.next;
         }
         return null;
@@ -232,6 +248,7 @@ public class SimpleHashtable<K, V> {
         for (int i = 0; i < table.length; i++) {
             table[i] = null;
         }
+        size = 0;
     }
 
     @Override
@@ -299,6 +316,18 @@ public class SimpleHashtable<K, V> {
         table = newTable;
     }
 
+    @Override
+    public Iterator<TableEntry<K, V>> iterator() {
+        return new IteratorImpl();
+        return null;
+    }
+
+    private class IteratorImpl implements Iterator<SimpleHashtable.TableEntry<K,V>> {
+        boolean hasNext() { … }
+        SimpleHashtable.TableEntry next() { … }
+        void remove() { … }
+        }
+
     /**
      * Slot in the hashtable. Each slot can contain multiple elements - a linked
      * list.
@@ -346,4 +375,8 @@ public class SimpleHashtable<K, V> {
             this.value = value;
         }
     }
+
+    
+
+
 }
