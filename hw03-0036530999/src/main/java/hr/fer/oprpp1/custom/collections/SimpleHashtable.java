@@ -21,6 +21,11 @@ public class SimpleHashtable<K, V> {
     private static final int DEFAULT_CAPACITY = 16;
 
     /**
+     * The default load factor of the hashtable.
+     */
+    private static final double DEFAULT_LOAD_FACTOR = 0.75;
+
+    /**
      * Constructs a new hashtable with the default capacity.
      */
     public SimpleHashtable() {
@@ -40,7 +45,8 @@ public class SimpleHashtable<K, V> {
             throw new IllegalArgumentException("Capacity must be greater than 0.");
         }
 
-        table = (TableEntry<K, V>[]) new Object[((int) Math.pow(2, Math.ceil(Math.log(capacity) / Math.log(2))))];
+
+        table = new TableEntry[((int) Math.pow(2, Math.ceil(Math.log(capacity) / Math.log(2))))];
     }
 
     /**
@@ -57,6 +63,10 @@ public class SimpleHashtable<K, V> {
     public V put(K key, V value) {
         if (key == null) {
             throw new NullPointerException("The key can't be null!");
+        }
+
+        if (size / table.length >= DEFAULT_LOAD_FACTOR) {
+            resize();
         }
 
         int pos = Math.abs(key.hashCode()) % table.length;
@@ -211,13 +221,18 @@ public class SimpleHashtable<K, V> {
 
     /**
      * Returns true if the hashtable is empty, false otherwise.
+     * 
      * @return - true if the hashtable is empty, false otherwise
      */
     public boolean isEmpty() {
         return size == 0;
     }
 
-    // TODO nema clear?
+    public void clear() {
+        for (int i = 0; i < table.length; i++) {
+            table[i] = null;
+        }
+    }
 
     @Override
     public String toString() {
@@ -237,6 +252,14 @@ public class SimpleHashtable<K, V> {
         return sb.toString();
     }
 
+    /**
+     * Returns an array of entries in the hashtable. The array is of type
+     * TableEntry<K, V> and the length of the array is the number of entries in
+     * the hashtable. The order of the entries is by slots, and for each slot the
+     * order is the same as the order in which the entries were added.
+     * 
+     * @return - an array of entries in the hashtable
+     */
     @SuppressWarnings("unchecked")
     public TableEntry<K, V>[] toArray() {
         TableEntry<K, V>[] array = (TableEntry<K, V>[]) new TableEntry[size];
@@ -251,6 +274,30 @@ public class SimpleHashtable<K, V> {
         return array;
     }
 
+    /**
+     * Doubles the size of the hashtable and rehashes all the entries.
+     */
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        TableEntry<K, V>[] newTable = (TableEntry<K, V>[]) new TableEntry[2 * table.length];
+        TableEntry<K, V>[] entries = toArray();
+
+        for (var entry : entries) {
+            int index = Math.abs(entry.key.hashCode() % newTable.length);
+            TableEntry<K, V> entryWalker = newTable[index];
+            if (entryWalker == null) {
+                newTable[index] = entry;
+                entry.next = null;
+            } else {
+                while (entryWalker.next != null) {
+                    entryWalker = entryWalker.next;
+                }
+                entryWalker.next = entry;
+                entry.next = null;
+            }
+        }
+        table = newTable;
+    }
 
     /**
      * Slot in the hashtable. Each slot can contain multiple elements - a linked
