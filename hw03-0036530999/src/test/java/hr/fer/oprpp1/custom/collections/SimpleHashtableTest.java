@@ -2,6 +2,10 @@ package hr.fer.oprpp1.custom.collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import org.junit.jupiter.api.Test;
 
 public class SimpleHashtableTest {
@@ -239,14 +243,157 @@ public class SimpleHashtableTest {
     public void testFromPDF2() {
         // create collection:
         SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>(2);
-        
+
         examMarks.put("Ivana", 2);
         examMarks.put("Ante", 2);
         examMarks.put("Jasna", 2);
         examMarks.put("Kristina", 5);
         examMarks.put("Ivana", 5); // overwrites old grade for Ivana
+        StringBuilder sb = new StringBuilder();
         for (SimpleHashtable.TableEntry<String, Integer> pair : examMarks) {
-            System.out.printf("%s => %d%n", pair.getKey(), pair.getValue());
+            sb.append(pair.getKey()).append(" => ").append(pair.getValue()).append('\n');
         }
+        assertEquals("Ante => 2\nIvana => 5\nJasna => 2\nKristina => 5", sb.toString().trim());
+    }
+
+    @Test
+    public void testIteratorLargeTable() { // large number of entries -> surely more than one slot and some filled slots
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>(2);
+        for (int i = 0; i < 10000; i++) {
+            examMarks.put("Ivana" + i, i + 1);
+        }
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        int sum = 0;
+        int count = 0;
+        while (iterator.hasNext()) {
+            SimpleHashtable.TableEntry<String, Integer> pair = iterator.next();
+            sum += pair.getValue();
+            count++;
+        }
+        assertFalse(iterator.hasNext());
+        assertEquals(10000, count);
+        assertEquals(50005000, sum);
+    }
+
+    @Test
+    public void testIteratorRemove() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 3);
+        examMarks.put("Jasna", 4);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        assertThrows(IllegalStateException.class, () -> iterator.remove());
+        var cur = iterator.next();
+        iterator.remove();
+        assertEquals(2, examMarks.size());
+        assertFalse(examMarks.containsKey(cur.getKey()));
+        assertThrows(IllegalStateException.class, () -> iterator.remove());
+
+        cur = iterator.next();
+        iterator.remove();
+        assertEquals(1, examMarks.size());
+        assertFalse(examMarks.containsKey(cur.getKey()));
+        assertThrows(IllegalStateException.class, () -> iterator.remove());
+
+        cur = iterator.next();
+        iterator.remove();
+        assertEquals(0, examMarks.size());
+        assertFalse(examMarks.containsKey(cur.getKey()));
+        assertThrows(IllegalStateException.class, () -> iterator.remove());
+
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void testIteratorRemove2() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 3);
+        examMarks.put("Jasna", 4);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        iterator.next();
+        iterator.next();
+        iterator.remove();
+        iterator.next();
+        iterator.remove();
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void testIteratorRemove3() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 3);
+        examMarks.put("Jasna", 4);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        iterator.next();
+        iterator.next();
+        iterator.next();
+        iterator.remove();
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void testIteratorRemove4() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        iterator.next();
+        assertThrows(NoSuchElementException.class, () -> iterator.next());
+        iterator.remove();
+        assertFalse(iterator.hasNext());
+        assertThrows(NoSuchElementException.class, () -> iterator.next());
+    }
+
+    @Test
+    public void testConcurrentModificationException() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 3);
+        examMarks.put("Jasna", 4);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        iterator.next();
+        iterator.next();
+        examMarks.put("Kristina", 5);
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
+    }
+
+    @Test
+    public void testConcurrentModificationException2() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 3);
+        examMarks.put("Jasna", 4);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        iterator.next();
+        iterator.next();
+        examMarks.remove("Ante");
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
+    }
+
+    @Test
+    public void testConcurrentModificationException3() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 3);
+        examMarks.put("Jasna", 4);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        iterator.next();
+        iterator.next();
+        iterator.remove();
+        iterator.next(); // should not throw exception -> test passed if no exception thrown
+    }
+
+    @Test
+    public void testConcurrentModificationException4() {
+        SimpleHashtable<String, Integer> examMarks = new SimpleHashtable<>();
+        examMarks.put("Ivana", 2);
+        examMarks.put("Ante", 3);
+        examMarks.put("Jasna", 4);
+        Iterator<SimpleHashtable.TableEntry<String, Integer>> iterator = examMarks.iterator();
+        iterator.next();
+        iterator.next();
+        examMarks.clear();
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
     }
 }

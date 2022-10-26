@@ -1,12 +1,14 @@
 package hr.fer.oprpp1.custom.collections;
 
 import java.lang.Math;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A simple hashtable implementation.
  */
-public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntry<K,V>> {
+public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntry<K, V>> {
     /**
      * Slots in the hashtable.
      */
@@ -15,6 +17,11 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
      * Number of elements in the hashtable.
      */
     int size;
+
+    /**
+     * Number of modifications made to the hashtable.
+     */
+    private int modificationCount = 0;
 
     /**
      * The default capacity of the hashtable.
@@ -46,7 +53,6 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             throw new IllegalArgumentException("Capacity must be greater than 0.");
         }
 
-
         table = new TableEntry[((int) Math.pow(2, Math.ceil(Math.log(capacity) / Math.log(2))))];
     }
 
@@ -75,15 +81,17 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
         if (table[pos] == null) {
             table[pos] = new TableEntry<K, V>(key, value);
             size++;
+            modificationCount++;
             return null;
         }
 
         TableEntry<K, V> entry = table[pos];
-        
+
         // checks the first in the slot
         if (entry.key.equals(key)) {
             V oldValue = entry.value;
             entry.value = value;
+            modificationCount++;
             return oldValue;
         }
 
@@ -92,11 +100,13 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             if (entry.key.equals(key)) {
                 V oldValue = entry.value;
                 entry.value = value;
+                modificationCount++;
                 return oldValue;
             }
             entry = entry.next;
         }
         entry.next = new TableEntry<K, V>(key, value);
+        modificationCount++;
         size++;
         return null;
     }
@@ -223,10 +233,11 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
                 V oldValue = entry.value;
                 if (prevEntry == null) {
                     table[pos] = entry.next;
-                } else {
+                } else if (prevEntry != null) {
                     prevEntry.next = entry.next;
                 }
                 size--;
+                modificationCount++;
                 return oldValue;
             }
             prevEntry = entry;
@@ -249,6 +260,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             table[i] = null;
         }
         size = 0;
+        modificationCount++;
     }
 
     @Override
@@ -318,15 +330,127 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
 
     @Override
     public Iterator<TableEntry<K, V>> iterator() {
-        return new IteratorImpl();
-        return null;
+        return new IteratorImpl(modificationCount);
     }
 
-    private class IteratorImpl implements Iterator<SimpleHashtable.TableEntry<K,V>> {
-        boolean hasNext() { … }
-        SimpleHashtable.TableEntry next() { … }
-        void remove() { … }
+    /**
+     * Iterator implementation for the SimpleHashtable class.
+     */
+    private class IteratorImpl implements Iterator<SimpleHashtable.TableEntry<K, V>> {
+        /**
+         * Keeps track of how many objects have been iterated over. Used to determine if
+         * all elements
+         * have been iterated over.
+         */
+        int no_iterated = 0;
+
+        /**
+         * Keeps track of the current slot in the table during the iteration.
+         */
+        int current_slot;
+
+        /**
+         * Keeps track of the current entry in the table during the iteration.
+         */
+        TableEntry<K, V> current_entry;
+
+        /**
+         * Reference to the previously iterated-over entry. Used when removing entries
+         * to re-link the list in a particular slot.
+         */
+        TableEntry<K, V> prev_entry;
+
+        /**
+         * Keeps track whether the table has been modified since the last next() call,
+         * as
+         * only one remove call is allowed per one next() call.
+         */
+        boolean removedThisIteration = false;
+
+        /**
+         * Keeps track of the modification count of the table at the time of the
+         * iterator
+         * creation.
+         */
+        private int savedModificationCount;
+
+        private IteratorImpl(int modificationCount) {
+            savedModificationCount = modificationCount;
         }
+
+        /**
+         * Returns true if the iteration has more elements, false otherwise.
+         */
+        public boolean hasNext() {
+            if (savedModificationCount != modificationCount) {
+                throw new ConcurrentModificationException("The hashtable was modified!");
+            }
+            return no_iterated < size; // size == SimpleHashtable.this.size
+        }
+
+        /**
+         * Returns the next element in the iteration.
+         * Throws NoSuchElementException if the iteration has no more elements.
+         * 
+         * @return - the next element in the iteration
+         * @throws NoSuchElementException - if the iteration has no more elements
+         */
+        @SuppressWarnings("rawtypes")
+        public SimpleHashtable.TableEntry next() {
+            if (savedModificationCount != modificationCount) {
+                throw new ConcurrentModificationException("The hashtable was modified!");
+            }
+            removedThisIteration = false;
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            if (current_entry == null) {
+                while (current_slot < table.length && table[current_slot] == null) {
+                    current_slot++;
+                }
+                prev_entry = current_entry;
+                current_entry = table[current_slot];
+            } else {
+                prev_entry = current_entry;
+                current_entry = current_entry.next;
+                if (current_entry == null) {
+                    current_slot++;
+                    while (current_slot < table.length && table[current_slot] == null) {
+                        current_slot++;
+                    }
+                    current_entry = table[current_slot];
+                    prev_entry = current_entry;
+                }
+            }
+            no_iterated++;
+            return current_entry;
+        }
+
+        /**
+         * Removes the last element returned by this iterator from the hashtable, making
+         * sure that the iterator is not left in an invalid state, essentially making
+         * sure the iterator doesn't break, by doing a controlled remove. The method can
+         * be called only once per call to next(). The method throws
+         * IllegalStateException if the next method has not yet been called, or the
+         * remove method has already been called after the last call to the next method.
+         * 
+         * @throws IllegalStateException - if the next method has not yet been called,
+         *                               or the remove method has already been called
+         */
+        public void remove() {
+            if (current_entry == null) {
+                throw new IllegalStateException("next() hasn't been called yet, nothing to remove");
+            }
+            if (removedThisIteration) {
+                throw new IllegalStateException("remove() has already been called this iteration");
+            }
+            SimpleHashtable.this.remove(current_entry.key);
+            savedModificationCount++;
+            current_entry = prev_entry;
+            removedThisIteration = true;
+            no_iterated--;
+        }
+    }
 
     /**
      * Slot in the hashtable. Each slot can contain multiple elements - a linked
@@ -375,8 +499,4 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             this.value = value;
         }
     }
-
-    
-
-
 }
