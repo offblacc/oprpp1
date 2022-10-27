@@ -19,7 +19,7 @@ public class CollectionTest {
         col2.add(3);
         col2.add(4);
         col2.add(5);
-        col.addAllSatisfying(col2, o -> (int) o % 2 == 0);
+        col.addAllSatisfying(col2, o -> o % 2 == 0);
         assertEquals(7, col.size());
         assertEquals(2, col.get(5));
         assertEquals(4, col.get(6));

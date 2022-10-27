@@ -12,7 +12,7 @@ public interface List<T> extends Collection<T> {
      * @param index - index of the object to be returned
      * @return object at the requested index
      */
-    public T get(int index);
+    T get(int index);
 
     /**
      * Inserts value at the given position in the collection. Element that was
@@ -25,7 +25,7 @@ public interface List<T> extends Collection<T> {
      * @throws NullPointerException      if the passed value is null
      * @throws IndexOutOfBoundsException if position is not between 0 and size
      */
-    public void insert(T value, int position);
+    void insert(T value, int position);
 
     /**
      * Searches the collection and returns the index of the first occurrence of the
@@ -35,7 +35,7 @@ public interface List<T> extends Collection<T> {
      * @return index of the first occurrence of the value or -1 if the value is not
      *         found
      */
-    public int indexOf(T value);
+    int indexOf(T value);
 
     /**
      * Removes element at specified index from collection. Element that was
@@ -46,5 +46,5 @@ public interface List<T> extends Collection<T> {
      * @param index - index of the element to be removed
      * @throws IndexOutOfBoundsException if index is not between 0 and size - 1
      */
-    public void remove(int index);
+    void remove(int index);
 }

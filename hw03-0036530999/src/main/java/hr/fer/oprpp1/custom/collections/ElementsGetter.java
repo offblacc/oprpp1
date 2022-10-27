@@ -15,7 +15,7 @@ public interface ElementsGetter<T> {
      * @return true if the collection contains at least one more element, false
      *         otherwise.
      */
-    public boolean hasNextElement();
+    boolean hasNextElement();
 
     /**
      * Returns the next element in the collection.
@@ -25,7 +25,7 @@ public interface ElementsGetter<T> {
      *                                but the next one was requested by calling this
      *                                method.
      */
-    public T getNextElement();
+    T getNextElement();
 
     /**
      * Processes all remaining elements in the collection by calling the process
@@ -34,7 +34,7 @@ public interface ElementsGetter<T> {
      * @param p - processor that will process each element of the collection,
      *          defined by the user.
      */
-    public default void processRemaining(Processor<T> p) {
+    default void processRemaining(Processor<T> p) {
         while (hasNextElement()) {
             p.process(getNextElement());
         }

@@ -72,7 +72,7 @@ public class LinkedListIndexedCollection<T> implements List<T> {
         if (value == null)
             throw new NullPointerException();
 
-        ListNode<T> newNode = new ListNode<T>(value);
+        ListNode<T> newNode = new ListNode<>(value);
         if (first == null) {
             first = newNode;
         } else {
@@ -108,7 +108,7 @@ public class LinkedListIndexedCollection<T> implements List<T> {
             return;
         }
 
-        ListNode<T> newNode = new ListNode<T>(value);
+        ListNode<T> newNode = new ListNode<>(value);
         for (ListNode<T> node = first; node != null; node = node.next) {
             if (position == 0) {
                 newNode.next = node;
@@ -252,6 +252,7 @@ public class LinkedListIndexedCollection<T> implements List<T> {
      * @return array of objects from this collection.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public T[] toArray() {
         T[] arr = (T[]) new Object[size];
         ListNode<T> node = first;
@@ -378,7 +379,7 @@ public class LinkedListIndexedCollection<T> implements List<T> {
          * @param first - first node in the list.
          */
         private LinkedListElementsGetter(LinkedListIndexedCollection<T> col, ListNode<T> first, int modificationCount) {
-            node = new ListNode<T>(null, first, null);
+            node = new ListNode<>(null, first, null);
             savedModificationCount = modificationCount;
             this.col = col;
         }
@@ -429,6 +430,6 @@ public class LinkedListIndexedCollection<T> implements List<T> {
      */
     @Override
     public ElementsGetter<T> createElementsGetter() {
-        return new LinkedListElementsGetter<T>(this, first, modificationCount);
+        return new LinkedListElementsGetter<>(this, first, modificationCount);
     }
 }

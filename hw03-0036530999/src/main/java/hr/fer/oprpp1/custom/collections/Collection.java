@@ -9,7 +9,7 @@ public interface Collection<T> {
      *
      * @return true if the collection has no objects stored, false otherwise.
      */
-    public default boolean isEmpty() {
+    default boolean isEmpty() {
         return this.size() == 0;
     }
 
@@ -18,14 +18,14 @@ public interface Collection<T> {
      * 
      * @return the number of currently stored objects.
      */
-    public int size();
+    int size();
 
     /**
      * Adds the given object into this collection.
      * 
      * @param value - value to be added to the collection.
      */
-    public void add(T value);
+    void add(T value);
 
     /**
      * Checks whether the collection contains the given object.
@@ -33,7 +33,7 @@ public interface Collection<T> {
      * @param value - value to be checked if it is in the collection.
      * @return true if the collection contains the given value, false otherwise.
      */
-    public boolean contains(T value);
+    boolean contains(T value);
 
     /**
      * Removes the first occurrence of the given object from the collection.
@@ -41,14 +41,14 @@ public interface Collection<T> {
      * @param value - value to be removed from the collection.
      * @return true if the collection contains the given value, false otherwise.
      */
-    public boolean remove(T value);
+    boolean remove(T value);
 
     /**
      * Converts the collection into a T array.
      * 
      * @return an array of objects that are currently in the collection.
      */
-    public T[] toArray();
+    T[] toArray();
 
     /**
      * Calls the processor's process method for each element of this collection.
@@ -56,7 +56,7 @@ public interface Collection<T> {
      * @param processor - processor that will process each element of the
      *                  collection, defined by the user.
      */
-    public default void forEach(Processor<? super T> processor) {
+    default void forEach(Processor<? super T> processor) {
         ElementsGetter<T> eg = this.createElementsGetter();
         while (eg.hasNextElement()) {
             processor.process(eg.getNextElement());
@@ -70,8 +70,7 @@ public interface Collection<T> {
      * @param other - collection from which all elements will be added to the
      *              current collection. Collection other is not changed.
      */
-    public default void addAll(Collection<? extends T> other) {
-        // TODO make sure this is right
+    default void addAll(Collection<? extends T> other) {
         class LocalProcessor implements Processor<T> {
             public void process(T value) {
                 add(value);
@@ -83,14 +82,14 @@ public interface Collection<T> {
     /**
      * Empties the collection.
      */
-    public void clear();
+    void clear();
 
     /**
      * Creates and returns an ElementsGetter object for this collection.
      * 
      * @return an ElementsGetter object for this collection.
      */
-    public ElementsGetter<T> createElementsGetter();
+    ElementsGetter<T> createElementsGetter();
 
     /**
      * Adds all elements from another collection that satisfy tester's test to the
@@ -101,7 +100,7 @@ public interface Collection<T> {
      * @param tester - Tester object whose test method gets called and determines
      *               whether an object from col is added to the calling method.
      */
-    public default void addAllSatisfying(Collection<? extends T> col, Tester<T> tester) {
+    default void addAllSatisfying(Collection<? extends T> col, Tester<T> tester) {
         ElementsGetter<? extends T> eg = col.createElementsGetter();
         while (eg.hasNextElement()) {
             T elem = eg.getNextElement();

@@ -15,7 +15,7 @@ public class LinkedListIndexedCollectionTest {
     public void testConstructorWithCollectionContainingValues() {
         var col1 = new LinkedListIndexedCollection<Integer>();
         col1.add(2);
-        var col = new LinkedListIndexedCollection<Integer>(col1);
+        var col = new LinkedListIndexedCollection<>(col1);
         assertAll(
                 () -> assertEquals(1, col.size()),
                 () -> assertEquals(2, col.get(0)));
@@ -26,7 +26,7 @@ public class LinkedListIndexedCollectionTest {
     public void testConstructorWithArrayContainingValues() {
         var col1 = new ArrayIndexedCollection<Integer>();
         col1.add(2);
-        var col = new LinkedListIndexedCollection<Integer>(col1);
+        var col = new LinkedListIndexedCollection<>(col1);
         assertAll(
                 () -> assertEquals(1, col.size()),
                 () -> assertEquals(2, col.get(0)));
@@ -265,5 +265,37 @@ public class LinkedListIndexedCollectionTest {
         assertThrows(IndexOutOfBoundsException.class, () -> {
             col.get(1);
         });
+    }
+
+    @Test
+    public void testGenerics() {
+        LinkedListIndexedCollection<Object> col = new LinkedListIndexedCollection<>();
+        col.add(1);
+        col.add("2");
+        col.add(3.0);
+        assertAll(
+                () -> assertEquals(1, col.get(0)),
+                () -> assertEquals("2", col.get(1)),
+                () -> assertEquals(3.0, col.get(2)));
+    }
+
+    @Test
+    public void testGenerics2() {
+        LinkedListIndexedCollection<Object> col = new LinkedListIndexedCollection<>();
+        col.add(1);
+        col.add("2");
+        col.add(3.0);
+        LinkedListIndexedCollection<Object> col2 = new LinkedListIndexedCollection<>();
+        col2.add(4);
+        col2.add("5");
+        col2.add(6.0);
+        col.addAll(col2);
+        assertAll(
+                () -> assertEquals(1, col.get(0)),
+                () -> assertEquals("2", col.get(1)),
+                () -> assertEquals(3.0, col.get(2)),
+                () -> assertEquals(4, col.get(3)),
+                () -> assertEquals("5", col.get(4)),
+                () -> assertEquals(6.0, col.get(5)));
     }
 }
