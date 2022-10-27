@@ -9,7 +9,7 @@ public class Dictionary<K, V> {
     /**
      * The underlying collection that stores the key-value pairs.
      */
-    ArrayIndexedCollection<Entry<K, V>> col;
+    final ArrayIndexedCollection<Entry<K, V>> col;
 
     /**
      * Creates a new dictionary.
@@ -61,7 +61,7 @@ public class Dictionary<K, V> {
                 return oldValue;
             }
         }
-        col.add(new Entry<K, V>(key, value));
+        col.add(new Entry<>(key, value));
         return value;
     }
 
@@ -85,8 +85,8 @@ public class Dictionary<K, V> {
      * Removes the value of the entry with the given key and returns it's value. If 
      * the key is not in the dictionary, null is returned. Be careful as the value of
      * an entry can also be null, so you cannot be sure if the key existed or not.
-     * @param key
-     * @return
+     * @param key - the key of the entry
+     * @return the value of the entry with the given key before removing it
      */
     public V remove(K key) {
         for (int i = 0; i < col.size(); i++) {
@@ -106,7 +106,7 @@ public class Dictionary<K, V> {
         /**
          * The key of the entry.
          */
-        K key;
+        final K key;
         /**
          * The value of the entry.
          */

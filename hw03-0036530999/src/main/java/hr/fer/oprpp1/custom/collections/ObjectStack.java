@@ -8,13 +8,13 @@ public class ObjectStack<T> {
     /**
      * ArrayIndexedCollection used to store the elements of the stack.
      */
-    ArrayIndexedCollection<T> array;
+    final ArrayIndexedCollection<T> array;
 
     /**
      * Default constructor. Creates an empty stack.
      */
     public ObjectStack() {
-        array = new ArrayIndexedCollection<T>();
+        array = new ArrayIndexedCollection<>();
     }
 
     /**

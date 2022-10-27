@@ -7,5 +7,5 @@ public interface Tester<T> {
      * @param obj - object to be tested.
      * @return true if the object passes the test, false otherwise.
      */
-    public boolean test(T obj);    
+    boolean test(T obj);
 }

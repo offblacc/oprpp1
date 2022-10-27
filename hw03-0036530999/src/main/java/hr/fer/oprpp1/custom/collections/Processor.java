@@ -10,5 +10,5 @@ public interface Processor<T> {
      *  
      * @param value - object to be processed.
      */
-    public void process(T value);
+    void process(T value);
 }

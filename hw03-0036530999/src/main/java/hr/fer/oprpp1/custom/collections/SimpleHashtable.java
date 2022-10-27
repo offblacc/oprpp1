@@ -47,7 +47,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
      * @throws IllegalArgumentException if the capacity is less than 1
      */
     @SuppressWarnings("unchecked")
-    public SimpleHashtable(int capacity) { // TODO check supressed warning
+    public SimpleHashtable(int capacity) {
         size = 0;
         if (capacity < 1) {
             throw new IllegalArgumentException("Capacity must be greater than 0.");
@@ -79,7 +79,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
         int pos = Math.abs(key.hashCode()) % table.length;
 
         if (table[pos] == null) {
-            table[pos] = new TableEntry<K, V>(key, value);
+            table[pos] = new TableEntry<>(key, value);
             size++;
             modificationCount++;
             return null;
@@ -105,7 +105,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             }
             entry = entry.next;
         }
-        entry.next = new TableEntry<K, V>(key, value);
+        entry.next = new TableEntry<>(key, value);
         modificationCount++;
         size++;
         return null;
@@ -114,7 +114,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
     /**
      * Returns the value of the entry with the given key. If the key doesn't exist
      * returns null. The given key can't be null, otherwise NullPointerException
-     * will be thrown. Be careful, if the value is null this will also returns null,
+     * will be thrown. Be careful, if the value is null this will also return null,
      * as it is the value.
      * 
      * @param key - the key of the entry
@@ -184,8 +184,8 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
         boolean searchNull = (value == null);
         TableEntry<K, V> entry;
         if (searchNull) {
-            for (int i = 0; i < table.length; i++) {
-                entry = table[i];
+            for (TableEntry<K, V> kvTableEntry : table) {
+                entry = kvTableEntry;
                 while (entry != null) {
                     if (entry.getValue() == value) {
                         return true;
@@ -194,8 +194,8 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
                 }
             }
         } else {
-            for (int i = 0; i < table.length; i++) {
-                entry = table[i];
+            for (TableEntry<K, V> kvTableEntry : table) {
+                entry = kvTableEntry;
                 while (entry != null) {
                     if (entry.getValue() != null && entry.getValue().equals(value)) {
                         return true;
@@ -267,8 +267,8 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for (int i = 0; i < table.length; i++) {
-            TableEntry<K, V> entry = table[i];
+        for (TableEntry<K, V> kvTableEntry : table) {
+            TableEntry<K, V> entry = kvTableEntry;
             while (entry != null) {
                 sb.append(entry.key).append("=").append(entry.value).append(", ");
                 entry = entry.next;
@@ -293,8 +293,8 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
     public TableEntry<K, V>[] toArray() {
         TableEntry<K, V>[] array = (TableEntry<K, V>[]) new TableEntry[size];
         int index = 0;
-        for (int i = 0; i < table.length; i++) {
-            TableEntry<K, V> entry = table[i];
+        for (TableEntry<K, V> kvTableEntry : table) {
+            TableEntry<K, V> entry = kvTableEntry;
             while (entry != null) {
                 array[index++] = entry;
                 entry = entry.next;
@@ -316,14 +316,13 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
             TableEntry<K, V> entryWalker = newTable[index];
             if (entryWalker == null) {
                 newTable[index] = entry;
-                entry.next = null;
             } else {
                 while (entryWalker.next != null) {
                     entryWalker = entryWalker.next;
                 }
                 entryWalker.next = entry;
-                entry.next = null;
             }
+            entry.next = null;
         }
         table = newTable;
     }
@@ -395,7 +394,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
          * @return - the next element in the iteration
          * @throws NoSuchElementException - if the iteration has no more elements
          */
-        @SuppressWarnings("rawtypes")
+        @SuppressWarnings({"rawtypes", "unchecked"})
         public SimpleHashtable.TableEntry next() {
             if (savedModificationCount != modificationCount) {
                 throw new ConcurrentModificationException("The hashtable was modified!");
@@ -457,7 +456,7 @@ public class SimpleHashtable<K, V> implements Iterable<SimpleHashtable.TableEntr
      * list.
      */
     public static class TableEntry<K, V> {
-        private K key;
+        private final K key;
         private V value;
         private TableEntry<K, V> next;
 

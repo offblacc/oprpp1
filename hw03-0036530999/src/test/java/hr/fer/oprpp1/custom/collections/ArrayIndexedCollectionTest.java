@@ -22,7 +22,7 @@ public class ArrayIndexedCollectionTest {
     public void testConstructorWithCollectionContainingValuesAndInitialCapacity() {
         var col1 = new ArrayIndexedCollection<Integer>(2);
         col1.add(2);
-        var col = new ArrayIndexedCollection<Integer>(col1);
+        var col = new ArrayIndexedCollection<>(col1);
         assertAll(
                 () -> assertEquals(1, col.size()),
                 () -> assertEquals(2, col.get(0)));
@@ -33,7 +33,7 @@ public class ArrayIndexedCollectionTest {
     public void testConstructorWithLinkedListContainingValues() {
         var col1 = new LinkedListIndexedCollection<Integer>();
         col1.add(2);
-        var col = new ArrayIndexedCollection<Integer>(col1);
+        var col = new ArrayIndexedCollection<>(col1);
         assertAll(
                 () -> assertEquals(1, col.size()),
                 () -> assertEquals(2, col.get(0)));
@@ -43,7 +43,7 @@ public class ArrayIndexedCollectionTest {
     @Test
     public void testConstructorWithEmptyLinkedList() {
         var col1 = new LinkedListIndexedCollection<Integer>();
-        var col2 = new ArrayIndexedCollection<Integer>(col1);
+        var col2 = new ArrayIndexedCollection<>(col1);
         assertEquals(0, col2.size());
     }
 
@@ -194,6 +194,7 @@ public class ArrayIndexedCollectionTest {
                 () -> assertEquals(2, col.size()));
     }
 
+    @Test
     public void testRemoveByValue() {
         ArrayIndexedCollection<Integer> col = new ArrayIndexedCollection<>();
         col.add(1);
@@ -265,7 +266,6 @@ public class ArrayIndexedCollectionTest {
     }
 
     // if addall works, foreach works
-    // test addall
     @Test
     public void testAddAll() {
         ArrayIndexedCollection<Integer> col = new ArrayIndexedCollection<>();
@@ -297,4 +297,35 @@ public class ArrayIndexedCollectionTest {
         });
     }
 
+    @Test
+    public void testGenerics() {
+        ArrayIndexedCollection<Object> col = new ArrayIndexedCollection<>();
+        col.add(1);
+        col.add("2");
+        col.add(3.0);
+        assertAll(
+                () -> assertEquals(1, col.get(0)),
+                () -> assertEquals("2", col.get(1)),
+                () -> assertEquals(3.0, col.get(2)));
+    }
+
+    @Test
+    public void testGenerics2() {
+        ArrayIndexedCollection<Object> col = new ArrayIndexedCollection<>();
+        col.add(1);
+        col.add("2");
+        col.add(3.0);
+        ArrayIndexedCollection<Object> col2 = new ArrayIndexedCollection<>();
+        col2.add(4);
+        col2.add("5");
+        col2.add(6.0);
+        col.addAll(col2);
+        assertAll(
+                () -> assertEquals(1, col.get(0)),
+                () -> assertEquals("2", col.get(1)),
+                () -> assertEquals(3.0, col.get(2)),
+                () -> assertEquals(4, col.get(3)),
+                () -> assertEquals("5", col.get(4)),
+                () -> assertEquals(6.0, col.get(5)));
+    }
 }

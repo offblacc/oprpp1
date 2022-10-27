@@ -37,14 +37,13 @@ public class ArrayIndexedCollection<T> implements List<T> {
      * @throws IllegalArgumentException if the given initial capacity is less than
      *                                  one.
      */
-    @SuppressWarnings("unchecked") // TODO is this right?
+    @SuppressWarnings("unchecked")
     public ArrayIndexedCollection(int initialCapacity) {
         if (initialCapacity < 1) {
             throw new IllegalArgumentException("Array size should be at least 1!");
         }
 
         size = 0;
-        // set elements to T array with initialcapacity
         elements = (T[]) new Object[initialCapacity];
     }
 
@@ -72,6 +71,7 @@ public class ArrayIndexedCollection<T> implements List<T> {
      * @throws IllegalArgumentException if the given initial capacity is less than
      *                                  one.
      */
+    @SuppressWarnings("unchecked")
     public ArrayIndexedCollection(Collection<? extends T> other, int initialCapacity) { // double check this
         if (other == null) {
             throw new NullPointerException();
@@ -105,6 +105,7 @@ public class ArrayIndexedCollection<T> implements List<T> {
      * @param value - object to be added to the collection.
      * @throws NullPointerException if the given object is null.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void add(T value) {
         if (value == null) {
@@ -168,11 +169,10 @@ public class ArrayIndexedCollection<T> implements List<T> {
      * @return array of objects in the collection.
      */
     @Override
-    public T[] toArray() { // TODO myb modify this
+    @SuppressWarnings("unchecked")
+    public T[] toArray() {
         T[] arr = (T[]) new Object[size];
-        for (int i = 0; i < size; i++) {
-            arr[i] = elements[i];
-        }
+        System.arraycopy(elements, 0, arr, 0, size);
         return arr;
     }
 
@@ -266,6 +266,7 @@ public class ArrayIndexedCollection<T> implements List<T> {
      * @throws NullPointerException      if the given object is null.
      * @throws IndexOutOfBoundsException if the given position is out of bounds.
      */
+    @SuppressWarnings("unchecked")
     public void insert(T value, int position) {
         if (position < 0 || position > size) {
             throw new IndexOutOfBoundsException();
@@ -396,6 +397,6 @@ public class ArrayIndexedCollection<T> implements List<T> {
      */
     @Override
     public ElementsGetter<T> createElementsGetter() {
-        return new ArrayIndexedCollectionElementsGetter<T>(this, size, modificationCount);
+        return new ArrayIndexedCollectionElementsGetter<>(this, size, modificationCount);
     }
 }
