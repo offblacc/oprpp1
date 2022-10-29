@@ -1,7 +1,6 @@
 package hr.fer.oprpp1.hw04.db;
 
+@FunctionalInterface
 public interface IComparisonOperator {
-    public boolean satisfied(String value1, String value2) {
-        return false; // TODO implement
-    }
+    boolean satisfied(String value1, String value2);
 }
