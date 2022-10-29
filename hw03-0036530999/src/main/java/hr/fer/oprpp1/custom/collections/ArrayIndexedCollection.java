@@ -20,6 +20,11 @@ public class ArrayIndexedCollection<T> implements List<T> {
      */
     private T[] elements;
 
+    /**
+     * Keeping track of every modification of the collection, so that the iterator
+     * can throw an exception if the collection is modified while the iterator is in
+     * use.
+     */
     private int modificationCount = 0;
 
     /**
@@ -333,11 +338,14 @@ public class ArrayIndexedCollection<T> implements List<T> {
         /**
          * Constructor for the ArrayIndexedCollectionElementsGetter class.
          * 
-         * @param indexReverse - initially equal to the number of elements in the
-         *                     collection, counting down to 0. When it reaches zero we
-         *                     have iterated through all elements.
-         * @param col          - reference to collection whose elements we are iterating
-         *                     through.
+         * @param indexReverse           - initially equal to the number of elements in
+         *                               the
+         *                               collection, counting down to 0. When it reaches
+         *                               zero we
+         *                               have iterated through all elements.
+         * @param col                    - reference to collection whose elements we are
+         *                               iterating
+         *                               through.
          *
          * @param savedModificationCount - modification count of the collection instance
          *

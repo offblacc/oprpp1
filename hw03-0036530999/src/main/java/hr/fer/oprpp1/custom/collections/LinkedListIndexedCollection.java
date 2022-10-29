@@ -25,7 +25,9 @@ public class LinkedListIndexedCollection<T> implements List<T> {
     private ListNode<T> last;
 
     /**
-     * Used to check for concurrent modification.
+     * Keeping track of every modification of the collection, so that the iterator
+     * can throw an exception if the collection is modified while the iterator is in
+     * use.
      */
     private int modificationCount = 0;
 
