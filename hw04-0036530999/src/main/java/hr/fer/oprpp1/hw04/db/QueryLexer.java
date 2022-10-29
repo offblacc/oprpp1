@@ -83,7 +83,7 @@ public class QueryLexer {
             } else if (word.equals("LIKE")) {
                 return QueryTokenType.LIKE;
             }
-            throw new UnsupportedOperationException("What broke me bruh");
+            throw new QueryParserException("Invalid operator.");
         } else if (word.equals("query")) {
             return QueryTokenType.QUERYKW;
         } else if (word.startsWith("\"") && word.endsWith("\"")) {
@@ -99,8 +99,6 @@ public class QueryLexer {
             return QueryTokenType.LASTNAME;
         } else if (word.equals("firstName")) {
             return QueryTokenType.FIRSTNAME;
-        } else if (word.equals("exit")) {
-            return QueryTokenType.EXIT;
         }
         throw new UnsupportedOperationException("Could not determine token type.");
     }

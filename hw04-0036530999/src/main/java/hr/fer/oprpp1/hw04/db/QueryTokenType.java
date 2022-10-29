@@ -9,6 +9,5 @@ public enum QueryTokenType {
     STRING,
     LIKE, // LIKE
     COMPARISON_OPERATOR, // > < >= <= = !=
-    EXIT,
     EOF
 }

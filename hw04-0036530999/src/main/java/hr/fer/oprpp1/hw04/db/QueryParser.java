@@ -8,7 +8,6 @@ public class QueryParser {
     private QueryToken token;
     private boolean isDirectQuery;
     List<ConditionalExpression> expressions;
-    private boolean isExit;
 
     public QueryParser(String query) {
         lexer = new QueryLexer(query);
@@ -21,11 +20,7 @@ public class QueryParser {
         if (token.getType() == QueryTokenType.EOF) {
             throw new QueryParserException("Query is empty.");
         }
-
-        isExit = false;
-        if (token.getType() == QueryTokenType.EXIT) {
-            isExit = true;
-        }
+        
         var fieldValueGetter = resolveFieldValueGetter(token.getType());
         var comparisonOperator = resolveComparisonOperator((token = lexer.nextToken()));
         var literal = (token = lexer.nextToken()).getValue();
@@ -109,7 +104,7 @@ public class QueryParser {
             case JMBAG:
                 return FieldValueGetters.JMBAG;
             default:
-                throw new UnsupportedOperationException("Could not resolve FieldValueGetter");
+                throw new UnsupportedOperationException("Could not resolve FieldValueGetter" + typ);
         }
     }
 

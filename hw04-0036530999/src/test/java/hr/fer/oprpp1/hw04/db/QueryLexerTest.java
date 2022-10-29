@@ -80,7 +80,7 @@ public class QueryLexerTest {
 
     @Test
     public void testQuery3() {
-        String q = "query jmbag = \"0000000003\" AND lastName LIKE \"L*\" exit";
+        String q = "query jmbag = \"0000000003\" AND lastName LIKE \"L*\"";
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
@@ -114,10 +114,6 @@ public class QueryLexerTest {
         token = lexer.nextToken();
         assertEquals("L*", token.getValue());
         assertEquals(QueryTokenType.STRING, token.getType());
-
-        token = lexer.nextToken();
-        assertEquals("exit", token.getValue());
-        assertEquals(QueryTokenType.EXIT, token.getType());
 
         token = lexer.nextToken();
         assertEquals(null, token.getValue());
