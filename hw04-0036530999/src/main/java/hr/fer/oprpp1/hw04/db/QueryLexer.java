@@ -27,7 +27,8 @@ public class QueryLexer {
             return nextToken();
         }
         word = readNextWord();
-        return new QueryToken(word, determineTokenType());
+        QueryTokenType type = determineTokenType();
+        return new QueryToken(word, type);
 
     }
 
@@ -51,8 +52,18 @@ public class QueryLexer {
                 sb.append(data[currentIndex++]);
             }
             sb.append(data[currentIndex++]);
+        } else if ("<>!".indexOf(data[currentIndex]) != -1) {
+            if (data[currentIndex] == '<' || data[currentIndex] == '>') {
+                sb.append(data[currentIndex++]);
+                if (data[currentIndex] == '=') {
+                    sb.append(data[currentIndex++]);
+                }
+            } else {
+                sb.append(data[currentIndex++]);
+                sb.append(data[currentIndex++]);
+            }
         } else {
-            while (!Character.isWhitespace(data[currentIndex])) {
+            while (currentIndex < data.length && !Character.isWhitespace(data[currentIndex])) {
                 sb.append(data[currentIndex++]);
             }
         }
@@ -68,7 +79,7 @@ public class QueryLexer {
     private QueryTokenType determineTokenType() {
         if (word.length() == 1 || word.length() == 2 || word.equals("LIKE")) {
             if (!Character.isLetter(word.charAt(0))) {
-                return QueryTokenType.COMPARISION_OPERATOR;
+                return QueryTokenType.COMPARISON_OPERATOR;
             } else if (word.equals("LIKE")) {
                 return QueryTokenType.LIKE;
             }
@@ -76,10 +87,13 @@ public class QueryLexer {
         } else if (word.equals("query")) {
             return QueryTokenType.QUERYKW;
         } else if (word.startsWith("\"") && word.endsWith("\"")) {
+            // remove quotes, they were here only to make it easier to determine it's a
+            // string
+            word = word.substring(1, word.length() - 1);
             return QueryTokenType.STRING;
         } else if (word.equals("jmbag")) {
             return QueryTokenType.JMBAG;
-        } else if (word.equals("AND")) {
+        } else if (word.equalsIgnoreCase("AND")) {
             return QueryTokenType.AND;
         } else if (word.equals("lastName")) {
             return QueryTokenType.LASTNAME;

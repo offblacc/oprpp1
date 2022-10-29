@@ -1,5 +1,14 @@
 package hr.fer.oprpp1.hw04.db;
 
 public enum QueryTokenType {
-    QUERYKW, JMBAG, LASTNAME, FIRSTNAME, AND, LIKE, STRING, COMPARISION_OPERATOR, EXIT, EOF
+    QUERYKW,
+    JMBAG,
+    LASTNAME,
+    FIRSTNAME,
+    AND,
+    STRING,
+    LIKE, // LIKE
+    COMPARISON_OPERATOR, // > < >= <= = !=
+    EXIT,
+    EOF
 }

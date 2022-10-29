@@ -23,10 +23,10 @@ public class QueryLexerTest {
 
         token = lexer.nextToken();
         assertEquals("=", token.getValue());
-        assertEquals(QueryTokenType.COMPARISION_OPERATOR, token.getType());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
 
         token = lexer.nextToken();
-        assertEquals("\"0000000003\"", token.getValue());
+        assertEquals("0000000003", token.getValue());
         assertEquals(QueryTokenType.STRING, token.getType());
 
         token = lexer.nextToken();
@@ -49,10 +49,10 @@ public class QueryLexerTest {
 
         token = lexer.nextToken();
         assertEquals("=", token.getValue());
-        assertEquals(QueryTokenType.COMPARISION_OPERATOR, token.getType());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
 
         token = lexer.nextToken();
-        assertEquals("\"0000000003\"", token.getValue());
+        assertEquals("0000000003", token.getValue());
         assertEquals(QueryTokenType.STRING, token.getType());
 
         token = lexer.nextToken();
@@ -68,7 +68,7 @@ public class QueryLexerTest {
         assertEquals(QueryTokenType.LIKE, token.getType());
 
         token = lexer.nextToken();
-        assertEquals("\"B*\"", token.getValue());
+        assertEquals("B*", token.getValue());
         assertEquals(QueryTokenType.STRING, token.getType());
 
         token = lexer.nextToken();
@@ -93,10 +93,10 @@ public class QueryLexerTest {
 
         token = lexer.nextToken();
         assertEquals("=", token.getValue());
-        assertEquals(QueryTokenType.COMPARISION_OPERATOR, token.getType());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
 
         token = lexer.nextToken();
-        assertEquals("\"0000000003\"", token.getValue());
+        assertEquals("0000000003", token.getValue());
         assertEquals(QueryTokenType.STRING, token.getType());
 
         token = lexer.nextToken();
@@ -112,7 +112,7 @@ public class QueryLexerTest {
         assertEquals(QueryTokenType.LIKE, token.getType());
 
         token = lexer.nextToken();
-        assertEquals("\"L*\"", token.getValue());
+        assertEquals("L*", token.getValue());
         assertEquals(QueryTokenType.STRING, token.getType());
 
         token = lexer.nextToken();
@@ -144,7 +144,7 @@ public class QueryLexerTest {
         assertEquals(QueryTokenType.LIKE, token.getType());
 
         token = lexer.nextToken();
-        assertEquals("\"Be*\"", token.getValue());
+        assertEquals("Be*", token.getValue());
         assertEquals(QueryTokenType.STRING, token.getType());
 
         token = lexer.nextToken();
@@ -152,7 +152,173 @@ public class QueryLexerTest {
         assertEquals(QueryTokenType.EOF, token.getType());
         
         assertThrows(NoSuchElementException.class, () -> lexer.nextToken());
-
     }
 
+    @Test
+    public void testLessThan() {
+        String q = "query jmbag <\"0000000003\"";
+        QueryLexer lexer = new QueryLexer(q);
+
+        QueryToken token = lexer.nextToken();
+        assertEquals("query", token.getValue());
+        assertEquals(QueryTokenType.QUERYKW, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("jmbag", token.getValue());
+        assertEquals(QueryTokenType.JMBAG, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("<", token.getValue());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("0000000003", token.getValue());
+        assertEquals(QueryTokenType.STRING, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(null, token.getValue());
+        assertEquals(QueryTokenType.EOF, token.getType());
+        
+        assertThrows(NoSuchElementException.class, () -> lexer.nextToken());
+    }
+
+    @Test
+    public void testLessOrEqual() {
+        String q = "query jmbag <=\"0000000003\"";
+        QueryLexer lexer = new QueryLexer(q);
+
+        QueryToken token = lexer.nextToken();
+        assertEquals("query", token.getValue());
+        assertEquals(QueryTokenType.QUERYKW, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("jmbag", token.getValue());
+        assertEquals(QueryTokenType.JMBAG, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("<=", token.getValue());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("0000000003", token.getValue());
+        assertEquals(QueryTokenType.STRING, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(null, token.getValue());
+        assertEquals(QueryTokenType.EOF, token.getType());
+        
+        assertThrows(NoSuchElementException.class, () -> lexer.nextToken());
+    }
+
+    @Test
+    public void testGreaterThan() {
+        String q = "query jmbag >\"0000000003\"";
+        QueryLexer lexer = new QueryLexer(q);
+
+        QueryToken token = lexer.nextToken();
+        assertEquals("query", token.getValue());
+        assertEquals(QueryTokenType.QUERYKW, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("jmbag", token.getValue());
+        assertEquals(QueryTokenType.JMBAG, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(">", token.getValue());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("0000000003", token.getValue());
+        assertEquals(QueryTokenType.STRING, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(null, token.getValue());
+        assertEquals(QueryTokenType.EOF, token.getType());
+        
+        assertThrows(NoSuchElementException.class, () -> lexer.nextToken());
+    }
+
+    @Test
+    public void testGreaterOrEqual() {
+        String q = "query jmbag >=\"0000000003\"";
+        QueryLexer lexer = new QueryLexer(q);
+
+        QueryToken token = lexer.nextToken();
+        assertEquals("query", token.getValue());
+        assertEquals(QueryTokenType.QUERYKW, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("jmbag", token.getValue());
+        assertEquals(QueryTokenType.JMBAG, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(">=", token.getValue());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("0000000003", token.getValue());
+        assertEquals(QueryTokenType.STRING, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(null, token.getValue());
+        assertEquals(QueryTokenType.EOF, token.getType());
+        
+        assertThrows(NoSuchElementException.class, () -> lexer.nextToken());
+    }
+
+    @Test
+    public void testEqual() {
+        String q = "query jmbag =\"0000000003\"";
+        QueryLexer lexer = new QueryLexer(q);
+
+        QueryToken token = lexer.nextToken();
+        assertEquals("query", token.getValue());
+        assertEquals(QueryTokenType.QUERYKW, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("jmbag", token.getValue());
+        assertEquals(QueryTokenType.JMBAG, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("=", token.getValue());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("0000000003", token.getValue());
+        assertEquals(QueryTokenType.STRING, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(null, token.getValue());
+        assertEquals(QueryTokenType.EOF, token.getType());
+        
+        assertThrows(NoSuchElementException.class, () -> lexer.nextToken());
+    }
+
+    @Test
+    public void testNotEqual() {
+        String q = "query jmbag !=\"0000000003\"";
+        QueryLexer lexer = new QueryLexer(q);
+
+        QueryToken token = lexer.nextToken();
+        assertEquals("query", token.getValue());
+        assertEquals(QueryTokenType.QUERYKW, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("jmbag", token.getValue());
+        assertEquals(QueryTokenType.JMBAG, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("!=", token.getValue());
+        assertEquals(QueryTokenType.COMPARISON_OPERATOR, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals("0000000003", token.getValue());
+        assertEquals(QueryTokenType.STRING, token.getType());
+
+        token = lexer.nextToken();
+        assertEquals(null, token.getValue());
+        assertEquals(QueryTokenType.EOF, token.getType());
+        
+        assertThrows(NoSuchElementException.class, () -> lexer.nextToken());
+    }
 }
