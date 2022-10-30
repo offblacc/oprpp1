@@ -2,17 +2,47 @@ package hr.fer.oprpp1.hw04.db;
 
 import java.util.NoSuchElementException;
 
+/**
+ * Lexer for the simple query language. Splits the query into tokens which are
+ * then used by the QueryParser.
+ */
 public class QueryLexer {
+    /**
+     * Data to be tokenized.
+     */
     char[] data;
-    int currentIndex;
-    QueryToken currentToken;
-    String word; // current word
 
+    /**
+     * Curret position in the data array.
+     */
+    int currentIndex;
+
+    /**
+     * The last token that was generated.
+     */
+    QueryToken currentToken;
+
+    /**
+     * The value of the token that is in the process of generating.
+     */
+    String word;
+
+    /**
+     * Creates a new query lexer.
+     * 
+     * @param query - query to be tokenized
+     */
     public QueryLexer(String query) {
         data = query.toCharArray();
         currentIndex = 0;
     }
 
+    /**
+     * Returns the next token. Throws NoSuchElementException if there are no more
+     * tokens.
+     * @return the next token
+     * @throws NoSuchElementException if there are no more tokens
+     */
     public QueryToken nextToken() {
         if (currentToken != null && currentToken.getType() == QueryTokenType.EOF) {
             throw new NoSuchElementException("No more tokens.");
@@ -85,7 +115,7 @@ public class QueryLexer {
             }
             throw new QueryParserException("Invalid operator.");
         } else if (word.equals("query")) {
-            return QueryTokenType.QUERYKW;
+            return QueryTokenType.QUERYKW; // TODO get rid of this
         } else if (word.startsWith("\"") && word.endsWith("\"")) {
             // remove quotes, they were here only to make it easier to determine it's a
             // string

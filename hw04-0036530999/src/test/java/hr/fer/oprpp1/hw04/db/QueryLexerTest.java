@@ -14,10 +14,8 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
         
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+        
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -40,10 +38,9 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
+       
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -84,10 +81,9 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
+       
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -128,10 +124,9 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
+       
         assertEquals("lastName", token.getValue());
         assertEquals(QueryTokenType.LASTNAME, token.getType());
 
@@ -156,10 +151,8 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -184,10 +177,8 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -212,10 +203,9 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
+        
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -240,10 +230,9 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
+        
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -268,10 +257,9 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
+      
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 
@@ -296,10 +284,9 @@ public class QueryLexerTest {
         QueryLexer lexer = new QueryLexer(q);
 
         QueryToken token = lexer.nextToken();
-        assertEquals("query", token.getValue());
-        assertEquals(QueryTokenType.QUERYKW, token.getType());
-
         token = lexer.nextToken();
+
+       
         assertEquals("jmbag", token.getValue());
         assertEquals(QueryTokenType.JMBAG, token.getType());
 

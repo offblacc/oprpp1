@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * A simple student record database.
+ */
 public class StudentDatabase {
     /**
      * List of student records.
@@ -26,8 +29,16 @@ public class StudentDatabase {
      */
     private ArrayList<StudentRecord> selection;
 
+    /**
+     * Remembers whether the previous selection was direct or not.
+     */
     private boolean usedIndexed;
 
+    /**
+     * Creates a new student database from a list of student records.
+     * 
+     * @param records - list of student records
+     */
     public StudentDatabase(List<String> lines) {
         records = new ArrayList<>();
         jmbagMap = new HashMap<>();
@@ -85,6 +96,12 @@ public class StudentDatabase {
         }
     }
 
+    /**
+     * Returns a list of all records that satisfy the given query.
+     * 
+     * @param query - query to be satisfied
+     * @return - list of all records that satisfy the given query
+     */
     public void select(String queryText) {
         QueryParser parser = new QueryParser(queryText);
         selection.clear();
@@ -100,6 +117,11 @@ public class StudentDatabase {
         }
     }
 
+    /**
+     * Returns the selection in a easily readable format.
+     * 
+     * @return the selection in a easily readable format
+     */
     public String getResult() {
         if (selection.isEmpty()) {
             return "Records selected: 0\n";
@@ -112,7 +134,8 @@ public class StudentDatabase {
             maxLen[3] = Math.max(maxLen[3], Integer.toString(record.getFinalGrade()).length());
         }
         StringBuilder sb = new StringBuilder();
-        if (usedIndexed) sb.append("Using index for record retrieval.\n");
+        if (usedIndexed)
+            sb.append("Using index for record retrieval.\n");
         appendVerticalBoundary(sb, maxLen);
         for (StudentRecord record : selection) {
             sb.append("|");
@@ -131,6 +154,13 @@ public class StudentDatabase {
         return sb.toString();
     }
 
+    /**
+     * Takes a StringBuilder and appends top and bottom boundaries to it based on
+     * the number and length of columns.
+     * 
+     * @param sb - StringBuilder to append to
+     * @param maxLen - array of maximum lengths of columns
+     */
     private void appendVerticalBoundary(StringBuilder sb, int[] maxLen) {
         for (int i = 0; i < 4; i++) {
             sb.append("+");
@@ -142,6 +172,9 @@ public class StudentDatabase {
         sb.append("\n");
     }
 
+    /**
+     * The main method, this is to be called when working with the database.
+     */
     public static void main(String[] args) throws IOException {
         StudentDatabase db = new StudentDatabase(Files.readAllLines(
                 Paths.get("src/main/java/hr/fer/oprpp1/hw04/db/database.txt"),

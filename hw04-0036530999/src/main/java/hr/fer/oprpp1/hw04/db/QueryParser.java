@@ -3,24 +3,52 @@ package hr.fer.oprpp1.hw04.db;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Parses a query and creates a list of conditional expressions, with the help
+ * of QueryLexer.
+ */
 public class QueryParser {
+    /**
+     * Lexer used to tokenize the query.
+     */
     private QueryLexer lexer;
+
+    /**
+     * The current token that is being processed.
+     */
     private QueryToken token;
+
+    /**
+     * Boolean that is true if the query is direct, false otherwise.
+     */
     private boolean isDirectQuery;
+
+    /**
+     * The list of generated conditional expressions, extracted from the query.
+     */
     List<ConditionalExpression> expressions;
 
+    /**
+     * Creates a new query parser and calls the parse method, parsing it upon
+     * creation of the parser itself.
+     * 
+     * @param query - query to be parsed
+     */
     public QueryParser(String query) {
         lexer = new QueryLexer(query);
         parseQuery();
     }
 
-    public void parseQuery() {// TODO db ignores query kw
+    /**
+     * The main parse method, generates the list of conditional expressions.
+     */
+    public void parseQuery() {
         token = lexer.nextToken();
         expressions = new ArrayList<>();
         if (token.getType() == QueryTokenType.EOF) {
             throw new QueryParserException("Query is empty.");
         }
-        
+
         var fieldValueGetter = resolveFieldValueGetter(token.getType());
         var comparisonOperator = resolveComparisonOperator((token = lexer.nextToken()));
         var literal = (token = lexer.nextToken()).getValue();
@@ -95,6 +123,13 @@ public class QueryParser {
         return expressions;
     }
 
+    /**
+     * Resolves the field value getter for the given token type, determining its type
+     * based on the token type.
+     * 
+     * @param type - token's type
+     * @return - field value getter for the given token type
+     */
     private IFieldValueGetter resolveFieldValueGetter(QueryTokenType typ) {
         switch (typ) {
             case LASTNAME:
@@ -108,6 +143,13 @@ public class QueryParser {
         }
     }
 
+    /**
+     * Resolves the comparison operator for the given token, determining its type
+     * based on the token type and value.
+     * 
+     * @param token - token to be analyzed
+     * @return - comparison operator for the given token
+     */
     private IComparisonOperator resolveComparisonOperator(QueryToken token) {
         if (token.getType() == QueryTokenType.LIKE) {
             return ComparisonOperators.LIKE;
