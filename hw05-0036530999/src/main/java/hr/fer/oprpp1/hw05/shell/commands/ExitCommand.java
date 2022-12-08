@@ -4,17 +4,16 @@ import hr.fer.oprpp1.hw05.shell.Environment;
 import hr.fer.oprpp1.hw05.shell.ShellCommand;
 import hr.fer.oprpp1.hw05.shell.ShellStatus;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class CatCommand implements ShellCommand {
-    public static final String NAME = "cat";
-    public static final List<String> DESCRIPTION = Arrays.asList("Command takes a single argument - file name,",
-            "and writes its content to the console.");
-
+public class ExitCommand implements ShellCommand {
+    public static final String NAME = "exit";
+    public static final List<String> DESCRIPTION = List.of(
+            "Terminates the shell."
+    );
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
-        return null;
+        return ShellStatus.TERMINATE;
     }
 
     @Override

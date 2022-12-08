@@ -13,13 +13,14 @@ public class Util {
         if (keyText == null) {
             throw new IllegalArgumentException("Key text cannot be null");
         }
-        if (keyText.length() % 2 != 0) {
-            throw new IllegalArgumentException("keyText parameter must be of even length, but is " + keyText.length());
+        int keyTextLen = keyText.length();
+        if (keyTextLen % 2 != 0) {
+            throw new IllegalArgumentException("keyText parameter must be of even length, but is " + keyTextLen);
         }
         keyText = keyText.toLowerCase();
-        byte[] bytearray = new byte[keyText.length() / 2];
+        byte[] bytearray = new byte[keyTextLen / 2];
         int[] offset = new int[] {0, 1};
-        for (int i = 0; i < keyText.length(); i += 2) {
+        for (int i = 0; i < keyTextLen; i += 2) {
             for (int o : offset) {
                 char c = keyText.charAt(i + o);
                 if ((int) c >= 48 && (int) c <= 57 || (int) c >= 97 && (int) c <= 102) {

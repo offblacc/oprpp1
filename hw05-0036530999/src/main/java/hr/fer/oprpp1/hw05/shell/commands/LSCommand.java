@@ -9,7 +9,7 @@ import java.util.List;
 public class LSCommand implements ShellCommand {
     public static final String NAME = "ls";
     public static final List<String> DESCRIPTION = List.of(
-            "Command ls takes a single argument – directory – and writes a directory listing (not recursive)."
+            "Command takes a single argument – directory – and writes a directory listing (not recursive)."
     );
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {

@@ -10,7 +10,7 @@ import java.util.List;
 public class MkdirCommand  implements ShellCommand {
     public static final String NAME = "mkdir";
     public static final List<String> DESCRIPTION = Arrays.asList(
-            "The mkdir command takes a single argument: directory name,",
+            "Command takes a single argument: directory name,",
             "and creates the appropriate directory structure."
     );
     @Override

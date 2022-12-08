@@ -1,6 +1,9 @@
 package hr.fer.oprpp1.hw05.shell;
 
+import hr.fer.oprpp1.hw05.shell.commands.*;
+
 import java.io.*;
+import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -12,11 +15,16 @@ public class MyShellEnvironment implements Environment {
     private final char DEFAULT_PROMPT = '>';
     private final char DEFAULT_MORELINES = '\\';
     private final char DEFAULT_MULTILINE = '|';
+    private BufferedReader br;
+    private BufferedWriter bw;
 
     public MyShellEnvironment() {
         this.multilineSymbol = DEFAULT_MULTILINE;
         this.promptSymbol = DEFAULT_PROMPT;
         this.moreLinesSymbol = DEFAULT_MORELINES;
+        this.commands = initCommands();
+        br = new BufferedReader(new InputStreamReader(System.in));
+        bw = new BufferedWriter(new OutputStreamWriter(System.out));
     }
 
 
@@ -24,17 +32,18 @@ public class MyShellEnvironment implements Environment {
      * Reads a single line from the standard input. If the line ends with the
      * morelines symbol, the method will continue reading until the line ends
      * without the multiline symbol.
+     *
      * @return the line read from the standard input
      * @throws ShellIOException if an error occurs while reading from the standard input
      */
     @Override
     public String readLine() throws ShellIOException {
         StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            String line = reader.readLine();
+        try {
+            String line = br.readLine();
             sb.append(line);
             while (line.endsWith(String.valueOf(moreLinesSymbol))) {
-                line = reader.readLine();
+                line = br.readLine();
                 sb.append(line);
             }
         } catch (Exception e) {
@@ -45,58 +54,69 @@ public class MyShellEnvironment implements Environment {
 
     @Override
     public void write(String text) throws ShellIOException {
-        try (OutputStreamWriter writer = new OutputStreamWriter(System.out)) {
-            writer.write(text);
-            writer.flush();
-        } catch (Exception e) {
-            throw new ShellIOException("Error while writing to output stream.");
+        if (text == null) {
+            return;
         }
-    }
-
-    @Override
-    public void writeln(String text) throws ShellIOException {
-        try (OutputStreamWriter writer = new OutputStreamWriter(System.out);) {
-            writer.write(text);
-            writer.write(System.lineSeparator());
-            writer.flush();
+        try {
+            bw.write(text);
+            bw.flush();
         } catch (IOException e) {
             throw new ShellIOException("Error while writing to output stream.");
         }
     }
 
     @Override
+    public void writeln(String text) throws ShellIOException {
+        write(text + System.lineSeparator());
+    }
+
+    @Override
     public SortedMap<String, ShellCommand> commands() {
-        TreeMap<String, ShellCommand> commands = new TreeMap<>();
-        return null; // TODO this is there you stopped in this class
+        return commands;
+    }
+
+    private SortedMap<String, ShellCommand> initCommands() {
+        return Collections.unmodifiableSortedMap(new TreeMap<>() {{
+            put("cat", new CatCommand());
+            put("charsets", new CharsetsCommand());
+            put("copy", new CopyCommand());
+            put("hexdump", new HexdumpCommand());
+            put("ls", new LSCommand());
+            put("mkdir", new MkdirCommand());
+            put("tree", new TreeCommand());
+            put("symbol", new SymbolCommand());
+            put("exit", new ExitCommand());
+            put("help", new HelpCommand());
+        }});
     }
 
     @Override
     public Character getMultilineSymbol() {
-        return null;
+        return multilineSymbol;
     }
 
     @Override
     public void setMultilineSymbol(Character symbol) {
-
+        multilineSymbol = symbol;
     }
 
     @Override
     public Character getPromptSymbol() {
-        return null;
+        return promptSymbol;
     }
 
     @Override
     public void setPromptSymbol(Character symbol) {
-
+        promptSymbol = symbol;
     }
 
     @Override
     public Character getMorelinesSymbol() {
-        return null;
+        return moreLinesSymbol;
     }
 
     @Override
     public void setMorelinesSymbol(Character symbol) {
-
+        moreLinesSymbol = symbol;
     }
 }

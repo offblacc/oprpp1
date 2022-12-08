@@ -10,7 +10,7 @@ import java.util.List;
 public class TreeCommand implements ShellCommand {
     public static final String NAME = "tree";
     public static final List<String> DESCRIPTION = Arrays.asList(
-            "The tree command expects a single argument: directory name and prints a tree",
+            "Command expects a single argument: directory name and prints a tree",
             "recursively listing all files and directories in the directory and its subdirectories."
     );
 
@@ -21,11 +21,11 @@ public class TreeCommand implements ShellCommand {
 
     @Override
     public String getCommandName() {
-        return null;
+        return NAME;
     }
 
     @Override
     public List<String> getCommandDescription() {
-        return null;
+        return DESCRIPTION;
     }
 }

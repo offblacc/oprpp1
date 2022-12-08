@@ -10,7 +10,7 @@ import java.util.List;
 public class HexdumpCommand implements ShellCommand {
     public static final String NAME = "hexdump";
     public static final List<String> DESCRIPTION = List.of(
-            "The hexdump command expects a single argument: file name and produces hex-output"
+            "Expects a single argument: file name and produces hex-output"
     );
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {

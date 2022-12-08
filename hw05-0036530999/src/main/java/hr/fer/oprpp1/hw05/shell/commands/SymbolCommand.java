@@ -10,7 +10,7 @@ import java.util.List;
 public class SymbolCommand implements ShellCommand {
     public static final String NAME = "symbol";
     public static final List<String> DESCRIPTION = Arrays.asList(
-            "Command symbol is used to change environment symbols.",
+            "Used to change environment symbols.",
             "Currently supports changing prompt, multiline and morelines symbols."
     );
     @Override
