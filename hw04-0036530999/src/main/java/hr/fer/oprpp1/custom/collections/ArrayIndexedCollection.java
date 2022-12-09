@@ -338,14 +338,11 @@ public class ArrayIndexedCollection<T> implements List<T> {
         /**
          * Constructor for the ArrayIndexedCollectionElementsGetter class.
          * 
-         * @param indexReverse           - initially equal to the number of elements in
-         *                               the
-         *                               collection, counting down to 0. When it reaches
-         *                               zero we
-         *                               have iterated through all elements.
-         * @param col                    - reference to collection whose elements we are
-         *                               iterating
-         *                               through.
+         * @param indexReverse - initially equal to the number of elements in the
+         *                     collection, counting down to 0. When it reaches zero we
+         *                     have iterated through all elements.
+         * @param col          - reference to collection whose elements we are iterating
+         *                     through.
          *
          * @param savedModificationCount - modification count of the collection instance
          *
