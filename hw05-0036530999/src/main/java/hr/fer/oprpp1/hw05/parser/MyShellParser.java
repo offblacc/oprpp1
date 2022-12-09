@@ -122,6 +122,7 @@ public class MyShellParser {
                 sb.append(c);
                 escaped = false;
             }
+            i++;
         }
         argumentList.add(sb.toString());
         return argumentList;
@@ -136,6 +137,7 @@ public class MyShellParser {
         List<String> argumentList = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int i = 0;
+        arguments = arguments.trim();
         int argLen = arguments.length();
         while (i < argLen) {
             char c = arguments.charAt(i);
@@ -145,6 +147,7 @@ public class MyShellParser {
             } else {
                 sb.append(c);
             }
+            i++;
         }
         argumentList.add(sb.toString());
         return argumentList;

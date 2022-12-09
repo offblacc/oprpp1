@@ -18,7 +18,7 @@ public class HelpCommand implements ShellCommand {
 
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
-        if (arguments == "") {
+        if (arguments.equals("")) {
             try {
                 env.writeln("Available commands:");
             } catch (ShellIOException e) {

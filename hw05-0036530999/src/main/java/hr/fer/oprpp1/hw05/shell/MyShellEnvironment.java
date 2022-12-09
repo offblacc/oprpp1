@@ -43,6 +43,8 @@ public class MyShellEnvironment implements Environment {
             String line = br.readLine();
             sb.append(line);
             while (line.endsWith(String.valueOf(moreLinesSymbol))) {
+                bw.write(multilineSymbol + " ");
+                bw.flush();
                 line = br.readLine();
                 sb.append(line);
             }
@@ -55,7 +57,7 @@ public class MyShellEnvironment implements Environment {
     @Override
     public void write(String text) throws ShellIOException {
         if (text == null) {
-            return;
+            return; // should not happen
         }
         try {
             bw.write(text);

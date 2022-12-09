@@ -21,6 +21,7 @@ import static hr.fer.oprpp1.hw05.crypto.Util.hextobyte;
 import static java.lang.System.exit;
 
 public class Crypto {
+    private static final int BUFFER_SIZE = 4096;
     public static void main(String[] args) {
         if (args.length != 2 && args.length != 3) {
             throw new IllegalArgumentException("Invalid number of arguments");
@@ -95,15 +96,11 @@ public class Crypto {
 
         try (InputStream is = new BufferedInputStream(Files.newInputStream(Paths.get(sourceFilename)));
              OutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(destFilename)))) {
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[BUFFER_SIZE];
             int numOfBytesRead;
-            while((numOfBytesRead = is.read(buffer)) > 0) {
+            while ((numOfBytesRead = is.read(buffer)) > 0) {
                 byte[] newBlock;
-                if (numOfBytesRead < 4096) {
-                    newBlock = cipher.update(Arrays.copyOfRange(buffer, 0, numOfBytesRead));
-                } else {
-                    newBlock = cipher.update(buffer);
-                }
+                newBlock = cipher.update(buffer, 0, numOfBytesRead);
                 os.write(newBlock);
             }
             os.write(cipher.doFinal());
