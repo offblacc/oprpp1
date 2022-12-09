@@ -17,17 +17,31 @@ import java.util.List;
 
 import static java.lang.System.exit;
 
+/**
+ * Class representing tree command.
+ */
 public class TreeCommand implements ShellCommand {
+    /**
+     * Command name
+     */
     public static final String NAME = "tree";
+
+    /**
+     * Command description
+     */
     public static final List<String> DESCRIPTION = Arrays.asList(
             "Command expects a single argument: directory name and prints a tree",
-            "recursively listing all files and directories in the directory and its subdirectories."
+            "recursively listing all files and directories in the directory and its subdirectories.",
+            "If no argument is given, the current directory is used."
     );
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
-        List<String> args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
-        if (args.size() != 1) {
+        String[] args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
+        if (args.length != 1) {
             try {
                 env.writeln("Expected 1 argument.");
             } catch (ShellIOException e) {
@@ -36,7 +50,7 @@ public class TreeCommand implements ShellCommand {
             return ShellStatus.CONTINUE;
         }
 
-        String pathString = args.get(0);
+        String pathString = args[0];
         SimpleFileVisitor<Path> visitor = new MyFileSystemVisitor(env);
         try {
             env.writeln(pathString);
@@ -56,18 +70,34 @@ public class TreeCommand implements ShellCommand {
         return ShellStatus.CONTINUE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCommandName() {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getCommandDescription() {
         return DESCRIPTION;
     }
 
+    /**
+     * Simple file visitor implementation used for walking through the file tree.
+     */
     class MyFileSystemVisitor extends SimpleFileVisitor<Path> {
+        /**
+         * Indentation level
+         */
         private int level = 0;
+
+        /**
+         * Reference to the environment used for writing to stdout
+         */
         private Environment env;
 
         public MyFileSystemVisitor(Environment env) {
@@ -104,5 +134,4 @@ public class TreeCommand implements ShellCommand {
             return FileVisitResult.CONTINUE;
         }
     }
-
 }

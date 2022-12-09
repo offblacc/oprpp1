@@ -14,14 +14,28 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import static hr.fer.oprpp1.hw05.crypto.Util.hextobyte;
 import static java.lang.System.exit;
 
 public class Crypto {
+    /**
+     * Size of the buffer used for reading/writing files.
+     */
     private static final int BUFFER_SIZE = 4096;
+
+    /**
+     * Main method of the program. Expects two or three arguments. First
+     * argument is the name of the command (checksha, encrypt or decrypt).
+     * In case of checksha, second argument is the name of the file whose
+     * SHA-256 digest is to be calculated. In case of encrypt or decrypt,
+     * second argument is the name of the file to be encrypted/decrypted
+     * and third argument is the name of the file to which the result
+     * should be written.
+     *
+     * @param args - command line arguments
+     */
     public static void main(String[] args) {
         if (args.length != 2 && args.length != 3) {
             throw new IllegalArgumentException("Invalid number of arguments");
@@ -55,7 +69,7 @@ public class Crypto {
 
         try (InputStream is = new BufferedInputStream(Files.newInputStream(Paths.get(filename)))) {
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[BUFFER_SIZE];
             int numOfBytesRead;
             while ((numOfBytesRead = is.read(buffer)) > 0) {
                 sha.update(buffer, 0, numOfBytesRead);
@@ -75,6 +89,22 @@ public class Crypto {
         }
     }
 
+    /**
+     * Encrypts or decrypts the file using AES algorithm. If the file is
+     * encrypted, the result is written to the file with the given name.
+     * If the file is decrypted, the result is written to the file with
+     * the given name.
+     * Throws an appropriate exception if the file is not encrypted or decrypted
+     * successfully.
+     *
+     * @param process - name of the process (encrypt or decrypt)
+     * @param sourceFilename - name of the file to be encrypted/decrypted
+     * @param destFilename - name of the file to which the result should be written
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     */
     private static void encryptDecrypt(String process, String sourceFilename, String destFilename) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         if (!(process.equals("encrypt") || process.equals("decrypt"))) {
             throw new IllegalArgumentException("Invalid argument: \"encrypt\" or \"decrypt\" expected, got " + process);

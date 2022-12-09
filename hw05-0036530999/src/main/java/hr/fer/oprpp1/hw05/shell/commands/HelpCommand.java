@@ -10,12 +10,26 @@ import java.util.List;
 
 import static java.lang.System.exit;
 
+/**
+ * Class representing help command.
+ */
 public class HelpCommand implements ShellCommand {
+    /**
+     * Command name
+     */
     public static final String NAME = "help";
+
+    /**
+     * Command description
+     */
     public static final List<String> DESCRIPTION = Arrays.asList("Takes a single argument - command name,",
             "and prints a description of the given command.",
             "If no argument is given, prints a list of all supported commands.");
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
         if (arguments.equals("")) {
@@ -42,7 +56,7 @@ public class HelpCommand implements ShellCommand {
                 }
             } else {
                 try {
-                    env.writeln(command.getCommandName());
+                    env.writeln(command.getCommandName().toUpperCase());
                     command.getCommandDescription().forEach(description -> {
                         try {
                             env.writeln(description);
@@ -55,14 +69,20 @@ public class HelpCommand implements ShellCommand {
                 }
             }
         }
-        return ShellStatus.CONTINUE; // TODO all terminating should be done this way ?? or not, pls check
+        return ShellStatus.CONTINUE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCommandName() {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getCommandDescription() {
         return DESCRIPTION;

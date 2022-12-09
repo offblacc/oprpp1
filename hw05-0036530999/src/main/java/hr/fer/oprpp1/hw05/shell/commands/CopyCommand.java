@@ -15,8 +15,18 @@ import java.util.List;
 
 import static java.lang.System.exit;
 
+/**
+ * Class representing copy command.
+ */
 public class CopyCommand implements ShellCommand {
+    /**
+     * Command name
+     */
     public static final String NAME = "copy";
+
+    /**
+     * Description of the command
+     */
     public static final List<String> DESCRIPTION = Arrays.asList(
             "Command takes two arguments: source file name and destination file name (i.e. paths and names).",
             "If destination file exists prompts the user whether it should be overwritten.",
@@ -24,12 +34,19 @@ public class CopyCommand implements ShellCommand {
             "original file into this directory using the original file name.",
             "This command works only with files and does not work with directories."
     );
+
+    /**
+     * Size of the buffer used for copying
+     */
     public static final int BUFFER_SIZE = 4096;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
-        List<String> args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
-        if (args.size() != 2) {
+        String[] args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
+        if (args.length != 2) {
             try {
                 env.writeln("Command copy must have exactly two arguments.");
             } catch (ShellIOException e) {
@@ -37,10 +54,10 @@ public class CopyCommand implements ShellCommand {
             }
             return ShellStatus.CONTINUE;
         }
-        Path source = Paths.get(args.get(0));
-        Path destination = Paths.get(args.get(1));
+        Path source = Paths.get(args[0]);
+        Path destination = Paths.get(args[1]);
         if (Files.isDirectory(destination)) {
-            destination = Paths.get(args.get(1) + File.separator + source.getFileName());
+            destination = Paths.get(args[1] + File.separator + source.getFileName());
         }
 
         if (source.equals(destination)) {
@@ -95,11 +112,17 @@ public class CopyCommand implements ShellCommand {
         return ShellStatus.CONTINUE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCommandName() {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getCommandDescription() {
         return DESCRIPTION;

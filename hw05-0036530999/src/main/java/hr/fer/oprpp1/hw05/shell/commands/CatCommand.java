@@ -19,12 +19,28 @@ import java.util.List;
 
 import static java.lang.System.exit;
 
+/**
+ * Class representing cat command.
+ */
 public class CatCommand implements ShellCommand {
+    /**
+     * Command name
+     */
     public static final String NAME = "cat";
-    public static final List<String> DESCRIPTION = Arrays.asList("Command takes a single argument - file name,",
-            "and writes its content to the console.");
-    private static final int BUFFER_SIZE = 1024; // going to the terminal - 4096b is too much
 
+    /**
+     * Command description
+     */
+    public static final List<String> DESCRIPTION = Arrays.asList("Command takes a single argument - file name,", "and writes its content to the console.");
+
+    /**
+     * Size of the buffer used for reading from the file and writing to stdout.
+     */
+    private static final int BUFFER_SIZE = 1024; // going to the terminal - 4096b  might be too much
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
         if (arguments.equals("")) {
@@ -35,14 +51,14 @@ public class CatCommand implements ShellCommand {
                 exit(1);
             }
         }
-        List<String> argsList = MyShellParser.parseArgumentsSupportingQuotes(arguments);
+        String[] argsArray = MyShellParser.parseArgumentsSupportingQuotes(arguments);
         Charset charset = null;
 
-        if (argsList.size() == 1) {
+        if (argsArray.length == 1) {
             charset = Charset.defaultCharset();
-        } else if (argsList.size() == 2) {
-            try { // TODO can it be null ? if yes, catch
-                charset = Charset.forName(argsList.get(1));
+        } else if (argsArray.length == 2) {
+            try {
+                charset = Charset.forName(argsArray[1]);
             } catch (IllegalCharsetNameException e) {
                 try {
                     env.writeln("Illegal charset name.");
@@ -57,6 +73,13 @@ public class CatCommand implements ShellCommand {
                 } catch (ShellIOException e1) {
                     exit(1);
                 }
+            } catch (NullPointerException e) {
+                try {
+                    env.writeln("Charset name is null.");
+                    return ShellStatus.CONTINUE;
+                } catch (ShellIOException e1) {
+                    exit(1);
+                }
             }
         } else {
             try {
@@ -67,7 +90,7 @@ public class CatCommand implements ShellCommand {
             return ShellStatus.CONTINUE;
         }
 
-        try (InputStream is = new BufferedInputStream(Files.newInputStream(Paths.get(argsList.get(0))))) {
+        try (InputStream is = new BufferedInputStream(Files.newInputStream(Paths.get(argsArray[0])))) {
             byte[] buffer = new byte[BUFFER_SIZE];
             int numReadBytes;
             while ((numReadBytes = is.read(buffer)) > 0) {
@@ -88,11 +111,17 @@ public class CatCommand implements ShellCommand {
         return ShellStatus.CONTINUE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCommandName() {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getCommandDescription() {
         return DESCRIPTION;

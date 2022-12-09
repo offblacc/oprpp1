@@ -54,6 +54,12 @@ public class MyShellEnvironment implements Environment {
         return sb.toString();
     }
 
+    /**
+     * Writes the given text to the standard output.
+     *
+     * @param text the text to be written
+     * @throws ShellIOException if an error occurs while writing to the standard output
+     */
     @Override
     public void write(String text) throws ShellIOException {
         if (text == null) {
@@ -67,16 +73,29 @@ public class MyShellEnvironment implements Environment {
         }
     }
 
+    /**
+     * Writes the given text to the standard output and adds a new line.
+     *
+     * @param text the text to be written
+     * @throws ShellIOException if an error occurs while writing to the standard output
+     */
     @Override
     public void writeln(String text) throws ShellIOException {
         write(text + System.lineSeparator());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SortedMap<String, ShellCommand> commands() {
         return commands;
     }
 
+    /**
+     * Initializes the map of commands, returning an unmodifiable map.
+     * @return the map of commands, unmodifiable
+     */
     private SortedMap<String, ShellCommand> initCommands() {
         return Collections.unmodifiableSortedMap(new TreeMap<>() {{
             put("cat", new CatCommand());
@@ -92,31 +111,49 @@ public class MyShellEnvironment implements Environment {
         }});
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Character getMultilineSymbol() {
         return multilineSymbol;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setMultilineSymbol(Character symbol) {
         multilineSymbol = symbol;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Character getPromptSymbol() {
         return promptSymbol;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setPromptSymbol(Character symbol) {
         promptSymbol = symbol;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Character getMorelinesSymbol() {
         return moreLinesSymbol;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setMorelinesSymbol(Character symbol) {
         moreLinesSymbol = symbol;

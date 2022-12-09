@@ -92,7 +92,7 @@ public class MyShellParser {
      * @param arguments - string of arguments
      * @return list of arguments
      */
-    public static List<String> parseArgumentsSupportingQuotes(String arguments) {
+    public static String[] parseArgumentsSupportingQuotes(String arguments) {
         List<String> argumentList = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int i = 0;
@@ -125,7 +125,7 @@ public class MyShellParser {
             i++;
         }
         argumentList.add(sb.toString());
-        return argumentList;
+        return argumentList.toArray(new String[0]);
     }
 
     /**
@@ -133,7 +133,7 @@ public class MyShellParser {
      * @param arguments - string of arguments
      * @return list of arguments
      */
-    public static List<String> processArguments(String arguments) {
+    public static String[] processArguments(String arguments) {
         List<String> argumentList = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int i = 0;
@@ -150,6 +150,6 @@ public class MyShellParser {
             i++;
         }
         argumentList.add(sb.toString());
-        return argumentList;
+        return argumentList.toArray(new String[0]);
     }
 }

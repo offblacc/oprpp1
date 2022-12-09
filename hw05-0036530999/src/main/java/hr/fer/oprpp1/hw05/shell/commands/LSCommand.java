@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -21,17 +20,30 @@ import java.util.List;
 
 import static java.lang.System.exit;
 
+/**
+ * Class representing ls command.
+ */
 public class LSCommand implements ShellCommand {
+    /**
+     * Command name
+     */
     public static final String NAME = "ls";
+
+    /**
+     * Description of the command
+     */
     public static final List<String> DESCRIPTION = List.of(
             "Command takes a single argument – directory – and writes a directory listing (not recursive)."
     );
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
-        List<String> args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
+        String[] args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
 
-        if (args.size() != 1) {
+        if (args.length != 1) {
             try {
                 env.writeln("Expected 1 argument.");
             } catch (ShellIOException e) {
@@ -40,7 +52,7 @@ public class LSCommand implements ShellCommand {
             return ShellStatus.CONTINUE;
         }
 
-        String pathString = args.get(0);
+        String pathString = args[0];
         File[] files = new File(pathString).listFiles();
 
         if (files == null) {
@@ -70,12 +82,12 @@ public class LSCommand implements ShellCommand {
             String formattedDateTime = sdf.format(new Date(fileTime.toMillis()));
 
 
-            sb.append(file.isDirectory() ? "d" : "-");
-            sb.append(file.canRead() ? "r" : "-");
-            sb.append(file.canWrite() ? "w" : "-");
-            sb.append(file.canExecute() ? "x" : "-");
-            sb.append(" ")
-                    .append(String.format("%10", file.length()))
+            sb.append(file.isDirectory() ? "d" : "-")
+                    .append(file.canRead() ? "r" : "-")
+                    .append(file.canWrite() ? "w" : "-")
+                    .append(file.canExecute() ? "x" : "-")
+                    .append(" ")
+                    .append(String.format("%10d", file.length()))
                     .append(" ")
                     .append(formattedDateTime)
                     .append(" ")
@@ -92,11 +104,17 @@ public class LSCommand implements ShellCommand {
         return ShellStatus.CONTINUE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCommandName() {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getCommandDescription() {
         return DESCRIPTION;

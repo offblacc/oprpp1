@@ -12,16 +12,30 @@ import java.util.List;
 
 import static java.lang.System.exit;
 
-public class MkdirCommand  implements ShellCommand {
+/**
+ * Class representing mkdir command.
+ */
+public class MkdirCommand implements ShellCommand {
+    /**
+     * Command name
+     */
     public static final String NAME = "mkdir";
+
+    /**
+     * Description of the command
+     */
     public static final List<String> DESCRIPTION = Arrays.asList(
             "Command takes a single argument: directory name,",
             "and creates the appropriate directory structure."
     );
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
-        List<String> args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
-        if (args.size() != 1) {
+        String[] args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
+        if (args.length != 1) {
             try {
                 env.writeln("Expected 1 argument.");
             } catch (ShellIOException e) {
@@ -29,7 +43,7 @@ public class MkdirCommand  implements ShellCommand {
             }
             return ShellStatus.CONTINUE;
         }
-        String pathString = args.get(0);
+        String pathString = args[0];
         File file = new File(pathString);
         if (file.mkdirs()) {
             try {
@@ -47,11 +61,17 @@ public class MkdirCommand  implements ShellCommand {
         return ShellStatus.CONTINUE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getCommandName() {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getCommandDescription() {
         return DESCRIPTION;

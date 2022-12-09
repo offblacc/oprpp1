@@ -6,7 +6,19 @@ import java.util.SortedMap;
 
 import static java.lang.System.exit;
 
+/**
+ * The main class of the shell program.
+ */
 public class MyShell {
+    /**
+     * Message that is printed when the program is started.
+     */
+    private static final String WELCOME_MSG = "Welcome to MyShell v1.0";
+
+    /**
+     * The main method of the shell program.
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         ShellStatus shellStatus = ShellStatus.CONTINUE;
         Environment env = createEnvironment();
@@ -14,13 +26,13 @@ public class MyShell {
         SortedMap<String, ShellCommand> commands = env.commands();
 
         try {
-            env.writeln("Welcome to MyShell v1.0");
+            env.writeln(WELCOME_MSG);
         } catch (ShellIOException e) {
             System.out.println("Error while writing to output stream.");
             exit(1);
         }
 
-        while(shellStatus != ShellStatus.TERMINATE) { // todo change this later, while state is not terminated
+        while(shellStatus != ShellStatus.TERMINATE) {
             try {
                 env.write(env.getPromptSymbol() + " ");
                 // trimming - this way the parser knows that if the line contains a \n there is a multiline command
@@ -41,7 +53,10 @@ public class MyShell {
         }
     }
 
-
+    /**
+     * Creates a new environment for the shell.
+     * @return the new environment
+     */
     private static Environment createEnvironment() {
         return new MyShellEnvironment();
     }
