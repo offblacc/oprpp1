@@ -59,9 +59,12 @@ public class ComplexRootedPolynomial {
         return sb.toString();
     }
 
-    // finds index of closest root for given complex number z that is within
-    // treshold; if there is no such root, returns -1
-    // first root has index 0, second index 1, etc
+    /**
+     * Method that finds index of the closest root for given complex number z that is within treshold.
+     * @param z Complex number.
+     * @param treshold Treshold.
+     * @return Index of the closest root.
+     */
     @SuppressWarnings("SpellCheckingInspection")
     public int indexOfClosestRootFor(Complex z, double treshold) {
         int index = -1;

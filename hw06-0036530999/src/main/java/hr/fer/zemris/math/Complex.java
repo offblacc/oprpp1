@@ -212,6 +212,77 @@ public class Complex {
         return sb.toString();
     }
 
+    // parse complex number from string in format "a+ib" or "a-ib" or "a" or "ib" or "-a+ib" or "-a-ib" or "-a" or "-ib"
+    public static Complex parse(String s) {
+        if (s == null) {
+            throw new IllegalArgumentException("Given string must not be null.");
+        }
+        s = s.trim();
+        if (s.isEmpty()) {
+            throw new IllegalArgumentException("Given string must not be empty.");
+        }
+        double re = 0;
+        double im = 0;
+        StringBuilder sb = new StringBuilder();
+        int sLen = s.length();
+        for (int i = 0; i < sLen; i++) {
+            char c = s.charAt(i);
+            if (c == ' ') {
+                continue;
+            }
+            sb.append(c);
+        }
+        s = sb.toString();
+        if (s.contains("+")) {
+            String[] parts = s.split("\\+");
+            if (parts.length != 2) {
+                throw new IllegalArgumentException("");
+            }
+            re = Double.parseDouble(parts[0]);
+            if (parts[1].trim().startsWith("i")) {
+                im = Double.parseDouble(parts[1].substring(1));
+            } else {
+                throw new IllegalArgumentException("");
+            }
+        } else if (s.contains("-")) {
+            // minus can be the first character and it can be between two numbers
+            if (s.startsWith("-")) {
+                if (s.length() == 1) {
+                    throw new IllegalArgumentException("");
+                }
+                if (s.charAt(1) == 'i') {
+                    if (s.length() == 2) {
+                        im = -1;
+                    } else {
+                        im = -Double.parseDouble(s.substring(2));
+                    }
+                } else {
+                    re = -Double.parseDouble(s.substring(1));
+                }
+            } else {
+                String[] parts = s.split("-");
+                if (parts.length != 2) {
+                    throw new IllegalArgumentException("");
+                }
+                re = Double.parseDouble(parts[0]);
+                if (parts[1].startsWith("i")) {
+                    im = -Double.parseDouble(parts[1].substring(1));
+                } else {
+                    im = -Double.parseDouble(parts[1]);
+                }
+            }
+        } else if (s.startsWith("i")) {
+            if (s.length() == 1) {
+                im = 1;
+            } else {
+                im = Double.parseDouble(s.substring(1));
+            }
+        } else {
+            re = Double.parseDouble(s);
+        }
+        return new Complex(re, im);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
