@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static java.lang.System.exit;
+
 public class Newton {
     public static void main(String[] args) {
         System.out.println("Welcome to Newton-Raphson iteration-based fractal viewer.");
@@ -75,5 +77,4 @@ public class Newton {
             observer.acceptResult(data, (short) (roots.size() + 1), requestNo);
         };
     }
-
 }

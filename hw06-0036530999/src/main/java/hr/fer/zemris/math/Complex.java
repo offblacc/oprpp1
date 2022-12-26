@@ -142,7 +142,7 @@ public class Complex {
      * @param n power
      * @return new complex number which is a power of this complex number
      */
-    public Complex power(int n) { // TODO test with ^0
+    public Complex power(int n) {
         if (n < 0) {
             throw new IllegalArgumentException("Given power must be non-negative integer.");
         }
