@@ -10,7 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Program that draws Newton-Raphson fractals.
+ */
 public class Newton {
+    /**
+     * Main method.
+     * @param args Command line arguments. Ignored.
+     */
     public static void main(String[] args) {
         System.out.println("Welcome to Newton-Raphson iteration-based fractal viewer.");
         System.out.println("Please enter at least two roots, one root per line. Enter 'done' when done.");
@@ -38,10 +45,14 @@ public class Newton {
     }
 
 
+    /**
+     * Method that returns an instance of IFractalProducer that draws Newton-Raphson fractals.
+     * @param roots Roots of the polynomial.
+     * @return Instance of IFractalProducer that draws Newton-Raphson fractals.
+     */
     private static IFractalProducer getSequentialFractalProducer(List<Complex> roots) {
         return (reMin, reMax, imMin, imMax, width, height, requestNo, observer, cancel) -> {
             System.out.println("Zapocinjem izracun...");
-            Long start_time = System.currentTimeMillis();
             ComplexRootedPolynomial rootedPolynomial = new ComplexRootedPolynomial(Complex.ONE, roots.toArray(new Complex[0]));
             ComplexPolynomial complexPolynomial = rootedPolynomial.toComplexPolynomial();
             ComplexPolynomial derived = complexPolynomial.derive();
@@ -72,8 +83,6 @@ public class Newton {
                     data[offset++] = (short) (index + 1);
                 }
             }
-            Long end_time = System.currentTimeMillis();
-            System.out.println("Izracun gotov. Vrijeme izracuna: " + (end_time - start_time) + " ms.");
             System.out.println("Izracun gotov...");
             observer.acceptResult(data, (short) (roots.size() + 1), requestNo);
         };
