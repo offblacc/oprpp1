@@ -99,7 +99,7 @@ public class StudentDatabase {
     /**
      * Returns a list of all records that satisfy the given query.
      * 
-     * @param query - query to be satisfied
+     * @param queryText - query to be satisfied
      * @return - list of all records that satisfy the given query
      */
     public void select(String queryText) {
