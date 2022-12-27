@@ -7,12 +7,12 @@ public class ComplexRootedPolynomial {
     /**
      * Polynomial's constant.
      */
-    Complex constant;
+    private final Complex constant;
 
     /**
      * Roots of the polynomial.
      */
-    Complex[] roots;
+    private final Complex[] roots;
 
     /**
      * Constructor that takes a constant and roots of the polynomial.
@@ -40,7 +40,10 @@ public class ComplexRootedPolynomial {
         return result;
     }
 
-    // converts this representation to ComplexPolynomial type
+    /**
+     * Method that converts this representation to ComplexPolynomial type.
+     * @return ComplexPolynomial representation of this polynomial.
+     */
     public ComplexPolynomial toComplexPolynomial() {
         ComplexPolynomial result = new ComplexPolynomial(constant);
         for (Complex root : roots) {
@@ -49,6 +52,19 @@ public class ComplexRootedPolynomial {
         return result;
     }
 
+    /**
+     * Roots getter.
+     * @return Roots of the polynomial as an array.
+     */
+    public Complex[] getRoots() {
+        return roots;
+    }
+
+    /**
+     * Returns string representation of this polynomial in the format of
+     * (z0)*(z-z1)*(z-z2)*...*(z-zn)
+     * @return String representation of this polynomial.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

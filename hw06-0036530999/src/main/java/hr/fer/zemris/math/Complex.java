@@ -11,17 +11,17 @@ public class Complex {
     /**
      * Real part.
      */
-    private double re;
+    private final double re;
 
     /**
      * Imaginary part.
      */
-    private double im;
+    private final double im;
 
     /**
      * Constant representing zero.
      */
-    public static final Complex ZERO = new Complex(0, 0);  // TODO should u use this bro?
+    public static final Complex ZERO = new Complex(0, 0);
 
     /**
      * Constant representing one.
@@ -147,28 +147,13 @@ public class Complex {
             throw new IllegalArgumentException("Given power must be non-negative integer.");
         }
         double module = Math.pow(module(), n);
-        double angle;
-        if (re == 0) {
-            angle = im > 0 ? Math.PI / 2 : -Math.PI / 2;
-        } else {
-            angle = Math.atan(im / re);
-            if (re < 0) {
-                angle += Math.PI;
-            }
-        }
+        double angle = calcAngle();
         angle *= n;
         return new Complex(module * Math.cos(angle), module * Math.sin(angle));
 
     }
 
-
-    // returns n-th root of this, n is positive integer
-    @SuppressWarnings("DuplicatedCode")
-    public List<Complex> root(int n) {
-        if (n <= 0) {
-            throw new IllegalArgumentException("Given root must be positive integer.");
-        }
-        double module = Math.pow(module(), 1.0 / n);
+    private double calcAngle() {
         double angle;
         if (re == 0) {
             angle = im > 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -178,6 +163,21 @@ public class Complex {
                 angle += Math.PI;
             }
         }
+        return angle;
+    }
+
+
+    /**
+     * Returns list of complex numbers which are roots of this complex number.
+     * @param n the root to be taken (e.g. n=2 means square root)
+     * @return list of complex numbers which are roots of this complex number
+     */
+    public List<Complex> root(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("Given root must be positive integer.");
+        }
+        double module = Math.pow(module(), 1.0 / n);
+        double angle = calcAngle();
         angle /= n;
         List<Complex> roots = new ArrayList<>();
         for (int i = 0; i < n; i++) {
@@ -187,6 +187,10 @@ public class Complex {
         return roots;
     }
 
+    /**
+     * Returns String representation of this complex number.
+     * @return String representation of this complex number
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -212,7 +216,12 @@ public class Complex {
         return sb.toString();
     }
 
-    // parse complex number from string in format "a+ib" or "a-ib" or "a" or "ib" or "-a+ib" or "-a-ib" or "-a" or "-ib"
+    /**
+     * Parses given String to complex number, the string be in the format
+     * "a+ib" or "a-ib" or "a" or "ib" or "-a+ib" or "-a-ib" or "-a" or "-ib"
+     * @param s String to parse
+     * @return Complex number parsed from given String
+     */
     public static Complex parse(String s) {
         if (s == null) {
             throw new IllegalArgumentException("Given string must not be null.");
@@ -283,6 +292,11 @@ public class Complex {
         return new Complex(re, im);
     }
 
+    /**
+     * Checks if given object is equal to this complex number.
+     * @param o object to check
+     * @return true if given object is equal to this complex number, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -291,6 +305,10 @@ public class Complex {
         return Double.compare(complex.re, re) == 0 && Double.compare(complex.im, im) == 0;
     }
 
+    /**
+     * Returns hash code of this complex number, calculated using re and im.
+     * @return hash code of this complex number
+     */
     @Override
     public int hashCode() {
         return Objects.hash(re, im);

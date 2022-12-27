@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static java.lang.System.exit;
-
 public class Newton {
     public static void main(String[] args) {
         System.out.println("Welcome to Newton-Raphson iteration-based fractal viewer.");
@@ -43,6 +41,7 @@ public class Newton {
     private static IFractalProducer getSequentialFractalProducer(List<Complex> roots) {
         return (reMin, reMax, imMin, imMax, width, height, requestNo, observer, cancel) -> {
             System.out.println("Zapocinjem izracun...");
+            Long start_time = System.currentTimeMillis();
             ComplexRootedPolynomial rootedPolynomial = new ComplexRootedPolynomial(Complex.ONE, roots.toArray(new Complex[0]));
             ComplexPolynomial complexPolynomial = rootedPolynomial.toComplexPolynomial();
             ComplexPolynomial derived = complexPolynomial.derive();
@@ -73,6 +72,8 @@ public class Newton {
                     data[offset++] = (short) (index + 1);
                 }
             }
+            Long end_time = System.currentTimeMillis();
+            System.out.println("Izracun gotov. Vrijeme izracuna: " + (end_time - start_time) + " ms.");
             System.out.println("Izracun gotov...");
             observer.acceptResult(data, (short) (roots.size() + 1), requestNo);
         };

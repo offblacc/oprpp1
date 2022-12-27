@@ -14,7 +14,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.System.exit;
 
+/**
+ * Multithreaded Newton-Raphson fractal generator.
+ */
 public class NewtonParallel {
+    /**
+     * Main method, entry point of the program. Takes arguments 'workers' and 'tracks'
+     * from the command line and starts the fractal viewer (--tracks=4 --workers=4 or
+     * -w 4 -t 4).
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         HashMap<String, Integer> params = parseArguments(args);
         System.out.println("Welcome to Newton-Raphson iteration-based fractal viewer.");
@@ -45,29 +55,111 @@ public class NewtonParallel {
         }
         sc.close();
         System.out.println("Image of fractal will appear shortly. Thank you.");
-        FractalViewer.show(new MyProducer(complexRoots.toArray(new Complex[0]), numOfThreads, numOfTracks));
+        FractalViewer.show(new MyProducer(new ComplexRootedPolynomial(Complex.ONE, complexRoots.toArray(new Complex[0])), numOfThreads, numOfTracks));
     }
 
+    /**
+     * Class representing a calculation job for a chunk of the fractal.
+     */
     public static class CalculationJob implements Runnable {
+        /**
+         * Minimum real value of the chunk.
+         */
         double reMin;
+
+        /**
+         * Maximum real value of the chunk.
+         */
         double reMax;
+
+        /**
+         * Minimum imaginary value of the chunk.
+         */
         double imMin;
+
+        /**
+         * Maximum imaginary value of the chunk.
+         */
         double imMax;
+
+        /**
+         * Width of the chunk.
+         */
         int width;
+
+        /**
+         * Height of the chunk.
+         */
         int height;
+
+        /**
+         * Minimum y value of the chunk.
+         */
         int yMin;
+
+        /**
+         * Maximum y value of the chunk.
+         */
         int yMax;
+
+        /**
+         * Maximum number of iterations.
+         */
         int m;
+
+        /**
+         * Color values of the chunk.
+         */
         short[] data;
-        Complex[] roots;
+
+
+        /**
+         * Cancel flag.
+         */
         AtomicBoolean cancel;
+
+        /**
+         * The polynomial whose fractal is being calculated as ComplexRootedPolynomial.
+         */
         ComplexRootedPolynomial rootedPolynomial;
+
+        /**
+         * The polynomial whose fractal is being calculated as ComplexPolynomial.
+         */
         ComplexPolynomial complexPolynomial;
+
+        /**
+         * Derivative of the polynomial whose fractal is being calculated.
+         */
         ComplexPolynomial derived;
-        public static CalculationJob NO_JOB = new CalculationJob();
 
-        public CalculationJob() {}
+        /**
+         * Empty calculation job constructor.
+         */
+        public static final CalculationJob NO_JOB = new CalculationJob();
 
+        /**
+         * Default constructor.
+         */
+        public CalculationJob() {
+        }
+
+
+        /**
+         * Constructor for the calculation job.
+         * @param reMin minimum real value of the chunk
+         * @param reMax maximum real value of the chunk
+         * @param imMin minimum imaginary value of the chunk
+         * @param imMax maximum imaginary value of the chunk
+         * @param width width of the chunk
+         * @param height height of the chunk
+         * @param yMin minimum y value of the chunk
+         * @param yMax maximum y value of the chunk
+         * @param m maximum number of iterations
+         * @param data color values of the chunk
+         * @param cancel cancel flag
+         * @param roots roots of the polynomial whose fractal is being calculated
+         */
         public CalculationJob(double reMin, double reMax, double imMin, double imMax, int width, int height, int yMin, int yMax, int m, short[] data, AtomicBoolean cancel, Complex[] roots) {
             this.reMin = reMin;
             this.reMax = reMax;
@@ -80,16 +172,18 @@ public class NewtonParallel {
             this.m = m;
             this.data = data;
             this.cancel = cancel;
-            this.roots = roots;
             this.rootedPolynomial = new ComplexRootedPolynomial(Complex.ONE, roots);
             this.complexPolynomial = rootedPolynomial.toComplexPolynomial();
             this.derived = complexPolynomial.derive();
         }
 
+        /**
+         * Calculates the fractal for the chunk.
+         */
         @Override
         public void run() {
-            int offset = 0;
-            for (int y = 0; y < height; y++) {
+            int offset = yMin * width;
+            for (int y = yMin; y < yMax; y++) {
                 if (cancel.get()) {
                     System.out.println("Izracun prekinut.");
                     return;
@@ -116,63 +210,102 @@ public class NewtonParallel {
         }
     }
 
+    /**
+     * Class representing a producer of calculation jobs.
+     */
     public static class MyProducer implements IFractalProducer {
-        private int numOfThreads;
-        private int numOfTracks;
-        private Complex[] roots;
+        /**
+         * Number of threads to use for the calculation.
+         */
+        private final int numOfThreads;
 
-        public MyProducer(Complex[] roots, int numOfThreads, int numOfTracks) {
+        /**
+         * Number of tracks to use for the calculation.
+         */
+        private final int numOfTracks;
+
+        /**
+         * Polynomial whose fractal is being calculated as ComplexPolynomial.
+         */
+        private final ComplexPolynomial polynomial;
+
+        /**
+         * Polynomial whose fractal is being calculated as ComplexRootedPolynomial.
+         */
+        private final ComplexRootedPolynomial rootedPolynomial;
+
+        /**
+         * Constructor for the producer, taking roots of the polynomial whose fractal is being calculated,
+         * number of threads to use for the calculation and number of tracks to use for the calculation.
+         * @param rootedPolynomial polynomial whose fractal is being calculated
+         * @param numOfThreads number of threads to use for the calculation
+         * @param numOfTracks number of tracks to use for the calculation
+         */
+        public MyProducer(ComplexRootedPolynomial rootedPolynomial, int numOfThreads, int numOfTracks) {
             this.numOfThreads = numOfThreads;
             this.numOfTracks = numOfTracks;
-            this.roots = roots;
+            this.rootedPolynomial = rootedPolynomial;
+            this.polynomial = rootedPolynomial.toComplexPolynomial();
         }
 
+        /**
+         * Calculates the fractal for the given parameters.
+         * @param reMin minimum real value
+         * @param reMax maximum real value
+         * @param imMax maximum imaginary value
+         * @param imMin minimum imaginary value
+         * @param width width of the image
+         * @param height height of the image
+         * @param requestNo request number
+         * @param observer observer to be notified when the calculation is done
+         * @param cancel cancel flag
+         */
         @Override
         public void produce(double reMin, double reMax, double imMin, double imMax, int width, int height, long requestNo, IFractalResultObserver observer, AtomicBoolean cancel) {
             System.out.println("Zapocinjem izracun...");
             int m = 16 * 16 * 16;
             short[] data = new short[width * height];
+            int brojYPoTraci = height / numOfTracks;
 
-            final BlockingQueue<CalculationJob> queue = new LinkedBlockingQueue<>();
-
+            final BlockingQueue<CalculationJob> queue = new LinkedBlockingQueue<>(numOfThreads);
             Thread[] workers = new Thread[numOfThreads];
             for (int i = 0; i < numOfThreads; i++) {
                 workers[i] = new Thread(() -> {
                     while (true) {
-                        CalculationJob job = null;
+                        CalculationJob job;
                         try {
                             job = queue.take();
                             if (job == CalculationJob.NO_JOB) break;
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            continue;
                         }
                         job.run();
                     }
                 });
             }
 
-            for (int i = 0; i < numOfThreads; i++) {
-                workers[i].start();
+            for (Thread worker : workers) {
+                worker.start();
             }
 
-            System.out.println("Number of tracks: " + numOfTracks);
             for (int i = 0; i < numOfTracks; i++) {
-                int yMin = i * height / numOfTracks;
-                int yMax = (i + 1) * height / numOfTracks - 1;
+                int yMin = i * brojYPoTraci;
+                int yMax = (i + 1) * brojYPoTraci;
                 if (i == numOfTracks - 1) {
                     yMax = height - 1;
                 }
-                CalculationJob job = new CalculationJob(reMin, reMax, imMin, imMax, width, height, yMin, yMax, m, data, cancel, roots);
-                try {
-                    queue.put(job);
-                    break;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                CalculationJob job = new CalculationJob(reMin, reMax, imMin, imMax, width, height, yMin, yMax, m, data, cancel, rootedPolynomial.getRoots());
+                while (true) {
+                    try {
+                        queue.put(job);
+                        break;
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
 
-            for(int i = 0; i < workers.length; i++) {
-                while(true) {
+            for (int i = 0; i < workers.length; i++) {
+                while (true) {
                     try {
                         queue.put(CalculationJob.NO_JOB);
                         break;
@@ -181,22 +314,26 @@ public class NewtonParallel {
                 }
             }
 
-            for(int i = 0; i < workers.length; i++) {
-                while(true) {
+            for (Thread worker : workers) {
+                while (true) {
                     try {
-                        workers[i].join();
+                        worker.join();
                         break;
                     } catch (InterruptedException e) {
                     }
                 }
             }
-
             System.out.println("Izracun gotov...");
-            observer.acceptResult(data, (short) (roots.length + 1), requestNo);
+            observer.acceptResult(data, polynomial.order(), requestNo);
         }
     }
 
 
+    /**
+     * Helper method for parsing the command line arguments.
+     * @param args command line arguments
+     * @return parsed arguments as a map
+     */
     public static HashMap<String, Integer> parseArguments(String[] args) {
         HashMap<String, Integer> map = new HashMap<>();
         for (int i = 0; i < args.length; i++) {

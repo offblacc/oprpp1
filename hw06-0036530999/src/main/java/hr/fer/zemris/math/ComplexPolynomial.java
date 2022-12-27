@@ -2,11 +2,14 @@ package hr.fer.zemris.math;
 
 import java.util.Arrays;
 
+/**
+ * Class that represents a polynomial with complex coefficients.
+ */
 public class ComplexPolynomial {
     /**
      * Polynomial's factors.
      */
-    private Complex[] factors;
+    private final Complex[] factors;
 
     /**
      * Constructor that takes factors of the polynomial.
@@ -72,6 +75,12 @@ public class ComplexPolynomial {
     }
 
 
+    /**
+     * Returns the string representation of this polynomial in
+     * the form of (7+2i)z^3+(2)z^2+(5-3i)z+(1)z^0
+     *
+     * @return String representation of this polynomial.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -83,7 +92,6 @@ public class ComplexPolynomial {
                 sb.append(" + ");
             }
             sb.append('(').append(factors[i]).append(')').append("z^").append(i);
-
         }
         return sb.toString();
     }
