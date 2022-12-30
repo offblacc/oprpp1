@@ -32,12 +32,17 @@ public class CalcLayout implements LayoutManager2 { // upravljač
 
     @Override
     public void addLayoutComponent(Component comp, Object RCPositionConstraints) {
-        if (RCPositionConstraints == null) {
-            throw new NullPointerException("RCPositionConstraints cannot be null.");
+        if (RCPositionConstraints == null || comp == null) {
+            throw new NullPointerException("Component or RCPositionConstraints is null.");
         }
-        if (!(RCPositionConstraints instanceof RCPosition pos)) {
-            throw new CalcLayoutException("RCPositionConstraints must be an instance of RCPosition.");
-        }
+        RCPosition pos;
+        if (!(RCPositionConstraints instanceof RCPosition)) {
+            if (!(RCPositionConstraints instanceof String strPos)) {
+                throw new CalcLayoutException("RCPositionConstraints must be an instance of RCPosition, or a string in the format \"row,column\".");
+            }
+            pos = RCPosition.parse(strPos);
+        } else pos = (RCPosition) RCPositionConstraints;
+
         int row = pos.getRow();
         int column = pos.getColumn();
         if (row < 1 || row > ROWS) {
@@ -93,38 +98,36 @@ public class CalcLayout implements LayoutManager2 { // upravljač
 
     @Override
     public void removeLayoutComponent(Component comp) {
-
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++) {
+                if (components[i][j] == comp) {
+                    components[i][j] = null;
+                    return;
+                }
+            }
+        }
     }
 
     @Override
     public Dimension preferredLayoutSize(Container parent) {
         int x = 0;
         int y = 0;
-        RCPosition decidingPosition = null;
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
                 if (components[i][j] == null) continue;
-                int div = 1;
-                if (specialPositions.containsKey(new RCPosition(i + 1, j + 1))) {
-                    div = specialPositions.get(new RCPosition(i + 1, j + 1));
-                }
                 Dimension d = components[i][j].getPreferredSize();
-                System.out.println(d + " is the preferred size");
-                if (d.width / div > x) {
-                    x = d.width / div;
-                    decidingPosition = new RCPosition(i + 1, j + 1);
+                RCPosition currRCPos = new RCPosition(i + 1, j + 1);
+                int width = d.width;
+                if (specialPositions.containsKey(currRCPos)) {
+                    int specialWidthValue = specialPositions.get(currRCPos);
+                    width = (d.width - (specialWidthValue - 1) * gap) / specialWidthValue;
+
                 }
-                if (d.height > y) {
-                    y = d.height;
-                    decidingPosition = new RCPosition(i + 1, j + 1);
-                }
+                if (x < width) x = width;
+                if (d.height > y) y = d.height;
             }
         }
-        int rows = ROWS;
-        if (decidingPosition.getRow() == 1) { // FIXME .. you know
-            rows = 3;
-        }
-        return new Dimension(x * COLUMNS + gap * (COLUMNS - 1), y * rows + gap * (rows - 1));
+        return new Dimension(x * COLUMNS + gap * (COLUMNS - 1), y * ROWS + gap * (ROWS - 1));
     }
 
     @Override
