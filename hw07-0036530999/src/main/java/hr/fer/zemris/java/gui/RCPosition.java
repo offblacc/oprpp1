@@ -1,6 +1,7 @@
 package hr.fer.zemris.java.gui;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class that represents a position in a (5 by 7) grid.
@@ -60,5 +61,18 @@ public class RCPosition {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid format.");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RCPosition that = (RCPosition) o;
+        return row == that.row && column == that.column;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, column);
     }
 }

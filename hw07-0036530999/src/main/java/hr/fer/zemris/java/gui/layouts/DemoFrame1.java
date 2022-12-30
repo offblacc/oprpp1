@@ -15,6 +15,8 @@ public class DemoFrame1 extends JFrame {
         Container cp = getContentPane();
         cp.setLayout(new CalcLayout(3));
         cp.add(l("tekst 1"), new RCPosition(1,1));
+//        cp.add(l("2"), new RCPosition(1,2));
+//        cp.add(l("3"), new RCPosition(1,3));
         cp.add(l("tekst 2"), new RCPosition(2,3));
         cp.add(l("tekst stvarno najdulji"), new RCPosition(2,7));
         cp.add(l("tekst kraći"), new RCPosition(4,2));
@@ -28,8 +30,6 @@ public class DemoFrame1 extends JFrame {
         return l;
     }
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(()->{
-            new DemoFrame1().setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new DemoFrame1().setVisible(true));
     }
 }
