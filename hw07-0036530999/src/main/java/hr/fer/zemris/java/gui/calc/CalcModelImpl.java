@@ -28,7 +28,8 @@ public class CalcModelImpl implements CalcModel {
 
     @Override
     public double getValue() {
-        if (currentNumberValue.isPresent()) return currentNumberValue.getAsDouble();
+        if (currentNumberValue.isPresent())
+            return isNegative ? -currentNumberValue.getAsDouble() : currentNumberValue.getAsDouble();
         return 0;
     }
 
@@ -71,9 +72,10 @@ public class CalcModelImpl implements CalcModel {
     }
 
     @Override
-    public void insertDecimalPoint() throws CalculatorInputException {
+    public void insertDecimalPoint() throws CalculatorInputException { // TODO is this ok? -> myb without ? fr idk
         if (!isEditable) throw new CalculatorInputException("Calculator is not editable");
         if (currentNumber.contains(".")) throw new CalculatorInputException("Number already contains decimal point");
+        if (currentNumber.isEmpty()) throw new CalculatorInputException();
         currentNumber += ".";
         frozenDisplayValue = null;
     }
@@ -84,12 +86,17 @@ public class CalcModelImpl implements CalcModel {
         double num;
         try {
             num = Double.parseDouble(currentNumber + digit);
-            if (num < 0 || num > 9) throw new IllegalArgumentException("Digit must be between 0 and 9");
+            if (num > Double.MAX_VALUE) throw new CalculatorInputException("Number is too big");
         } catch (NumberFormatException e) {
             throw new CalculatorInputException("Invalid number");
         }
-        if (currentNumberValue.isPresent() && currentNumberValue.getAsDouble() == 0 && num == 0 && !currentNumber.contains("."))
-            return;
+
+        if (currentNumberValue.isPresent() && currentNumberValue.getAsDouble() == 0) {
+            if (!currentNumber.contains("."))
+                if (num == 0) return;
+            else currentNumber = "";
+        }
+
         currentNumber += digit;
         currentNumberValue = OptionalDouble.of(num);
         frozenDisplayValue = null;

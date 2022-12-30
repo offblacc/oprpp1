@@ -12,7 +12,6 @@ import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 import java.util.function.DoubleBinaryOperator;
 
 public class CalcModelTest {
-
     private CalcModel model;
 
     private static CalcModel newCalcModel() {
@@ -384,74 +383,5 @@ public class CalcModelTest {
         private void notimp() {
             throw new UnsupportedOperationException("Method is not implemented yet!");
         }
-    }
-
-    // -- my tests --
-    @Test
-    public void testInputExample1() {
-        model.insertDigit(5);
-        assertEquals(5.0, model.getValue(), 1E-10);
-        assertEquals("5", model.toString());
-        assertFalse(model.isActiveOperandSet());
-        assertNull(model.getPendingBinaryOperation());
-        assertThrows(IllegalStateException.class, () -> model.getActiveOperand());
-
-        model.insertDigit(8);
-        assertEquals(58.0, model.getValue(), 1E-10);
-        assertEquals("58", model.toString());
-        assertFalse(model.isActiveOperandSet());
-        assertNull(model.getPendingBinaryOperation());
-        assertThrows(IllegalStateException.class, () -> model.getActiveOperand());
-
-        model.setActiveOperand(model.getValue());
-        assertEquals(58.0, model.getValue(), 1E-10);
-        assertEquals("58", model.toString());
-        assertTrue(model.isActiveOperandSet());
-        assertEquals(58.0, model.getActiveOperand(), 1E-10);
-        assertNull(model.getPendingBinaryOperation());
-
-        model.setPendingBinaryOperation(Double::sum);
-        assertEquals(58.0, model.getValue(), 1E-10);
-        assertEquals("58", model.toString());
-        assertTrue(model.isActiveOperandSet());
-        assertEquals(58.0, model.getActiveOperand(), 1E-10);
-        assertNotNull(model.getPendingBinaryOperation());
-
-        model.clear();
-        assertEquals(0.0, model.getValue(), 1E-10);
-        assertEquals("0", model.toString());
-        assertTrue(model.isActiveOperandSet());
-        assertEquals(58.0, model.getActiveOperand(), 1E-10);
-        assertNotNull(model.getPendingBinaryOperation());
-
-        model.insertDigit(1);
-        assertEquals(1.0, model.getValue(), 1E-10);
-        assertEquals("1", model.toString());
-        assertTrue(model.isActiveOperandSet());
-        assertEquals(58.0, model.getActiveOperand(), 1E-10);
-        assertNotNull(model.getPendingBinaryOperation());
-
-        model.insertDigit(4);
-        assertEquals(14.0, model.getValue(), 1E-10);
-        assertEquals("14", model.toString());
-        assertTrue(model.isActiveOperandSet());
-        assertEquals(58.0, model.getActiveOperand(), 1E-10);
-        assertNotNull(model.getPendingBinaryOperation());
-
-        double result = model.getPendingBinaryOperation().applyAsDouble(model.getActiveOperand(), model.getValue());
-        model.setValue(result);
-        assertEquals(72.0, model.getValue(), 1E-10);
-        assertEquals("72.0", model.toString());
-        assertFalse(model.isActiveOperandSet());
-        assertNull(model.getPendingBinaryOperation());
-        assertThrows(IllegalStateException.class, () -> model.getActiveOperand());
-
-        model.clearActiveOperand();
-        assertEquals(72.0, model.getValue(), 1E-10);
-        assertEquals("72.0", model.toString());
-        assertFalse(model.isActiveOperandSet());
-        assertNull(model.getPendingBinaryOperation());
-        assertThrows(IllegalStateException.class, () -> model.getActiveOperand());
-
     }
 }

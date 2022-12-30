@@ -61,22 +61,6 @@ public class CalcLayout implements LayoutManager2 { // upravljač
     }
 
     @Override
-    public Dimension maximumLayoutSize(Container target) {
-        int x = Integer.MAX_VALUE;
-        int y = Integer.MAX_VALUE;
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-                if (components[i][j] != null) {
-                    Dimension d = components[i][j].getMaximumSize();
-                    if (d.width < x) x = d.width;
-                    if (d.height < y) y = d.height;
-                }
-            }
-        }
-        return new Dimension(x, y);
-    }
-
-    @Override
     public float getLayoutAlignmentX(Container target) {
         return 0;
     }
@@ -108,43 +92,31 @@ public class CalcLayout implements LayoutManager2 { // upravljač
         }
     }
 
+     @Override
+    public Dimension minimumLayoutSize(Container parent) {
+        ISizeGetter sizeGetter = LayoutSizeType.MIN;
+        return getLayoutSize(parent, sizeGetter);
+    }
+
+    @Override
+    public Dimension maximumLayoutSize(Container parent) {
+        ISizeGetter sizeGetter = LayoutSizeType.MAX;
+        return getLayoutSize(parent, sizeGetter);
+    }
+
     @Override
     public Dimension preferredLayoutSize(Container parent) {
-        int x = 0;
-        int y = 0;
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-                if (components[i][j] == null) continue;
-                Dimension d = components[i][j].getPreferredSize();
-                RCPosition currRCPos = new RCPosition(i + 1, j + 1);
-                int width = d.width;
-                if (specialPositions.containsKey(currRCPos)) {
-                    int specialWidthValue = specialPositions.get(currRCPos);
-                    width = (d.width - (specialWidthValue - 1) * gap) / specialWidthValue;
-
-                }
-                if (x < width) x = width;
-                if (d.height > y) y = d.height;
-            }
-        }
-        return new Dimension(x * COLUMNS + gap * (COLUMNS - 1), y * ROWS + gap * (ROWS - 1));
+        ISizeGetter sizeGetter = LayoutSizeType.PREF;
+        return getLayoutSize(parent, sizeGetter);
     }
 
-    @Override
-    public Dimension minimumLayoutSize(Container parent) {
-        int x = 0; // TODO refactor this, delegate to a method which will be used by this, max and pref
-        int y = 0;
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-                if (components[i][j] != null) {
-                    Dimension d = components[i][j].getMinimumSize();
-                    if (d.width > x) x = d.width;
-                    if (d.height > y) y = d.height;
-                }
-            }
-        }
-        return new Dimension(x * COLUMNS + gap * (COLUMNS - 1), y * ROWS + gap * (ROWS - 1));
-    }
+
+
+
+
+
+
+
 
     // when there is a component that takes multiple rows, it is stored in specialPositions
     // and the number of rows it takes is stored as an Integer value
@@ -158,7 +130,6 @@ public class CalcLayout implements LayoutManager2 { // upravljač
         int componentHeight = (height - (ROWS - 1) * gap) / ROWS;
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0, columnPointer = 0; j < COLUMNS; j++) {
-                // TODO idk where it is but you need to be able to parse "1, 1" to RCPosition from somewhere
                 if (components[i][j] == null) continue;
                 if (columnPointer < j) columnPointer = j;
                 int widthMul = specialPositions.getOrDefault(new RCPosition(i + 1, j + 1), 1);
@@ -168,5 +139,26 @@ public class CalcLayout implements LayoutManager2 { // upravljač
                 columnPointer += widthMul;
             }
         }
+    }
+
+    public Dimension getLayoutSize(Container parent, ISizeGetter sizeType) {
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++) {
+                if (components[i][j] == null) continue;
+                Dimension d = sizeType.get(components[i][j]);
+                RCPosition currRCPos = new RCPosition(i + 1, j + 1);
+                int width = d.width;
+                if (specialPositions.containsKey(currRCPos)) {
+                    int specialWidthValue = specialPositions.get(currRCPos);
+                    width = (d.width - (specialWidthValue - 1) * gap) / specialWidthValue;
+
+                }
+                if (x < width) x = width;
+                if (d.height > y) y = d.height;
+            }
+        }
+        return new Dimension(x * COLUMNS + gap * (COLUMNS - 1), y * ROWS + gap * (ROWS - 1));
     }
 }
