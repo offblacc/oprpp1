@@ -56,7 +56,7 @@ public class Calculator extends JFrame {
         cp.add(new UnaryOperationButton("tan", model), new RCPosition(4, 2));
         cp.add(new UnaryOperationButton("ctg", model), new RCPosition(5, 2));
         cp.add(new SwapSignButton(model), new RCPosition(5, 4)); // TODO try entering 5 then swap then 1/x -> fix
-
+        cp.add(new InvertedToggleButton(model), new RCPosition(5, 7));
 
     }
 }

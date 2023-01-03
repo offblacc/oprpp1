@@ -159,4 +159,12 @@ public class CalcModelImpl implements CalcModel {
         if (currentNumber.equals("")) return isNegative ? "-0" : "0";
         return (isNegative ? "-" : "") + currentNumber;
     }
+
+    public boolean isInverted() {
+        return inverted;
+    }
+
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
+    }
 }
