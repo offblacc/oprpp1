@@ -1,4 +1,4 @@
-package hr.fer.zemris.java.gui.calc.components;
+package hr.fer.zemris.java.gui.calc.components.buttons;
 
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
 

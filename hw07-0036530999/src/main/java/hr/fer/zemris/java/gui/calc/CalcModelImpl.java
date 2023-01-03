@@ -12,16 +12,16 @@ import java.util.OptionalDouble;
 import java.util.function.DoubleBinaryOperator;
 
 public class CalcModelImpl implements CalcModel {
-    boolean isEditable = true;
-    boolean isNegative = false;
-    String currentNumber = "";
-    OptionalDouble currentNumberValue = OptionalDouble.empty();
-    String frozenDisplayValue = null;
-    DoubleBinaryOperator binaryOperator = null;
-    OptionalDouble activeOperand = OptionalDouble.empty();
+    private boolean isEditable = true;
+    private boolean isNegative = false;
+    private String currentNumber = "";
+    private OptionalDouble currentNumberValue = OptionalDouble.empty();
+    private String frozenDisplayValue = null;
+    private DoubleBinaryOperator binaryOperator = null;
+    private OptionalDouble activeOperand = OptionalDouble.empty();
+    private boolean inverted = false;
 
     List<CalcValueListener> listeners = new ArrayList<>();
-
 
 
     @Override
@@ -63,7 +63,6 @@ public class CalcModelImpl implements CalcModel {
         currentNumberValue = OptionalDouble.empty();
         isEditable = true;
         isNegative = false;
-        frozenDisplayValue = null;
         listeners.forEach(l -> l.valueChanged(this));
     }
 
@@ -72,6 +71,7 @@ public class CalcModelImpl implements CalcModel {
         clear();
         activeOperand = OptionalDouble.empty();
         binaryOperator = null;
+        frozenDisplayValue = null;
         listeners.forEach(l -> l.valueChanged(this));
     }
 
@@ -107,12 +107,16 @@ public class CalcModelImpl implements CalcModel {
         if (currentNumberValue.isPresent() && currentNumberValue.getAsDouble() == 0) {
             if (!currentNumber.contains("."))
                 if (num == 0) return;
-            else currentNumber = "";
+                else currentNumber = "";
+        }
+
+        if (frozenDisplayValue != null) {
+            currentNumber = "";
+            frozenDisplayValue = null;
         }
 
         currentNumber += digit;
         currentNumberValue = OptionalDouble.of(num);
-        frozenDisplayValue = null;
         listeners.forEach(l -> l.valueChanged(this));
     }
 
@@ -131,6 +135,7 @@ public class CalcModelImpl implements CalcModel {
     @Override
     public void setActiveOperand(double activeOperand) {
         this.activeOperand = OptionalDouble.of(activeOperand); // TODO no listener here, right?
+        frozenDisplayValue = toString();
     }
 
     @Override

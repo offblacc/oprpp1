@@ -113,7 +113,7 @@ public class CalcLayout implements LayoutManager2 { // upravljač
      * @param parent the container to be laid out
      */
     @Override
-    public void layoutContainer(Container parent) {
+    public void layoutContainer(Container parent) { // TODO make sure you alternate 38 39 38 39 blahblah u know
         Insets insets = parent.getInsets();
         int width = parent.getWidth() - insets.left - insets.right;
         int height = parent.getHeight() - insets.top - insets.bottom;

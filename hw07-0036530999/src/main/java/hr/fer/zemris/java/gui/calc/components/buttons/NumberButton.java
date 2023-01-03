@@ -1,4 +1,4 @@
-package hr.fer.zemris.java.gui.calc.components;
+package hr.fer.zemris.java.gui.calc.components.buttons;
 
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
 
@@ -10,7 +10,7 @@ public class NumberButton extends JButton {
 
     public NumberButton(String text, CalcModel model) {
         super(text);
-        setFont(getFont().deriveFont(30f));
+        setFont(getFont().deriveFont(20f));
         this.model = model;
         try {
             digit = Integer.parseInt(text);
@@ -18,6 +18,9 @@ public class NumberButton extends JButton {
             throw new IllegalArgumentException("Invalid digit.");
         }
         addActionListener(e -> {
+            if (model.getPendingBinaryOperation() != null && model.toString().isEmpty()) {
+                model.clear();
+            }
             model.insertDigit(digit);
         });
     }
