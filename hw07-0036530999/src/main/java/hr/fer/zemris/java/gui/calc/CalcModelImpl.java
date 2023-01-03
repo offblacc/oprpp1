@@ -3,7 +3,11 @@ package hr.fer.zemris.java.gui.calc;
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
 import hr.fer.zemris.java.gui.calc.model.CalcValueListener;
 import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
+import hr.fer.zemris.java.gui.layouts.CalcLayout;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 import java.util.function.DoubleBinaryOperator;
 
@@ -16,14 +20,18 @@ public class CalcModelImpl implements CalcModel {
     DoubleBinaryOperator binaryOperator = null;
     OptionalDouble activeOperand = OptionalDouble.empty();
 
+    List<CalcValueListener> listeners = new ArrayList<>();
+
+
+
     @Override
     public void addCalcValueListener(CalcValueListener l) {
-
+        listeners.add(l);
     }
 
     @Override
     public void removeCalcValueListener(CalcValueListener l) {
-
+        listeners.remove(l);
     }
 
     @Override
@@ -41,6 +49,7 @@ public class CalcModelImpl implements CalcModel {
         currentNumberValue = OptionalDouble.of(value);
         currentNumber = Double.toString(value);
         isEditable = false;
+        listeners.forEach(l -> l.valueChanged(this));
     }
 
     @Override
@@ -55,6 +64,7 @@ public class CalcModelImpl implements CalcModel {
         isEditable = true;
         isNegative = false;
         frozenDisplayValue = null;
+        listeners.forEach(l -> l.valueChanged(this));
     }
 
     @Override
@@ -62,6 +72,7 @@ public class CalcModelImpl implements CalcModel {
         clear();
         activeOperand = OptionalDouble.empty();
         binaryOperator = null;
+        listeners.forEach(l -> l.valueChanged(this));
     }
 
     @Override
@@ -69,6 +80,7 @@ public class CalcModelImpl implements CalcModel {
         if (!isEditable) throw new CalculatorInputException("Calculator is not editable");
         isNegative = !isNegative;
         frozenDisplayValue = null;
+        listeners.forEach(l -> l.valueChanged(this));
     }
 
     @Override
@@ -78,6 +90,7 @@ public class CalcModelImpl implements CalcModel {
         if (currentNumber.isEmpty()) throw new CalculatorInputException();
         currentNumber += ".";
         frozenDisplayValue = null;
+        listeners.forEach(l -> l.valueChanged(this));
     }
 
     @Override
@@ -100,6 +113,7 @@ public class CalcModelImpl implements CalcModel {
         currentNumber += digit;
         currentNumberValue = OptionalDouble.of(num);
         frozenDisplayValue = null;
+        listeners.forEach(l -> l.valueChanged(this));
     }
 
     @Override
@@ -116,7 +130,7 @@ public class CalcModelImpl implements CalcModel {
 
     @Override
     public void setActiveOperand(double activeOperand) {
-        this.activeOperand = OptionalDouble.of(activeOperand);
+        this.activeOperand = OptionalDouble.of(activeOperand); // TODO no listener here, right?
     }
 
     @Override
@@ -130,7 +144,7 @@ public class CalcModelImpl implements CalcModel {
     }
 
     @Override
-    public void setPendingBinaryOperation(DoubleBinaryOperator op) {
+    public void setPendingBinaryOperation(DoubleBinaryOperator op) { // TODO no listener here, right?
         binaryOperator = op;
     }
 

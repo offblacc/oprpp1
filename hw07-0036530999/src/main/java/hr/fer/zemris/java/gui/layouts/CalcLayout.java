@@ -46,16 +46,16 @@ public class CalcLayout implements LayoutManager2 { // upravljač
         int row = pos.getRow();
         int column = pos.getColumn();
         if (row < 1 || row > ROWS) {
-            throw new CalcLayoutException("Row must be between 1 and 5.");
+            throw new CalcLayoutException("Row must be between 1 and 5, got " + row);
         }
         if (column < 1 || column > COLUMNS) {
-            throw new CalcLayoutException("Column must be between 1 and 7.");
+            throw new CalcLayoutException("Column must be between 1 and 7, got " + column);
         }
         if (row == 1 && column > 1 && column < 6) {
             throw new CalcLayoutException("Invalid position.");
         }
         if (components[row - 1][column - 1] != null) {
-            throw new CalcLayoutException("Position is already occupied.");
+            throw new CalcLayoutException("Position (" + row + ", " + column + ") is already occupied.");
         }
         components[row - 1][column - 1] = comp;
     }
@@ -92,35 +92,26 @@ public class CalcLayout implements LayoutManager2 { // upravljač
         }
     }
 
-     @Override
+    @Override
     public Dimension minimumLayoutSize(Container parent) {
-        ISizeGetter sizeGetter = LayoutSizeType.MIN;
-        return getLayoutSize(parent, sizeGetter);
+        return getLayoutSize(parent, LayoutSizeType.MIN);
     }
 
     @Override
     public Dimension maximumLayoutSize(Container parent) {
-        ISizeGetter sizeGetter = LayoutSizeType.MAX;
-        return getLayoutSize(parent, sizeGetter);
+        return getLayoutSize(parent, LayoutSizeType.MAX);
     }
 
     @Override
     public Dimension preferredLayoutSize(Container parent) {
-        ISizeGetter sizeGetter = LayoutSizeType.PREF;
-        return getLayoutSize(parent, sizeGetter);
+        return getLayoutSize(parent, LayoutSizeType.PREF);
     }
 
-
-
-
-
-
-
-
-
-    // when there is a component that takes multiple rows, it is stored in specialPositions
-    // and the number of rows it takes is stored as an Integer value
-    // and when we are calculating the size of the component, we need to take that into account, and for the ones following it
+    /**
+     * Lays out the specific container.
+     *
+     * @param parent the container to be laid out
+     */
     @Override
     public void layoutContainer(Container parent) {
         Insets insets = parent.getInsets();
