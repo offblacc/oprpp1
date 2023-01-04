@@ -9,9 +9,8 @@ public class BinaryOperators {
     public static final DoubleBinaryOperator SUB = (a, b) -> a - b;
     public static final DoubleBinaryOperator MUL = (a, b) -> a * b;
     public static final DoubleBinaryOperator DIV = (a, b) -> a / b;
-//    public static final DoubleBinaryOperator POW = Math::pow;
-//    public static final DoubleBinaryOperator LOG = (a, b) -> Math.log(a) / Math.log(b);
-//    public static final DoubleBinaryOperator ROOT = (a, b) -> Math.pow(a, 1 / b);
+    public static final DoubleBinaryOperator POW = Math::pow;
+    public static final DoubleBinaryOperator ROOT = (a, b) -> Math.pow(a, 1 / b);
 
 
     /**
@@ -34,6 +33,7 @@ public class BinaryOperators {
         map.put("-", SUB);
         map.put("*", MUL);
         map.put("/", DIV);
+        map.put("x^n", POW);
         return map;
     }
 }

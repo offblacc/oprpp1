@@ -153,7 +153,9 @@ public class CalcModelImpl implements CalcModel {
     @Override
     public String toString() {
         if (frozenDisplayValue != null) return frozenDisplayValue;
-        if (!hasDecimalPoint) {
+        // using a regex removes zeros after the decimal point if there are only zeros
+        boolean hasRelevantDecimal = currentNumber.matches(".*\\.[1-9]+");
+        if (!hasDecimalPoint && !hasRelevantDecimal) {
             int i = 0;
             while (i < currentNumber.length() && currentNumber.charAt(i) == '0') i++;
             currentNumber = currentNumber.substring(i);

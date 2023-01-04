@@ -20,4 +20,8 @@ public class UnaryOperationButton extends JButton {
             model.setValue(operator.applyAsDouble(model.getValue()));
         });
     }
+
+    public UnaryOperationButton(String text, CalcModel model) {
+        this(text, model, null);
+    }
 }

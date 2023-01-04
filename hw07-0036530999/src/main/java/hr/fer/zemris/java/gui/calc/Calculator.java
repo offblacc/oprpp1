@@ -43,13 +43,14 @@ public class Calculator extends JFrame {
         cp.add(new DecimalPointButton(model), new RCPosition(5, 5));
         int yPos = 5;
         for (var opName : BinaryOperators.getOperatorsMap().keySet()) {
+            if (opName.equals("x^n")) continue;
             cp.add(new BinaryOperationButton(opName, model), new RCPosition(yPos--, 6));
         }
         cp.add(new EqualsButton(model), new RCPosition(1, 6));
         cp.add(new ClearButton(model), new RCPosition(1, 7));
         cp.add(new ResButton(model), new RCPosition(2, 7));
 
-        cp.add(new UnaryOperationButton("1/x", model, null), new RCPosition(2, 1));
+        cp.add(new UnaryOperationButton("1/x", model), new RCPosition(2, 1));
         // -- invertible operations --
 
         InvertedToggleButton invCheckBox = new InvertedToggleButton();
@@ -64,7 +65,8 @@ public class Calculator extends JFrame {
         for (int i = 2; i < 6; i++, index++) cp.add(invertibleButtons.get(index), new RCPosition(i, 2));
 
         cp.add(invCheckBox, new RCPosition(5, 7));
-        cp.add(new SwapSignButton(model), new RCPosition(5, 4)); // TODO try entering 5 then swap then 1/x -> fix
+        cp.add(new SwapSignButton(model), new RCPosition(5, 4));
+        cp.add(new BinaryOperationButton("x^n", model, invCheckBox), new RCPosition(5, 1));
 
     }
 }

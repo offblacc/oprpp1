@@ -8,20 +8,23 @@ import java.util.function.DoubleBinaryOperator;
 
 public class BinaryOperationButton extends JButton {
     private DoubleBinaryOperator operator;
-    private CalcModel model;
 
-    public BinaryOperationButton(String name, CalcModel model) {
+    public BinaryOperationButton(String name, CalcModel model, InvertedToggleButton inv) {
         super(name);
         setFont(getFont().deriveFont(20f)); // looks weird with this font increased as well
         this.operator = BinaryOperators.getOperatorsMap().get(name);
         if (operator == null) throw new UnsupportedOperationException("No such operator. Try checking your spelling.");
-        this.model = model;
         addActionListener(e -> {
             model.setPendingBinaryOperation(operator);
+            if (inv != null && name.equals("x^n") && inv.isSelected()) operator = BinaryOperators.ROOT; // not pretty, but this is an exception anyhow
             if (!model.isActiveOperandSet()) {
                 model.setActiveOperand(model.getValue());
                 model.clear();
             }
         });
+    }
+
+    public BinaryOperationButton(String name, CalcModel model) {
+        this(name, model, null);
     }
 }
