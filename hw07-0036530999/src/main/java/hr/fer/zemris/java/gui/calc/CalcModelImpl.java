@@ -13,13 +13,14 @@ import java.util.function.DoubleBinaryOperator;
 
 public class CalcModelImpl implements CalcModel {
     private boolean isEditable = true;
-    private boolean isNegative = false;
     private String currentNumber = "";
-    private OptionalDouble currentNumberValue = OptionalDouble.empty();
+    private double currentNumberValue = 0;
     private String frozenDisplayValue = null;
     private DoubleBinaryOperator binaryOperator = null;
     private OptionalDouble activeOperand = OptionalDouble.empty();
     private boolean inverted = false;
+    private boolean hasDecimalPoint = false;
+    private boolean enteredDigit = false;
 
     List<CalcValueListener> listeners = new ArrayList<>();
 
@@ -36,9 +37,7 @@ public class CalcModelImpl implements CalcModel {
 
     @Override
     public double getValue() {
-        if (currentNumberValue.isPresent())
-            return isNegative ? -currentNumberValue.getAsDouble() : currentNumberValue.getAsDouble();
-        return 0;
+        return currentNumberValue;
     }
 
     // TODO check this is ok Primijetite da broj koji se predaje u
@@ -46,7 +45,7 @@ public class CalcModelImpl implements CalcModel {
     // očekuje Infinity, -Infinity odnosno NaN
     @Override
     public void setValue(double value) {
-        currentNumberValue = OptionalDouble.of(value);
+        currentNumberValue = value;
         currentNumber = Double.toString(value);
         isEditable = false;
         listeners.forEach(l -> l.valueChanged(this));
@@ -60,9 +59,8 @@ public class CalcModelImpl implements CalcModel {
     @Override
     public void clear() { // TODO not sure this is right
         currentNumber = "";
-        currentNumberValue = OptionalDouble.empty();
+        currentNumberValue = 0;
         isEditable = true;
-        isNegative = false;
         listeners.forEach(l -> l.valueChanged(this));
     }
 
@@ -78,7 +76,9 @@ public class CalcModelImpl implements CalcModel {
     @Override
     public void swapSign() throws CalculatorInputException {
         if (!isEditable) throw new CalculatorInputException("Calculator is not editable");
-        isNegative = !isNegative;
+        currentNumberValue *= -1;
+        if (currentNumber.isEmpty()) currentNumber = "0";
+        currentNumber = currentNumber.startsWith("-") ? currentNumber.substring(1) : "-" + currentNumber;
         frozenDisplayValue = null;
         listeners.forEach(l -> l.valueChanged(this));
     }
@@ -86,9 +86,10 @@ public class CalcModelImpl implements CalcModel {
     @Override
     public void insertDecimalPoint() throws CalculatorInputException { // TODO is this ok? -> myb without ? fr idk
         if (!isEditable) throw new CalculatorInputException("Calculator is not editable");
-        if (currentNumber.contains(".")) throw new CalculatorInputException("Number already contains decimal point");
-        if (currentNumber.isEmpty()) throw new CalculatorInputException();
+        if (hasDecimalPoint) throw new CalculatorInputException("Number already contains decimal point");
+        if (!this.enteredDigit) throw new CalculatorInputException();
         currentNumber += ".";
+        hasDecimalPoint = true;
         frozenDisplayValue = null;
         listeners.forEach(l -> l.valueChanged(this));
     }
@@ -96,6 +97,8 @@ public class CalcModelImpl implements CalcModel {
     @Override
     public void insertDigit(int digit) throws CalculatorInputException, IllegalArgumentException {
         if (!isEditable) throw new CalculatorInputException("Calculator is not editable");
+        if (digit == 0 && (currentNumber.equals("0")) && !hasDecimalPoint) return;
+
         double num;
         try {
             num = Double.parseDouble(currentNumber + digit);
@@ -104,19 +107,13 @@ public class CalcModelImpl implements CalcModel {
             throw new CalculatorInputException("Invalid number");
         }
 
-        if (currentNumberValue.isPresent() && currentNumberValue.getAsDouble() == 0) {
-            if (!currentNumber.contains("."))
-                if (num == 0) return;
-                else currentNumber = "";
-        }
-
         if (frozenDisplayValue != null) {
             currentNumber = "";
             frozenDisplayValue = null;
         }
-
+        enteredDigit = true;
+        currentNumberValue = num;
         currentNumber += digit;
-        currentNumberValue = OptionalDouble.of(num);
         listeners.forEach(l -> l.valueChanged(this));
     }
 
@@ -156,15 +153,12 @@ public class CalcModelImpl implements CalcModel {
     @Override
     public String toString() {
         if (frozenDisplayValue != null) return frozenDisplayValue;
-        if (currentNumber.equals("")) return isNegative ? "-0" : "0";
-        return (isNegative ? "-" : "") + currentNumber;
-    }
-
-    public boolean isInverted() {
-        return inverted;
-    }
-
-    public void setInverted(boolean inverted) {
-        this.inverted = inverted;
+        if (!hasDecimalPoint) {
+            int i = 0;
+            while (i < currentNumber.length() && currentNumber.charAt(i) == '0') i++;
+            currentNumber = currentNumber.substring(i);
+        }
+        if (currentNumber.equals("")) return "0";
+        return currentNumber;
     }
 }

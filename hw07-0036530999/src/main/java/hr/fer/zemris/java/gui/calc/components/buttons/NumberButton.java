@@ -21,6 +21,7 @@ public class NumberButton extends JButton {
             if (model.getPendingBinaryOperation() != null && model.toString().isEmpty()) {
                 model.clear();
             }
+            if (!model.isEditable()) return; // silently ignoring
             model.insertDigit(digit);
         });
     }

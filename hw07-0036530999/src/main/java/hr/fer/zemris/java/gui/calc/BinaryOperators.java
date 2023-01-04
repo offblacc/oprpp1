@@ -1,6 +1,6 @@
 package hr.fer.zemris.java.gui.calc;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.DoubleBinaryOperator;
 
@@ -29,7 +29,7 @@ public class BinaryOperators {
      * @return a map of available operators and their names
      */
     public static Map<String, DoubleBinaryOperator> getOperatorsMap() {
-        HashMap<String, DoubleBinaryOperator> map = new HashMap<>();
+        LinkedHashMap<String, DoubleBinaryOperator> map = new LinkedHashMap<>();
         map.put("+", ADD);
         map.put("-", SUB);
         map.put("*", MUL);
