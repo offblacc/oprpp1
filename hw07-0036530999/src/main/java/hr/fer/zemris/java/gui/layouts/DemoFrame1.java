@@ -1,7 +1,5 @@
 package hr.fer.zemris.java.gui.layouts;
 
-import hr.fer.zemris.java.gui.RCPosition;
-
 import javax.swing.*;
 import java.awt.*;
 

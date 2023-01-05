@@ -1,6 +1,6 @@
 package hr.fer.zemris.java.gui.calc;
 
-import hr.fer.zemris.java.gui.RCPosition;
+import hr.fer.zemris.java.gui.layouts.RCPosition;
 import hr.fer.zemris.java.gui.calc.components.*;
 import hr.fer.zemris.java.gui.calc.components.buttons.*;
 import hr.fer.zemris.java.gui.calc.model.CalcModel;
@@ -8,7 +8,6 @@ import hr.fer.zemris.java.gui.layouts.CalcLayout;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.awt.*;
 
 public class Calculator extends JFrame {

@@ -1,6 +1,5 @@
 package hr.fer.zemris.java.gui.layouts;
 
-import hr.fer.zemris.java.gui.RCPosition;
 import org.junit.jupiter.api.Test;
 
 

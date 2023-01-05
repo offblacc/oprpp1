@@ -1,6 +1,5 @@
-package hr.fer.zemris.java.gui;
+package hr.fer.zemris.java.gui.layouts;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
