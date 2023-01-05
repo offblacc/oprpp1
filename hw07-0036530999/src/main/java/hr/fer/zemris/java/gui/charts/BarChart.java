@@ -32,4 +32,28 @@ public class BarChart {
     public BarChartComponent getComponent() {
         return new BarChartComponent(this);
     }
+
+    public List<XYValue> getValues() {
+        return values;
+    }
+
+    public String getxDescription() {
+        return xDescription;
+    }
+
+    public String getyDescription() {
+        return yDescription;
+    }
+
+    public int getyMin() {
+        return yMin;
+    }
+
+    public int getyMax() {
+        return yMax;
+    }
+
+    public int getyStep() {
+        return yStep;
+    }
 }

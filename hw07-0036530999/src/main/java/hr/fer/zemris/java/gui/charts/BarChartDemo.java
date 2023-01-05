@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class BarChartDemo extends JFrame {
+    String pathToFile;
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Invalid number of arguments.");
@@ -39,11 +40,12 @@ public class BarChartDemo extends JFrame {
             e.printStackTrace(); // TODO remove
             return;
         }
-        BarChart finalChart = chart; // TODO why is this necessary? aaaaaaaaaaaaaaa
-        SwingUtilities.invokeLater(() -> new BarChartDemo(finalChart).setVisible(true));
+        BarChart finalChart = chart;
+        SwingUtilities.invokeLater(() -> new BarChartDemo(finalChart, args[0]).setVisible(true));
     }
 
-    public BarChartDemo(BarChart chart) {
+    public BarChartDemo(BarChart chart, String path) {
+        this.pathToFile = path;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         initGUI(chart);
     }
@@ -51,8 +53,8 @@ public class BarChartDemo extends JFrame {
     public void initGUI(BarChart chart) {
         setTitle("BarChart");
         setLayout(new BorderLayout());
-        // add a new jlabel north, which is centered horizontally
-        JLabel label = new JLabel("Ovdje ide path");
+        setSize(500, 500);
+        JLabel label = new JLabel(pathToFile);
         label.setHorizontalAlignment(SwingConstants.CENTER);
         add(label, BorderLayout.NORTH);
         add(chart.getComponent(), BorderLayout.CENTER);
