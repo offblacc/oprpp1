@@ -6,16 +6,18 @@ import java.awt.geom.AffineTransform;
 import java.util.List;
 
 public class BarChartComponent extends JComponent {
-    private final short MARGIN = 20;
+    private static final short SHADOW_WIDTH = 3;
+    private static final short MARGIN = 20;
     private BarChart chart;
     private List<XYValue> values;
+    private int valuesCount;
 
     public BarChartComponent(BarChart chart) {
         this.chart = chart;
         setLayout(null);
         setVisible(true);
         List<XYValue> values = chart.getValues();
-        int valuesCount = values.size();
+        valuesCount = values.size();
     }
 
     @Override
@@ -38,11 +40,10 @@ public class BarChartComponent extends JComponent {
         g2d.drawString(xDescription, parentWidth / 2 - fm.stringWidth(xDescription) / 2, (int) (parentHeight - MARGIN * 1.5));
         int maxYValueStringWidth = fm.stringWidth(Integer.toString(maxY));
         int numOfGaps = maxY / chart.getyStep();
-        int xGridStep = (parentWidth - valuesStartX - 2 * MARGIN) / values.size();
+        int xGridStep = (parentWidth - valuesStartX - 2 * MARGIN) / valuesCount;
 
         g2d.setColor(Color.decode("#EEDDBF"));
-        // set line width
-        g2d.setStroke(new BasicStroke(2));
+        g2d.setStroke(new BasicStroke(2)); // widen the stroke width a bit
         // drawing horizontal lines
         for (int i = 0; i <= numOfGaps; i++) {
             int y = (int) Math.round(MARGIN + i * (parentHeight - 4 * MARGIN) / (double) numOfGaps);
@@ -50,7 +51,7 @@ public class BarChartComponent extends JComponent {
         }
 
         // drawing vertical lines
-        for (int i = 0; i <= values.size(); i++) {
+        for (int i = 0; i <= valuesCount; i++) {
             g2d.drawLine(2 * MARGIN + maxYValueStringWidth + i * xGridStep, parentHeight - MARGIN * 3, 2 * MARGIN + maxYValueStringWidth + i * xGridStep, MARGIN - 5);
         }
 
@@ -63,16 +64,21 @@ public class BarChartComponent extends JComponent {
             g2d.drawString(stringToRender, 2 * MARGIN + maxYValueStringWidth - fm.stringWidth(stringToRender) - 3, y + fmAscent / 2 - 1);
         }
         // now for the x axis values
-        for (int i = 0; i < values.size(); i++) {
+        for (int i = 0; i < valuesCount; i++) {
             String stringToRender = Integer.toString(values.get(i).getX());
             g2d.drawString(stringToRender, 2 * MARGIN + maxYValueStringWidth + i * xGridStep - fm.stringWidth(stringToRender) / 2 + xGridStep / 2, parentHeight - MARGIN * 2 - 5);
         }
 
+        g2d.setColor(new Color(0, 0, 0, 0.2f)); // bar shadows, semitransparent light grey
+        // drawing each bar's shadow
+        for (int i = 0; i < valuesCount; i++) {
+            int barHeight = (int) Math.round(values.get(i).getY() * (parentHeight - 4 * MARGIN) / (double) maxY) - 5;
+            g2d.fillRect(2 * MARGIN + maxYValueStringWidth + i * xGridStep + xGridStep + 1, parentHeight - MARGIN * 3 - barHeight, SHADOW_WIDTH, barHeight);
+        }
+
         g2d.setColor(Color.decode("#F37747")); // color for the bars
-
         // now drawing the bars themselves
-
-        for (int i = 0; i < values.size(); i++) {
+        for (int i = 0; i < valuesCount; i++) {
             int barHeight = (int) Math.round(values.get(i).getY() * (parentHeight - 4 * MARGIN) / (double) maxY);
             g2d.fillRect(2 * MARGIN + maxYValueStringWidth + i * xGridStep + 1, parentHeight - MARGIN * 3 - barHeight, xGridStep - 2, barHeight);
         }
@@ -91,6 +97,8 @@ public class BarChartComponent extends JComponent {
         arrow.addPoint(2 * MARGIN + maxYValueStringWidth - 5, MARGIN - 5);
         arrow.addPoint(2 * MARGIN + maxYValueStringWidth + 5, MARGIN - 5);
         g2d.fillPolygon(arrow);
+
+
 
     }
 }
