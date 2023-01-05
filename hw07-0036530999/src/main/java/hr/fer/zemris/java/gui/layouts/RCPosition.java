@@ -4,6 +4,8 @@ import java.util.Objects;
 
 /**
  * Class that represents a position in a (5 by 7) grid.
+ *
+ * @author offblacc
  */
 public class RCPosition {
     /**

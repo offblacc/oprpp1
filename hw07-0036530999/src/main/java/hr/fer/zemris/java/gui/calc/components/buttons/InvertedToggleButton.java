@@ -1,13 +1,19 @@
 package hr.fer.zemris.java.gui.calc.components.buttons;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Class that represents an inverse toggle button, or a checkbox.
+ *
+ * @author offblacc
+ */
 public class InvertedToggleButton extends JCheckBox {
+    /**
+     * Creates a new button.
+     */
     public InvertedToggleButton() {
         super("Inv");
-        setFont(getFont().deriveFont(20f)); // TODO make toggling inv change the labels of the buttons
+        setFont(getFont().deriveFont(20f));
     }
 
 }

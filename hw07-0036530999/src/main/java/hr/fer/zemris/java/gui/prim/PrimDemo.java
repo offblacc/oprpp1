@@ -3,11 +3,24 @@ package hr.fer.zemris.java.gui.prim;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Demonstration of the {@link PrimListModel} and {@link JList} classes.
+ *
+ * @author offblacc
+ */
 public class PrimDemo extends JFrame {
-    public static void main(String args[]) {
+    /**
+     * Entry point of the program.
+     *
+     * @param args Command line arguments.
+     */
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new PrimDemo().setVisible(true));
     }
 
+    /**
+     * Constructor that creates a new PrimDemo object.
+     */
     public PrimDemo() {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("PrimDemo");
@@ -16,6 +29,9 @@ public class PrimDemo extends JFrame {
         initGUI();
     }
 
+    /**
+     * Method that initializes the GUI.
+     */
     private void initGUI() {
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());

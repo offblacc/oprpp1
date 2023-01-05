@@ -3,6 +3,9 @@ package hr.fer.zemris.java.gui.layouts;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * This is just a develop-time demo, so omitting any further javadoc.
+ */
 public class DemoFrame1 extends JFrame {
     public DemoFrame1() {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

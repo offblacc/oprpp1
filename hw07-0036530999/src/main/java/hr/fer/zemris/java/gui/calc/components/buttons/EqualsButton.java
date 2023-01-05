@@ -4,6 +4,11 @@ import hr.fer.zemris.java.gui.calc.model.CalcModel;
 
 import javax.swing.*;
 
+/**
+ * Class that represents an equals button.
+ *
+ * @author offblacc
+ */
 public class EqualsButton extends JButton {
     public EqualsButton(CalcModel model) {
         super("=");

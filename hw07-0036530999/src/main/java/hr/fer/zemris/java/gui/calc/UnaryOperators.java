@@ -5,23 +5,76 @@ import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
 
 public class UnaryOperators {
+    /**
+     * Reference to the 1/x operation.
+     */
     public static final DoubleUnaryOperator RECIPROCAL = x -> (1 / x);
+
+    /**
+     * Reference to the log10 operation.
+     */
     public static final DoubleUnaryOperator LOG = Math::log10;
+
+    /**
+     * Reference to the ln operation.
+     */
     public static final DoubleUnaryOperator LN = Math::log;
-    // TODO x^n, doesn't go here, but keep in mind you need to implement it, and it's not a unary operator
+
+    /**
+     * Reference to the sin operation.
+     */
     public static final DoubleUnaryOperator SIN = Math::sin;
+
+    /**
+     * Reference to the cos operation.
+     */
     public static final DoubleUnaryOperator COS = Math::cos;
+
+    /**
+     * Reference to the tan operation.
+     */
     public static final DoubleUnaryOperator TAN = Math::tan;
+
+    /**
+     * Reference to the ctg operation.
+     */
     public static final DoubleUnaryOperator CTG = x -> (1 / Math.tan(x));
 
     // -- inverse trigonometric functions --
-
-
+    /**
+     * Reference to the operation that returns ten to the value of x. Inverse
+     * of the log10 operation.
+     */
     public static final DoubleUnaryOperator TENEXN = x -> Math.pow(10, x);
+
+    /**
+     * Reference to the operation that returns e to the value of x. Inverse
+     * of the ln operation.
+     */
     public static final DoubleUnaryOperator EXP = Math::exp;
+
+    /**
+     * Reference to the operation that returns the arc sine of x. Inverse
+     * of the sin operation.
+     */
     public static final DoubleUnaryOperator ASIN = Math::asin;
+
+    /**
+     * Reference to the operation that returns the arc cosine of x. Inverse
+     * of the cos operation.
+     */
     public static final DoubleUnaryOperator ACOS = Math::acos;
+
+    /**
+     * Reference to the operation that returns the arc tangent of x. Inverse
+     * of the tan operation.
+     */
     public static final DoubleUnaryOperator ATAN = Math::atan;
+
+    /**
+     * Reference to the operation that returns the arc cotangent of x. Inverse
+     * of the ctg operation.
+     */
     public static final DoubleUnaryOperator ACTG = x -> (Math.PI / 2 - Math.atan(x));
 
 

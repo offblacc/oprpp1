@@ -10,13 +10,32 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.awt.*;
 
+/**
+ * Class that represents a simple calculator.
+ *
+ * @author offblacc
+ */
 public class Calculator extends JFrame {
+    /**
+     * Reference to the calculator model instance used by this calculator.
+     */
     private CalcModel model;
+    /**
+     * Reference to the display component.
+     */
     private Display display;
+
+    /**
+     * Entry point of the program.
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Calculator().setVisible(true));
     }
 
+    /**
+     * Default constructor.
+     */
     public Calculator() {
         super();
         model = new CalcModelImpl();
@@ -25,6 +44,9 @@ public class Calculator extends JFrame {
         pack();
     }
 
+    /**
+     * Initializes the GUI.
+     */
     private void initGUI() {
         Container cp = getContentPane();
         cp.setLayout(new CalcLayout(3));

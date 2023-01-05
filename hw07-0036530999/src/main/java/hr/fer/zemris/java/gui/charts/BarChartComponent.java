@@ -2,24 +2,55 @@ package hr.fer.zemris.java.gui.charts;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.util.List;
 
+/**
+ * Graphical component that draws a bar chart from a {@link BarChart} object.
+ *
+ * @author offblacc
+ */
 public class BarChartComponent extends JComponent {
-    private static final short SHADOW_WIDTH = 3;
-    private static final short MARGIN = 20;
+    /**
+     * Reference to the {@link BarChart} object that this component draws.
+     */
     private BarChart chart;
+
+    /**
+     * Width of the shadow of the bars.
+     */
+    private static final short SHADOW_WIDTH = 3;
+
+    /**
+     * A margin constant used throughout the class.
+     */
+    private static final short MARGIN = 20;
+
+    /**
+     * List of {@link XYValue} objects that this component draws, taken from the {@link BarChart} object.
+     */
     private List<XYValue> values;
+
+    /**
+     * Number of values that this component draws, taken from the {@link BarChart} object.
+     */
     private int valuesCount;
 
+    /**
+     * Creates a new {@link BarChartComponent} object.
+     * @param chart The {@link BarChart} object that this component draws.
+     */
     public BarChartComponent(BarChart chart) {
         this.chart = chart;
         setLayout(null);
         setVisible(true);
-        List<XYValue> values = chart.getValues();
+        values = chart.getValues();
         valuesCount = values.size();
     }
 
+    /**
+     * Paints the components, overridden from {@link JComponent}.
+     * {@inheritDoc}
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -31,7 +62,7 @@ public class BarChartComponent extends JComponent {
         int parentHeight = getParent().getHeight();
         int valuesStartX = MARGIN + fm.getHeight();
         String xDescription = chart.getxDescription();
-        int maxY = chart.getyMax();
+        int maxY = chart.getMaxY();
 
         // draw y axis name
         g2d.rotate(-Math.PI / 2);
@@ -39,7 +70,7 @@ public class BarChartComponent extends JComponent {
         g2d.rotate(Math.PI / 2);
         g2d.drawString(xDescription, parentWidth / 2 - fm.stringWidth(xDescription) / 2, (int) (parentHeight - MARGIN * 1.5));
         int maxYValueStringWidth = fm.stringWidth(Integer.toString(maxY));
-        int numOfGaps = maxY / chart.getyStep();
+        int numOfGaps = maxY / chart.getStepY();
         int xGridStep = (parentWidth - valuesStartX - 2 * MARGIN) / valuesCount;
 
         g2d.setColor(Color.decode("#EEDDBF"));
@@ -56,7 +87,7 @@ public class BarChartComponent extends JComponent {
 
         g2d.setColor(Color.BLACK); // reset color to black for drawing text
         g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
-        for (int i = maxY; i >= 0; i -= chart.getyStep()) { // draw y axis values
+        for (int i = maxY; i >= 0; i -= chart.getStepY()) { // draw y axis values
             int y = (int) Math.round(MARGIN + i * (parentHeight - 4 * MARGIN) / (double) maxY);
             String stringToRender = Integer.toString(maxY - i);
             g2d.drawString(stringToRender, 2 * MARGIN + maxYValueStringWidth - fm.stringWidth(stringToRender) - 3, y + fmAscent / 2 - 1);

@@ -4,10 +4,28 @@ import hr.fer.zemris.java.gui.calc.model.CalcModel;
 
 import javax.swing.*;
 
+/**
+ * Class that represents a number button.
+ *
+ * @author offblacc
+ */
 public class NumberButton extends JButton {
+    /**
+     * Digit on the button.
+     */
     private int digit;
+
+    /**
+     * Calculator model.
+     */
     private CalcModel model;
 
+    /**
+     * Constructor.
+     *
+     * @param text digit on the button, as a string
+     * @param model calculator model
+     */
     public NumberButton(String text, CalcModel model) {
         super(text);
         setFont(getFont().deriveFont(20f));

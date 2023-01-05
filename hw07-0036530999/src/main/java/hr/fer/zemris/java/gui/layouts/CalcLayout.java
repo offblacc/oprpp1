@@ -3,31 +3,69 @@ package hr.fer.zemris.java.gui.layouts;
 import java.awt.*;
 import java.util.*;
 
-// 5 x 7, but the first row has 3 columns, the rest have 7
-
-public class CalcLayout implements LayoutManager2 { // upravljač
+/**
+ * Layout manager for a simple calculator.
+ *
+ * @author offblacc
+ */
+public class CalcLayout implements LayoutManager2 {
+    /**
+     * Gap in pixels between components.
+     */
     int gap;
+    /**
+     * Number of rows in the layout.
+     */
     private static final int ROWS = 5;
+
+    /**
+     * Number of columns in the layout.
+     */
     private static final int COLUMNS = 7;
+    /**
+     * The default gap between components.
+     */
     private static final int DEFAULT_GAP = 0;
 
-    // FIXME - components arr hardcoded here
+    /**
+     * Array of components in the layout.
+     */
     private final Component[][] components = new Component[ROWS][COLUMNS];
-    // make private static final HashMap<RCPosition, Integer> specialPositions and put rpc 1, 1 with integer value 5
+
+    /**
+     * Map containing positions of components in the layout that take more than one x coordinate,
+     * the value being the number of columns the component takes.
+     */
     private static final HashMap<RCPosition, Integer> specialPositions = new HashMap<>();
 
     static {
         specialPositions.put(new RCPosition(1, 1), 5);
     }
 
+    /**
+     * Creates a new {@link CalcLayout} with the given gap.
+     *
+     * @param gap the gap between components
+     */
     public CalcLayout(int gap) {
         this.gap = gap;
     }
 
+    /**
+     * Creates a new {@link CalcLayout} with the default gap.
+     */
     public CalcLayout() {
         this(DEFAULT_GAP);
     }
 
+
+    /**
+     * Adds the specified component with the specified name to the layout.
+     *
+     * @param comp                  the component to be added
+     * @param RCPositionConstraints where to add the component. Can be a {@link RCPosition} or a {@link String}
+     *                              in the form "row,column".
+     */
     @Override
     public void addLayoutComponent(Component comp, Object RCPositionConstraints) {
         if (RCPositionConstraints == null || comp == null) {
@@ -58,26 +96,44 @@ public class CalcLayout implements LayoutManager2 { // upravljač
         components[row - 1][column - 1] = comp;
     }
 
+    /**
+     * Unused.
+     */
     @Override
     public float getLayoutAlignmentX(Container target) {
         return 0;
     }
 
+    /**
+     * Unused.
+     */
     @Override
     public float getLayoutAlignmentY(Container target) {
         return 0;
     }
 
+    /**
+     * Unused.
+     */
     @Override
     public void invalidateLayout(Container target) {
-
     }
 
+    /**
+     * Throws an exception, unsupported operation.
+     *
+     * @throws UnsupportedOperationException always
+     */
     @Override
     public void addLayoutComponent(String name, Component comp) {
         throw new UnsupportedOperationException("This method is not supported.");
     }
 
+    /**
+     * Removes the specified component from the layout.
+     *
+     * @param comp the component to be removed
+     */
     @Override
     public void removeLayoutComponent(Component comp) {
         for (int i = 0; i < ROWS; i++) {
@@ -90,16 +146,26 @@ public class CalcLayout implements LayoutManager2 { // upravljač
         }
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Dimension minimumLayoutSize(Container parent) {
         return getLayoutSize(parent, LayoutSizeType.MIN);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Dimension maximumLayoutSize(Container parent) {
         return getLayoutSize(parent, LayoutSizeType.MAX);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Dimension preferredLayoutSize(Container parent) {
         return getLayoutSize(parent, LayoutSizeType.PREF);
@@ -111,7 +177,7 @@ public class CalcLayout implements LayoutManager2 { // upravljač
      * @param parent the container to be laid out
      */
     @Override
-    public void layoutContainer(Container parent) { // TODO make sure you alternate 38 39 38 39 blahblah u know
+    public void layoutContainer(Container parent) { // TODO 38 39 38 39
         Insets insets = parent.getInsets();
         int width = parent.getWidth() - insets.left - insets.right;
         int height = parent.getHeight() - insets.top - insets.bottom;
@@ -130,6 +196,13 @@ public class CalcLayout implements LayoutManager2 { // upravljač
         }
     }
 
+    /**
+     * Returns the size of the layout, whether it's the minimum, maximum or preferred size.
+     *
+     * @param parent   the container to be laid out
+     * @param sizeType the type of size to be returned, either minimum, maximum or preferred, as defined in {@link LayoutSizeType}
+     * @return the size of the layout
+     */
     public Dimension getLayoutSize(Container parent, ISizeGetter sizeType) {
         int x = 0;
         int y = 0;

@@ -5,13 +5,25 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * Demo of the barchart, using BarChartComponent to display the chart inside a frame.
+ *
+ * @author offblacc
+ */
 public class BarChartDemo extends JFrame {
+    /**
+     * Path to the file containing the data for the chart.
+     */
     String pathToFile;
+
+    /**
+     * Entry point of the program. Expects one argument, the path to the file containing the data for the chart.
+     * @param args command line arguments, expects one argument, the path to the file containing the data for the chart.
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Invalid number of arguments.");
@@ -44,12 +56,21 @@ public class BarChartDemo extends JFrame {
         SwingUtilities.invokeLater(() -> new BarChartDemo(finalChart, args[0]).setVisible(true));
     }
 
+    /**
+     * Constructor for the demo.
+     * @param chart the chart to be displayed
+     * @param path the path to the file containing the data for the chart
+     */
     public BarChartDemo(BarChart chart, String path) {
         this.pathToFile = path;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         initGUI(chart);
     }
 
+    /**
+     * Initializes the GUI.
+     * @param chart the chart to be displayed
+     */
     public void initGUI(BarChart chart) {
         setTitle("BarChart");
         setLayout(new BorderLayout());
