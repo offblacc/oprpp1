@@ -17,7 +17,7 @@ public class BarChart {
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     public BarChart(List<XYValue> values, String xDescription, String yDescription, int yMin, int yMax, int yStep) {
         if (yMin < 0 || yMax <= yMin || yStep < 0) throw new IllegalArgumentException("Invalid arguments.");
-        if ((yMax - yMin) % yStep != 0) yStep = (int) Math.ceil((yMax - yMin) / yStep);
+        if ((yMax - yMin) % yStep != 0) throw new UnsupportedOperationException("Fix this"); // FIXME
         for (var value : values)
             if (value.getY() < yMin) throw new IllegalArgumentException("Invalid arguments, value is less than yMin.");
 

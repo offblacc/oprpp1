@@ -3,15 +3,19 @@ package hr.fer.zemris.java.gui.charts;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.List;
 
 public class BarChartComponent extends JComponent {
     private final short MARGIN = 20;
     private BarChart chart;
+    private List<XYValue> values;
 
     public BarChartComponent(BarChart chart) {
         this.chart = chart;
         setLayout(null);
         setVisible(true);
+        List<XYValue> values = chart.getValues();
+        int valuesCount = values.size();
     }
 
     @Override
@@ -23,72 +27,69 @@ public class BarChartComponent extends JComponent {
         var values = chart.getValues();
         int parentWidth = getParent().getWidth();
         int parentHeight = getParent().getHeight();
-        int leftMostMargin = MARGIN;
-        int rightMostMargin = MARGIN * 2;
-        int valuesStartX = leftMostMargin + fm.getHeight();
+        int valuesStartX = MARGIN + fm.getHeight();
         String xDescription = chart.getxDescription();
+        int maxY = chart.getyMax();
 
         // draw y axis name
         g2d.rotate(-Math.PI / 2);
         g2d.drawString(chart.getyDescription(), -parentHeight / 2, MARGIN);
         g2d.rotate(Math.PI / 2);
         g2d.drawString(xDescription, parentWidth / 2 - fm.stringWidth(xDescription) / 2, (int) (parentHeight - MARGIN * 1.5));
-        int maxYValueStringWidth = fm.stringWidth(Integer.toString(chart.getyMax()));
-        // draw grid
-        int yGridStep = (parentHeight - MARGIN * 4) / chart.getyMax();
-        int xGridStep = (parentWidth - valuesStartX - rightMostMargin) / values.size();
+        int maxYValueStringWidth = fm.stringWidth(Integer.toString(maxY));
+        int numOfGaps = maxY / chart.getyStep();
+        int xGridStep = (parentWidth - valuesStartX - 2 * MARGIN) / values.size();
 
         g2d.setColor(Color.decode("#EEDDBF"));
+        // set line width
+        g2d.setStroke(new BasicStroke(2));
         // drawing horizontal lines
-        for (int i = 0; i <= chart.getyMax(); i += chart.getyStep()) {
-            g2d.drawLine(valuesStartX, parentHeight - MARGIN * 3 - i * yGridStep, parentWidth - rightMostMargin, parentHeight - MARGIN * 3 - i * yGridStep);
+        for (int i = 0; i <= numOfGaps; i++) {
+            int y = (int) Math.round(MARGIN + i * (parentHeight - 4 * MARGIN) / (double) numOfGaps);
+            g2d.drawLine(2 * MARGIN + maxYValueStringWidth, y, parentWidth - MARGIN + 5, y);
         }
+
         // drawing vertical lines
-        for (int i = 0; i < values.size(); i++) {
-            g2d.drawLine(2 * MARGIN + maxYValueStringWidth + i * xGridStep, parentHeight - MARGIN * 3, 2 * MARGIN + maxYValueStringWidth + i * xGridStep, MARGIN);
-        }
-        g2d.setColor(Color.BLACK);
-        for (int i = 0; i <= chart.getyMax(); i += chart.getyStep()) {
-            g2d.drawLine(2 * MARGIN + maxYValueStringWidth - 2, parentHeight - MARGIN * 3 - i * yGridStep, 2 * MARGIN + maxYValueStringWidth+ 2, parentHeight - MARGIN * 3 - i * yGridStep);
+        for (int i = 0; i <= values.size(); i++) {
+            g2d.drawLine(2 * MARGIN + maxYValueStringWidth + i * xGridStep, parentHeight - MARGIN * 3, 2 * MARGIN + maxYValueStringWidth + i * xGridStep, MARGIN - 5);
         }
 
-        // setting the font for the axis values and drawing them
-        Font font = g2d.getFont();
-        g2d.setFont(font.deriveFont(Font.BOLD));
-        for (int i = 0; i <= chart.getyMax(); i += chart.getyStep()) { // first y values
-            String stringToDraw = Integer.toString(i);
-            g2d.drawString(stringToDraw, valuesStartX + (maxYValueStringWidth - fm.stringWidth(stringToDraw)), parentHeight - MARGIN * 3 - i * yGridStep + fmAscent / 2);
-        }
-        for (int i = 0; i < values.size(); i++) { // then x values
-            String stringToDraw = Integer.toString(values.get(i).getX());
-            g2d.drawString(stringToDraw, 2 * MARGIN + maxYValueStringWidth + i * xGridStep + xGridStep/2 - fm.stringWidth(stringToDraw) / 2,
-                    parentHeight - MARGIN * 3 + fmAscent);
-        }
-
-
-        // drawing the axis themselves
-        g2d.drawLine(2 * MARGIN + maxYValueStringWidth, MARGIN, 2 * MARGIN + maxYValueStringWidth, parentHeight - MARGIN * 3);
-        g2d.drawLine(2 * MARGIN + maxYValueStringWidth, parentHeight - MARGIN * 3, parentWidth - MARGIN, parentHeight - MARGIN * 3);
+        g2d.setColor(Color.BLACK); // for the font
         // set font to bold
+        g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
+        for (int i = maxY; i >= 0; i -= chart.getyStep()) { // draw y axis values
+            int y = (int) Math.round(MARGIN + i * (parentHeight - 4 * MARGIN) / (double) maxY);
+            String stringToRender = Integer.toString(maxY - i);
+            g2d.drawString(stringToRender, 2 * MARGIN + maxYValueStringWidth - fm.stringWidth(stringToRender) - 3, y + fmAscent / 2 - 1);
+        }
+        // now for the x axis values
+        for (int i = 0; i < values.size(); i++) {
+            String stringToRender = Integer.toString(values.get(i).getX());
+            g2d.drawString(stringToRender, 2 * MARGIN + maxYValueStringWidth + i * xGridStep - fm.stringWidth(stringToRender) / 2 + xGridStep / 2, parentHeight - MARGIN * 2 - 5);
+        }
 
-        int i = 0; // index of the current value, keeping track of how far we are in the x axis
-        for (var value : values) {
-            int x = 2 * MARGIN + maxYValueStringWidth + values.indexOf(value) * xGridStep;
-            int y = parentHeight - MARGIN * 3 - value.getY() * yGridStep;
-            g2d.setColor(Color.decode("#F37747"));
-            g2d.fillRect(2 * MARGIN + maxYValueStringWidth + i++ * xGridStep, parentHeight - MARGIN * 3 - value.getY() * yGridStep, xGridStep - 2, value.getY() * yGridStep);
+        g2d.setColor(Color.decode("#F37747")); // color for the bars
+
+        // now drawing the bars themselves
+
+        for (int i = 0; i < values.size(); i++) {
+            int barHeight = (int) Math.round(values.get(i).getY() * (parentHeight - 4 * MARGIN) / (double) maxY);
+            g2d.fillRect(2 * MARGIN + maxYValueStringWidth + i * xGridStep + 1, parentHeight - MARGIN * 3 - barHeight, xGridStep - 2, barHeight);
         }
 
         g2d.setColor(Color.BLACK);
-        Polygon arrow = new Polygon();
-        arrow.addPoint(parentWidth - MARGIN + 5, parentHeight - MARGIN * 3);
-        arrow.addPoint(parentWidth - MARGIN, parentHeight - MARGIN * 3 - 5);
-        arrow.addPoint(parentWidth - MARGIN, parentHeight - MARGIN * 3 + 5);
+        g2d.drawLine(2 * MARGIN + maxYValueStringWidth, MARGIN - 5, 2 * MARGIN + maxYValueStringWidth, parentHeight - MARGIN * 3); // vertical, y-axis
+        g2d.drawLine(2 * MARGIN + maxYValueStringWidth, parentHeight - MARGIN * 3, parentWidth - MARGIN + 5, parentHeight - MARGIN * 3); // horizontal, x-axis
+
+        Polygon arrow = new Polygon(); // x-axis arrow
+        arrow.addPoint(parentWidth - MARGIN + 10, parentHeight - MARGIN * 3);
+        arrow.addPoint(parentWidth - MARGIN + 5, parentHeight - MARGIN * 3 - 5);
+        arrow.addPoint(parentWidth - MARGIN + 5, parentHeight - MARGIN * 3 + 5);
         g2d.fillPolygon(arrow);
-        arrow = new Polygon();
-        arrow.addPoint(2 * MARGIN + maxYValueStringWidth, MARGIN - 5);
-        arrow.addPoint(2 * MARGIN + maxYValueStringWidth - 5, MARGIN);
-        arrow.addPoint(2 * MARGIN + maxYValueStringWidth + 5, MARGIN);
+        arrow = new Polygon(); // y-axis arrow
+        arrow.addPoint(2 * MARGIN + maxYValueStringWidth, MARGIN - 10);
+        arrow.addPoint(2 * MARGIN + maxYValueStringWidth - 5, MARGIN - 5);
+        arrow.addPoint(2 * MARGIN + maxYValueStringWidth + 5, MARGIN - 5);
         g2d.fillPolygon(arrow);
 
     }
