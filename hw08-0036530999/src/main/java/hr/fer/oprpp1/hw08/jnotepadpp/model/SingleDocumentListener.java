@@ -1,7 +1,9 @@
-package hr.fer.oprpp1.hw08.jnotepadpp;
+package hr.fer.oprpp1.hw08.jnotepadpp.model;
 
 /**
  * A listener that listens to changes in a single document.
+ *
+ * @author offblacc
  */
 public interface SingleDocumentListener {
     /**

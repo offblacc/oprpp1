@@ -1,8 +1,10 @@
-package hr.fer.oprpp1.hw08.jnotepadpp;
+package hr.fer.oprpp1.hw08.jnotepadpp.model;
 
 /**
  * Listener that is notified when the currently selected document is changed (selecting a differenc document or closing
  * the currently selected document), a new document is opened or a document is closed.
+ *
+ * @author offblacc
  */
 public interface MultipleDocumentListener {
     /**
@@ -27,4 +29,5 @@ public interface MultipleDocumentListener {
      * @param model the document that was removed
      */
     void documentRemoved(SingleDocumentModel model);
+
 }

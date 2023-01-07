@@ -1,4 +1,4 @@
-package hr.fer.oprpp1.hw08.jnotepadpp;
+package hr.fer.oprpp1.hw08.jnotepadpp.model;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -7,6 +7,8 @@ import java.nio.file.Path;
  * Class that represents a model of a single document, having information about file path from which document was loaded
  * (can be null for a new document), document modification status and reference to Swing component which is used for
  * editing.
+ *
+ * @author offblacc
  */
 public interface SingleDocumentModel {
     /**

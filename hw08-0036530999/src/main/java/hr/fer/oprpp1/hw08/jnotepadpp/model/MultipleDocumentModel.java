@@ -1,4 +1,4 @@
-package hr.fer.oprpp1.hw08.jnotepadpp;
+package hr.fer.oprpp1.hw08.jnotepadpp.model;
 
 import javax.swing.*;
 import java.nio.file.Path;
