@@ -9,5 +9,9 @@ public class NewButton extends Button {
     private static final Icon icon = null;
     public NewButton(MultipleDocumentModel model) {
         super(buttonText, icon, model);
+        addActionListener(e -> {
+            model.createNewDocument();
+
+        });
     }
 }

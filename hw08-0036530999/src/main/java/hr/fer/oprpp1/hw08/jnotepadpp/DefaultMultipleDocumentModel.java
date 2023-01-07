@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.nio.file.Files.*;
+
 public class DefaultMultipleDocumentModel extends JTabbedPane implements MultipleDocumentModel {
     /**
      * A collection of the documents this model contains.
@@ -37,17 +39,16 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
 
     public DefaultMultipleDocumentModel() {
         super();
-        createNewDocument();
-        this.addChangeListener(e -> {
-            int index = this.getSelectedIndex();
-            if (index == -1) {
-                this.currentDocument = null;
-                return;
-            }
-            this.currentDocument = this.documents.get(index);
-            this.currentTabIndex = index;
-            this.notifyListenersCurrentDocumentChanged(null, currentDocument);
-        });
+//        this.addChangeListener(e -> {
+//            int index = this.getSelectedIndex();
+//            if (index == -1) {
+//                this.currentDocument = null;
+//                return;
+//            }
+//            this.currentDocument = this.documents.get(index);
+//            this.currentTabIndex = index;
+//            this.notifyListenersCurrentDocumentChanged(null, currentDocument);
+//        });
     }
 
 
@@ -65,12 +66,12 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         DefaultSingleDocumentModel newDocument = new DefaultSingleDocumentModel(null, null);
         documents.add(newDocument);
         addTab("unnamed", newDocument.getIcon(), newDocument.getTextComponent());
-        setIconAt(documents.size() - 1, newDocument.getIcon());
-        //System.out.println(newDocument.getIcon());
         setSelectedIndex(documents.size() - 1);
         currentDocument = newDocument;
         currentTabIndex = documents.size() - 1;
-        listeners.forEach(l -> l.documentAdded(newDocument));
+        notifyListenersDocumentAdded(newDocument);
+        revalidate();
+        repaint();
         return newDocument;
     }
 
@@ -85,19 +86,21 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
 
         SingleDocumentModel newModel = getOpenDocumentAtPath(path);
         if (newModel == null) {
-            byte[] data;
-            try (InputStream is = this.getClass().getResourceAsStream(path.toString())) {
-                if (is == null) throw new IOException();
-                data = is.readAllBytes();
+            try {
+                String text = new String(readAllBytes(path));
+                newModel = new DefaultSingleDocumentModel(text, path);
             } catch (IOException e) {
-                throw new IllegalArgumentException("There was a problem loading the document from the given path.");
+                throw new RuntimeException("Error while reading from file.");
             }
-            newModel = new DefaultSingleDocumentModel(new String(data), path);
-            documents.add(newModel); // add the new document to the collection of documents
-            this.addTab(path.toString(), newModel.getTextComponent()); // add an actual tab// TODO the title is not the path, but the name of the file, modify later how you see fit
         }
+        documents.add(newModel); // add the new document to the collection of documents
+        this.addTab(path.getFileName().toString(), new JScrollPane(newModel.getTextComponent())); // add an actual tab// TODO the title is not the path, but the name of the file, modify later how you see fit
         currentDocument = newModel;
         for (var l : listeners) l.documentAdded(newModel);
+        setSelectedIndex(documents.size() - 1);
+        currentTabIndex = documents.size() - 1;
+        revalidate();
+        repaint();
         return newModel;
     }
 
