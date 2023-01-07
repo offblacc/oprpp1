@@ -40,16 +40,13 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel {
     private static final Icon unmodifiedIcon = loadIcon("/icons/unmodified.png");
 
     private static Icon loadIcon(String path) {
-        System.out.println("Calling static block");
         try (InputStream is = DefaultSingleDocumentModel.class.getResourceAsStream(path)) {
             if (is == null) throw new NullPointerException();
             byte[] bytes = is.readAllBytes();
             if (bytes == null) throw new NullPointerException();
             return new ImageIcon(bytes);
         } catch (IOException | NullPointerException e) {
-            System.out.println("Failed to load icon: " + path); // TODO edit this
-            e.printStackTrace();
-            return null;
+            return null; // if icon fails to load, return null, meaning it won't be displayed, silently ignoring, even though it should not happen and if it does the cause should be fixed
         }
     }
 

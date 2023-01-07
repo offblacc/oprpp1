@@ -66,7 +66,7 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         documents.add(newDocument);
         addTab("unnamed", newDocument.getIcon(), newDocument.getTextComponent());
         setIconAt(documents.size() - 1, newDocument.getIcon());
-        System.out.println(newDocument.getIcon());
+        //System.out.println(newDocument.getIcon());
         setSelectedIndex(documents.size() - 1);
         currentDocument = newDocument;
         currentTabIndex = documents.size() - 1;
