@@ -7,6 +7,7 @@ import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.Stack;
 import java.util.function.DoubleBinaryOperator;
 
 /**
@@ -61,6 +62,26 @@ public class CalcModelImpl implements CalcModel {
      * List of listeners.
      */
     List<CalcValueListener> listeners = new ArrayList<>();
+
+    /**
+     * Stack of numbers.
+     */
+    Stack<Double> stack = new Stack<>();
+
+    public void push() {
+        stack.push(getValue());
+    }
+
+    public void pop() {
+        if (stack.isEmpty()) {
+            throw new CalculatorInputException("Stack is empty.");
+        }
+        if (frozenDisplayValue != null) {
+            unfreeze();
+            clear();
+        }
+        setValue(stack.pop());
+    }
 
     /**
      * {@inheritDoc}
@@ -124,6 +145,13 @@ public class CalcModelImpl implements CalcModel {
         clear();
         activeOperand = OptionalDouble.empty();
         binaryOperator = null;
+        frozenDisplayValue = null;
+        hasDecimalPoint = false;
+        stack.clear();
+        listeners.forEach(l -> l.valueChanged(this));
+    }
+
+    public void unfreeze() {
         frozenDisplayValue = null;
         listeners.forEach(l -> l.valueChanged(this));
     }
@@ -247,15 +275,15 @@ public class CalcModelImpl implements CalcModel {
      */
     @Override
     public String toString() {
-        if (frozenDisplayValue != null) return frozenDisplayValue;
-        // using a regex removes zeros after the decimal point if there are only zeros
-        boolean hasRelevantDecimal = currentNumber.matches(".*\\.[1-9]+");
-        if (!hasDecimalPoint && !hasRelevantDecimal) {
-            int i = 0;
-            while (i < currentNumber.length() && currentNumber.charAt(i) == '0') i++;
-            currentNumber = currentNumber.substring(i);
+        if (frozenDisplayValue != null) {
+            return frozenDisplayValue;
         }
-        if (currentNumber.equals("")) return "0";
+        if (!currentNumber.contains(".") && !currentNumber.contains("[1-9]")) {
+            currentNumber = currentNumber.replaceFirst("^0+(?!$)", "");
+        }
+        if (currentNumber.isEmpty()) {
+            return "0";
+        }
         return currentNumber;
     }
 }

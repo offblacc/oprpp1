@@ -27,6 +27,7 @@ public class Calculator extends JFrame {
 
     /**
      * Entry point of the program.
+     *
      * @param args command line arguments
      */
     public static void main(String[] args) {
@@ -76,7 +77,7 @@ public class Calculator extends JFrame {
 
         InvertedToggleButton invCheckBox = new InvertedToggleButton();
         ArrayList<UnaryOperationButton> invertibleButtons = new ArrayList<>();
-        for (var opName: UnaryOperators.getOperatorsMap().keySet()) {
+        for (var opName : UnaryOperators.getOperatorsMap().keySet()) {
             if (opName.equals("1/x")) continue; // is unary, but not invertible, so we skip it, added it above manually
             UnaryOperationButton button = new UnaryOperationButton(opName, model, invCheckBox);
             invertibleButtons.add(button);
@@ -88,6 +89,8 @@ public class Calculator extends JFrame {
         cp.add(invCheckBox, new RCPosition(5, 7));
         cp.add(new SwapSignButton(model), new RCPosition(5, 4));
         cp.add(new BinaryOperationButton("x^n", model, invCheckBox), new RCPosition(5, 1));
+        cp.add(new PushButton((CalcModelImpl) model), new RCPosition(3, 7));
+        cp.add(new PopButton((CalcModelImpl) model), new RCPosition(4, 7));
 
     }
 }

@@ -8,7 +8,7 @@ import java.util.*;
  *
  * @author offblacc
  */
-public class CalcLayout implements LayoutManager2 {
+public class CalcLayout implements LayoutManager2 { // TODO need to alternate width...
     /**
      * Gap in pixels between components.
      */
