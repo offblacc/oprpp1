@@ -177,29 +177,29 @@ public class CalcLayout implements LayoutManager2 { // TODO need to alternate wi
      * @param parent the container to be laid out
      */
     @Override
-    public void layoutContainer(Container parent) { // TODO 38 39 38 39
-        Insets insets = parent.getInsets();         // TODO samo odredi starting pozicije svakog stupca i svakog retka pa onda dalje puni
+    public void layoutContainer(Container parent) {
+        Insets insets = parent.getInsets();
         int width = parent.getWidth() - insets.left - insets.right;
         int height = parent.getHeight() - insets.top - insets.bottom;
-        double componentWidth = (width - (COLUMNS - 1) * (double) gap) / COLUMNS;
-        double componentHeight = (height - (ROWS - 1) * (double) gap) / ROWS;
-        int prevX = insets.left;
-        int prevY = insets.top;
+        int componentWidth = (width - (COLUMNS - 1) * gap) / COLUMNS;
+        int componentHeight = (height - (ROWS - 1) * gap) / ROWS;
         for (int i = 0; i < ROWS; i++) {
-            for (int j = 0, columnPointer = 0; j < COLUMNS; j++) {
-                if (components[i][j] == null) continue;
-                if (columnPointer < j) columnPointer = j;
-                int widthMul = specialPositions.getOrDefault(new RCPosition(i + 1, j + 1), 1);
-                int x = prevX + gap ;
-                int y = prevY + gap;
-                components[i][j].setBounds(x, y, (int) Math.round(componentWidth * widthMul) + gap * (widthMul - 1), (int) Math.round(componentHeight));
-                prevX = x + (int) Math.round(componentWidth * widthMul) + gap * (widthMul - 1);
-                columnPointer += widthMul;
+            for (int j = 0; j < COLUMNS; j++) {
+                if (components[i][j] == null) {
+                    continue;
+                }
+                int x = j * (componentWidth + gap);
+                int y = i * (componentHeight + gap);
+                int w = componentWidth;
+                int h = componentHeight;
+                if (specialPositions.containsKey(new RCPosition(i + 1, j + 1))) {
+                    w = (componentWidth + gap) * specialPositions.get(new RCPosition(i + 1, j + 1)) - gap;
+                }
+                components[i][j].setBounds(x, y, w, h);
             }
-            prevX = insets.left;
-            prevY += componentHeight + gap;
         }
     }
+
 
     /**
      * Returns the size of the layout, whether it's the minimum, maximum or preferred size.
