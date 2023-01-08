@@ -45,11 +45,9 @@ public class BarChartDemo extends JFrame {
             );
         } catch (IOException e) {
             System.out.println("IO Error.");
-            e.printStackTrace(); // TODO remove
             return;
         } catch (IllegalArgumentException e) { // covers NumberFormatException
             System.out.println("Invalid file format.");
-            e.printStackTrace(); // TODO remove
             return;
         }
         BarChart finalChart = chart;

@@ -130,7 +130,7 @@ public class CalcModelImpl implements CalcModel {
      * {@inheritDoc}
      */
     @Override
-    public void clear() { // TODO not sure this is right
+    public void clear() {
         currentNumber = "";
         currentNumberValue = 0;
         isEditable = true;
@@ -173,7 +173,7 @@ public class CalcModelImpl implements CalcModel {
      * {@inheritDoc}
      */
     @Override
-    public void insertDecimalPoint() throws CalculatorInputException { // TODO is this ok? -> myb without ? fr idk
+    public void insertDecimalPoint() throws CalculatorInputException {
         if (!isEditable) throw new CalculatorInputException("Calculator is not editable");
         if (hasDecimalPoint) throw new CalculatorInputException("Number already contains decimal point");
         if (!this.enteredDigit) throw new CalculatorInputException();
@@ -232,7 +232,7 @@ public class CalcModelImpl implements CalcModel {
      */
     @Override
     public void setActiveOperand(double activeOperand) {
-        this.activeOperand = OptionalDouble.of(activeOperand); // TODO no listener here, right?
+        this.activeOperand = OptionalDouble.of(activeOperand);
         frozenDisplayValue = toString();
     }
 
@@ -256,7 +256,7 @@ public class CalcModelImpl implements CalcModel {
      * {@inheritDoc}
      */
     @Override
-    public void setPendingBinaryOperation(DoubleBinaryOperator op) { // TODO no listener here, right?
+    public void setPendingBinaryOperation(DoubleBinaryOperator op) {
         binaryOperator = op;
     }
 

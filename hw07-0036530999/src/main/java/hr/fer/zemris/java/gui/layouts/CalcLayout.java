@@ -33,8 +33,8 @@ public class CalcLayout implements LayoutManager2 { // TODO need to alternate wi
     private final Component[][] components = new Component[ROWS][COLUMNS];
 
     /**
-     * Map containing positions of components in the layout that take more than one x coordinate,
-     * the value being the number of columns the component takes.
+     * Map containing positions of components in the layout that take more than one x coordinate, the value being the
+     * number of columns the component takes.
      */
     private static final HashMap<RCPosition, Integer> specialPositions = new HashMap<>();
 
@@ -63,8 +63,8 @@ public class CalcLayout implements LayoutManager2 { // TODO need to alternate wi
      * Adds the specified component with the specified name to the layout.
      *
      * @param comp                  the component to be added
-     * @param RCPositionConstraints where to add the component. Can be a {@link RCPosition} or a {@link String}
-     *                              in the form "row,column".
+     * @param RCPositionConstraints where to add the component. Can be a {@link RCPosition} or a {@link String} in the
+     *                              form "row,column".
      */
     @Override
     public void addLayoutComponent(Component comp, Object RCPositionConstraints) {
@@ -178,21 +178,26 @@ public class CalcLayout implements LayoutManager2 { // TODO need to alternate wi
      */
     @Override
     public void layoutContainer(Container parent) { // TODO 38 39 38 39
-        Insets insets = parent.getInsets();
+        Insets insets = parent.getInsets();         // TODO samo odredi starting pozicije svakog stupca i svakog retka pa onda dalje puni
         int width = parent.getWidth() - insets.left - insets.right;
         int height = parent.getHeight() - insets.top - insets.bottom;
-        int componentWidth = (width - (COLUMNS - 1) * gap) / COLUMNS;
-        int componentHeight = (height - (ROWS - 1) * gap) / ROWS;
+        double componentWidth = (width - (COLUMNS - 1) * (double) gap) / COLUMNS;
+        double componentHeight = (height - (ROWS - 1) * (double) gap) / ROWS;
+        int prevX = insets.left;
+        int prevY = insets.top;
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0, columnPointer = 0; j < COLUMNS; j++) {
                 if (components[i][j] == null) continue;
                 if (columnPointer < j) columnPointer = j;
                 int widthMul = specialPositions.getOrDefault(new RCPosition(i + 1, j + 1), 1);
-                int x = insets.left + columnPointer * (componentWidth + gap);
-                int y = insets.top + i * (componentHeight + gap);
-                components[i][j].setBounds(x, y, componentWidth * widthMul + gap * (widthMul - 1), componentHeight);
+                int x = prevX + gap ;
+                int y = prevY + gap;
+                components[i][j].setBounds(x, y, (int) Math.round(componentWidth * widthMul) + gap * (widthMul - 1), (int) Math.round(componentHeight));
+                prevX = x + (int) Math.round(componentWidth * widthMul) + gap * (widthMul - 1);
                 columnPointer += widthMul;
             }
+            prevX = insets.left;
+            prevY += componentHeight + gap;
         }
     }
 
@@ -200,7 +205,8 @@ public class CalcLayout implements LayoutManager2 { // TODO need to alternate wi
      * Returns the size of the layout, whether it's the minimum, maximum or preferred size.
      *
      * @param parent   the container to be laid out
-     * @param sizeType the type of size to be returned, either minimum, maximum or preferred, as defined in {@link LayoutSizeType}
+     * @param sizeType the type of size to be returned, either minimum, maximum or preferred, as defined in
+     *                 {@link LayoutSizeType}
      * @return the size of the layout
      */
     public Dimension getLayoutSize(Container parent, ISizeGetter sizeType) {
