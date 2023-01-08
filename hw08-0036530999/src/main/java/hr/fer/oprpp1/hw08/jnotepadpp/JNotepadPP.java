@@ -1,10 +1,7 @@
 package hr.fer.oprpp1.hw08.jnotepadpp;
 
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentModel;
-import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.NewButton;
-import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.OpenButton;
-import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.SaveAsButton;
-import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.SaveButton;
+import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,6 +32,7 @@ public class JNotepadPP extends JFrame {
         toolbar.add(new OpenButton(model));
         toolbar.add(new SaveButton(model));
         toolbar.add(new SaveAsButton(model));
+        toolbar.add(new CloseButton(model));
         cp.add(toolbar, BorderLayout.NORTH);
     }
 

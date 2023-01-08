@@ -7,12 +7,11 @@ import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
 import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import static java.nio.file.Files.*;
 
 public class DefaultMultipleDocumentModel extends JTabbedPane implements MultipleDocumentModel {
     /**
@@ -39,16 +38,18 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
 
     public DefaultMultipleDocumentModel() {
         super();
-//        this.addChangeListener(e -> {
-//            int index = this.getSelectedIndex();
-//            if (index == -1) {
-//                this.currentDocument = null;
-//                return;
-//            }
-//            this.currentDocument = this.documents.get(index);
-//            this.currentTabIndex = index;
-//            this.notifyListenersCurrentDocumentChanged(null, currentDocument);
-//        });
+        // fired whenever a tab is selected -> need to update the current document
+        this.addChangeListener(e -> {
+            int index = this.getSelectedIndex();
+            if (index == -1) {
+                this.currentDocument = null;
+                return;
+            }
+            var prevDocument = currentDocument;
+            currentDocument = this.documents.get(index);
+            currentTabIndex = index;
+            notifyListenersCurrentDocumentChanged(prevDocument, currentDocument);
+        });
     }
 
 
@@ -65,7 +66,7 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
     public SingleDocumentModel createNewDocument() {
         DefaultSingleDocumentModel newDocument = new DefaultSingleDocumentModel(null, null);
         documents.add(newDocument);
-        addTab("unnamed", newDocument.getIcon(), newDocument.getTextComponent());
+        addTab("unnamed", newDocument.getIcon(), new JScrollPane(newDocument.getTextComponent()));
         setSelectedIndex(documents.size() - 1);
         currentDocument = newDocument;
         currentTabIndex = documents.size() - 1;
@@ -87,20 +88,24 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         SingleDocumentModel newModel = getOpenDocumentAtPath(path);
         if (newModel == null) {
             try {
-                String text = new String(readAllBytes(path));
+                String text = new String(Files.readAllBytes(path));
                 newModel = new DefaultSingleDocumentModel(text, path);
             } catch (IOException e) {
                 throw new RuntimeException("Error while reading from file.");
             }
+
+            documents.add(newModel);
+            this.addTab(path.getFileName().toString(), new JScrollPane(newModel.getTextComponent()));
+            setSelectedIndex(documents.size() - 1);
+            currentTabIndex = documents.size() - 1;
+            for (var l : listeners) l.documentAdded(newModel);
+            revalidate();
+            repaint();
+        } else {
+            setSelectedIndex(documents.indexOf(newModel));
+            currentTabIndex = documents.indexOf(newModel);
         }
-        documents.add(newModel); // add the new document to the collection of documents
-        this.addTab(path.getFileName().toString(), new JScrollPane(newModel.getTextComponent())); // add an actual tab// TODO the title is not the path, but the name of the file, modify later how you see fit
         currentDocument = newModel;
-        for (var l : listeners) l.documentAdded(newModel);
-        setSelectedIndex(documents.size() - 1);
-        currentTabIndex = documents.size() - 1;
-        revalidate();
-        repaint();
         return newModel;
     }
 
@@ -122,13 +127,30 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
 
     @Override
     public void saveDocument(SingleDocumentModel model, Path newPath) {
+        if (model == null) throw new NullPointerException("Model must not be null.");
+        if (newPath == null) {
+            newPath = model.getFilePath();
+            if (newPath == null) throw new NullPointerException("Cannot save document without a path.");
+        }
 
+        try {
+            Files.write(newPath, model.getTextComponent().getText().getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException("Error while writing to file.");
+        }
+
+        model.setModified(false);
+        model.setFilePath(newPath);
+        int index = documents.indexOf(model);
+        setTitleAt(index, newPath.getFileName().toString());
+        revalidate();
+        repaint();
     }
 
     @Override
-    public void closeDocument(SingleDocumentModel model) { // TODO need to do any checking ?
+    public void closeDocument(SingleDocumentModel model) { // TODO need to do any checking ? -> not here i think
         documents.remove(model);
-        removeTabAt(getIndexOfDocument(model));
+        removeTabAt(currentTabIndex);
         listeners.forEach(l -> l.documentRemoved(model));
     }
 

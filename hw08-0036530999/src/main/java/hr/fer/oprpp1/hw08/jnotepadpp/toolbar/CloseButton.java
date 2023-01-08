@@ -10,5 +10,6 @@ public class CloseButton extends Button {
 
     public CloseButton(MultipleDocumentModel model) {
         super(buttonText, icon, model);
+        addActionListener(ButtonActions.CLOSE.getActionListener(model, this));
     }
 }

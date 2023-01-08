@@ -10,12 +10,6 @@ public class OpenButton extends Button {
     private static final Icon icon = null;
     public OpenButton(MultipleDocumentModel model) {
         super(buttonText, icon, model);
-        addActionListener(e -> {
-            var fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Open file");
-            if (fileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
-            Path path = fileChooser.getSelectedFile().toPath();
-            model.loadDocument(path);
-        });
+        addActionListener(ButtonActions.OPEN.getActionListener(model, this));
     }
 }

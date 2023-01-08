@@ -84,7 +84,7 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel {
 
     @Override
     public boolean isModified() {
-        return isModified();
+        return modified;
     }
 
     /**
