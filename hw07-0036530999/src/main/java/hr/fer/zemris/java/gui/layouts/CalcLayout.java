@@ -181,21 +181,41 @@ public class CalcLayout implements LayoutManager2 { // TODO need to alternate wi
         Insets insets = parent.getInsets();
         int width = parent.getWidth() - insets.left - insets.right;
         int height = parent.getHeight() - insets.top - insets.bottom;
+        int[] widths = new int[COLUMNS];
+        int[] heights = new int[ROWS];
         int componentWidth = (width - (COLUMNS - 1) * gap) / COLUMNS;
         int componentHeight = (height - (ROWS - 1) * gap) / ROWS;
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-                if (components[i][j] == null) {
-                    continue;
-                }
-                int x = j * (componentWidth + gap);
-                int y = i * (componentHeight + gap);
-                int w = componentWidth;
-                int h = componentHeight;
-                if (specialPositions.containsKey(new RCPosition(i + 1, j + 1))) {
-                    w = (componentWidth + gap) * specialPositions.get(new RCPosition(i + 1, j + 1)) - gap;
-                }
-                components[i][j].setBounds(x, y, w, h);
+        Arrays.fill(heights, componentHeight);
+        Arrays.fill(widths, componentWidth);
+        int lastColumnEnd = COLUMNS * componentWidth + (COLUMNS - 1) * gap;
+        int lastRowEnd = ROWS * componentHeight + (ROWS - 1) * gap;
+        int endGapRight = width - lastColumnEnd;
+        int endGapBottom = height - lastRowEnd;
+
+        {
+            int i = 0;
+            while (endGapRight != 0) {
+                widths[i++]++;
+                endGapRight--;
+                i++;
+                if (i > widths.length) i %= widths.length;
+            }
+            i = 0;
+            while (endGapBottom != 0) {
+                heights[i++]++;
+                endGapBottom--;
+                i++;
+                if (i > heights.length) i %= heights.length;
+            }
+        }
+
+        for (int row = 0; row < ROWS; row++){
+            for (int col = 0; col < COLUMNS; col++) {
+                if (components[row][col] == null) continue;
+                int x = (col - 1) * gap + col * componentWidth + gap;
+                int y = (row - 1) * gap + row * componentHeight + gap;
+                int widthMul = specialPositions.getOrDefault(new RCPosition(row + 1, col + 1), 1);
+                components[row][col].setBounds(x, y, widthMul * widths[col], heights[row]);
             }
         }
     }
