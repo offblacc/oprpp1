@@ -2,6 +2,7 @@ package hr.fer.oprpp1.hw08.jnotepadpp;
 
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentModel;
+import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class DefaultMultipleDocumentModel extends JTabbedPane implements MultipleDocumentModel {
+public class DefaultMultipleDocumentModel extends JTabbedPane implements MultipleDocumentModel, SingleDocumentListener {
     /**
      * A collection of the documents this model contains.
      */
@@ -66,10 +67,12 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
     public SingleDocumentModel createNewDocument() {
         DefaultSingleDocumentModel newDocument = new DefaultSingleDocumentModel(null, null);
         documents.add(newDocument);
-        addTab("unnamed", newDocument.getIcon(), new JScrollPane(newDocument.getTextComponent()));
+        addTab("(unnamed)", newDocument.getIcon(), new JScrollPane(newDocument.getTextComponent()));
         setSelectedIndex(documents.size() - 1);
         currentDocument = newDocument;
         currentTabIndex = documents.size() - 1;
+        setToolTipTextAt(currentTabIndex, "(unnamed)");
+        newDocument.addSingleDocumentListener(this);
         notifyListenersDocumentAdded(newDocument);
         revalidate();
         repaint();
@@ -95,9 +98,10 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
             }
 
             documents.add(newModel);
-            this.addTab(path.getFileName().toString(), new JScrollPane(newModel.getTextComponent()));
+            this.addTab(path.getFileName().toString(), ((DefaultSingleDocumentModel) newModel).getIcon(), new JScrollPane(newModel.getTextComponent()));
             setSelectedIndex(documents.size() - 1);
             currentTabIndex = documents.size() - 1;
+            setToolTipTextAt(currentTabIndex, path.toString());
             for (var l : listeners) l.documentAdded(newModel);
             revalidate();
             repaint();
@@ -105,6 +109,7 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
             setSelectedIndex(documents.indexOf(newModel));
             currentTabIndex = documents.indexOf(newModel);
         }
+        newModel.addSingleDocumentListener(this);
         currentDocument = newModel;
         return newModel;
     }
@@ -231,5 +236,17 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
      */
     private void notifyListenersDocumentRemoved(SingleDocumentModel model) {
         listeners.forEach(l -> l.documentRemoved(model));
+    }
+
+
+    @Override
+    public void documentModifyStatusUpdated(SingleDocumentModel model) {
+        int index = documents.indexOf(model);
+        setIconAt(index, ((DefaultSingleDocumentModel) model).getIcon());
+    }
+
+    @Override
+    public void documentFilePathUpdated(SingleDocumentModel model) {
+
     }
 }

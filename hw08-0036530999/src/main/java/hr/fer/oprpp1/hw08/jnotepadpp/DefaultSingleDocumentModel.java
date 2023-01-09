@@ -4,6 +4,8 @@ import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -16,7 +18,7 @@ import java.util.List;
  *
  * @author offblacc
  */
-public class DefaultSingleDocumentModel implements SingleDocumentModel {
+public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListener {
     /**
      * The text component that is used to display the text.
      */
@@ -46,15 +48,17 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel {
             if (bytes == null) throw new NullPointerException();
             return new ImageIcon(bytes);
         } catch (IOException | NullPointerException e) {
+            // System.out.println("Error loading icon: " + path);
             return null; // if icon fails to load, return null, meaning it won't be displayed, silently ignoring, even though it should not happen and if it does the cause should be fixed
         }
     }
 
     public DefaultSingleDocumentModel(String textContent, Path path) {
         this.textArea = new JTextArea(textContent);
+        this.textArea.addKeyListener(this);
         this.path = path;
         // as it is not saved anywhere, it makes no sense to display the icon that is associated with saved files that have not been modified since last save
-        this.modified = true;
+        this.modified = false;
         this.listeners = new ArrayList<>();
     }
 
@@ -119,5 +123,23 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel {
      */
     public void notifyListenersModifiedStatusUpdated() {
         listeners.forEach(l -> l.documentModifyStatusUpdated(this));
+    }
+
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        if (modified) return; // if it was already set to modified, no need to notify listeners on every key press
+        setModified(true);
+        notifyListenersModifiedStatusUpdated(); // TODO who gets notified of this? -> stopped here, should be
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        // do nothing
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // do nothing
     }
 }

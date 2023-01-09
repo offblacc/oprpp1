@@ -1,6 +1,8 @@
 package hr.fer.oprpp1.hw08.jnotepadpp.toolbar;
 
+import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentModel;
+import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
 
 import javax.swing.*;
 
