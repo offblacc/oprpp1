@@ -27,7 +27,6 @@ public class ButtonActions {
         model.saveDocument(currentDocument, path);
     };
 
-    // TODO this is complicated, make sure it works
     public static final IButtonAction SAVE = (MultipleDocumentModel model, Button parent) -> (ActionListener) e -> {
         var currentDocument = model.getCurrentDocument();
         if (currentDocument == null) return;
@@ -50,5 +49,22 @@ public class ButtonActions {
             }
         }
         model.closeDocument(currentDocument);
+    };
+    public static final IButtonAction STATS = (MultipleDocumentModel model, Button parent) -> (ActionListener) e -> {
+        var currentDocument = model.getCurrentDocument();
+        if (currentDocument == null) return;
+        var text = currentDocument.getTextComponent().getText();
+        int charsCount = text.length();
+        int nonBlankCount = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c != ' ' && c != '\t' && c != '\n') nonBlankCount++;
+        }
+        int newLinesCount = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c == '\n') newLinesCount++;
+        }
+        JOptionPane.showMessageDialog(parent.getParent(), "Characters: " + charsCount + "\nNon-blank characters: " + nonBlankCount + "\nLines: " + newLinesCount, "Stats", JOptionPane.INFORMATION_MESSAGE);
     };
 }

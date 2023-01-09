@@ -130,7 +130,7 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
     public void keyTyped(KeyEvent e) {
         if (modified) return; // if it was already set to modified, no need to notify listeners on every key press
         setModified(true);
-        notifyListenersModifiedStatusUpdated(); // TODO who gets notified of this? -> stopped here, should be
+        notifyListenersModifiedStatusUpdated();
     }
 
     @Override

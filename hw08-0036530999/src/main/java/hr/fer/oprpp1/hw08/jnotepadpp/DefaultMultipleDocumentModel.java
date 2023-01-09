@@ -4,8 +4,12 @@ import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentModel;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
+import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.ButtonActions;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -14,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class DefaultMultipleDocumentModel extends JTabbedPane implements MultipleDocumentModel, SingleDocumentListener {
+public class DefaultMultipleDocumentModel extends JTabbedPane implements MultipleDocumentModel, SingleDocumentListener, WindowListener {
     /**
      * A collection of the documents this model contains.
      */
@@ -153,7 +157,7 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
     }
 
     @Override
-    public void closeDocument(SingleDocumentModel model) { // TODO need to do any checking ? -> not here i think
+    public void closeDocument(SingleDocumentModel model) {
         documents.remove(model);
         removeTabAt(currentTabIndex);
         listeners.forEach(l -> l.documentRemoved(model));
@@ -247,6 +251,64 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
 
     @Override
     public void documentFilePathUpdated(SingleDocumentModel model) {
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        for (SingleDocumentModel document : documents) {
+            if (document.isModified()) {
+                String name = document.getFilePath() == null ? "unnamed" : document.getFilePath().getFileName().toString();
+                int result = JOptionPane.showConfirmDialog(this, "Do you want to save changes to " + name + "?", "Save changes", JOptionPane.YES_NO_CANCEL_OPTION);
+                if (result == JOptionPane.YES_OPTION) {
+                    Path path = document.getFilePath();
+                    if (document.getFilePath() == null) {
+                        JFileChooser fc = new JFileChooser();
+                        fc.setDialogTitle("Save document");
+                        if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+                            return;
+                        }
+                        path = fc.getSelectedFile().toPath();
+                    }
+                    saveDocument(document, path);
+                } else if (result == JOptionPane.CANCEL_OPTION) {
+                    return;
+                }
+            }
+        }
+        System.exit(0);
+    }
+
+
+
+    // unused methods from interfaces
+    @Override
+    public void windowOpened(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
 
     }
 }
