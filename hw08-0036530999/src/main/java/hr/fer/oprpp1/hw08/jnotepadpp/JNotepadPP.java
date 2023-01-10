@@ -3,6 +3,7 @@ package hr.fer.oprpp1.hw08.jnotepadpp;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentModel;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
+import hr.fer.oprpp1.hw08.jnotepadpp.statusbar.StatusBar;
 import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.*;
 
 import javax.swing.*;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 
 public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     private DefaultMultipleDocumentModel multipleDocumentModel;
+    private StatusBar statusBar;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new JNotepadPP().setVisible(true));
@@ -27,6 +29,10 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         setTitle("JNotepad++");
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
+        statusBar = new StatusBar();
+        cp.add(statusBar, BorderLayout.SOUTH);
+
+
         multipleDocumentModel = new DefaultMultipleDocumentModel();
         addWindowListener(multipleDocumentModel);
         multipleDocumentModel.addMultipleDocumentListener(this); // so that the parent can change the window title on document change
@@ -40,15 +46,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         toolbar.add(new SaveAsButton(multipleDocumentModel));
         toolbar.add(new CloseButton(multipleDocumentModel));
         toolbar.add(new StatsButton(multipleDocumentModel));
-        cp.add(toolbar, BorderLayout.NORTH); // neka ovo bude listener na tabovima, odnosno na tabchanged, i onda samo brate lupaj setTitle(model.getCurrentDocument().getFilePath().getFileName().toString());
-
-        JPanel statusBar = new JPanel(new GridLayout(1, 0));
-        statusBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        JLabel lengthLabel = new JLabel("Length: 0");
-        JLabel lnLabel = new JLabel("Ln: 0   Col: 0");
-        statusBar.add(lengthLabel);
-        statusBar.add(lnLabel);
-        cp.add(statusBar, BorderLayout.SOUTH);
+        cp.add(toolbar, BorderLayout.NORTH);
     }
 
     @Override
@@ -60,6 +58,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     @Override
     public void documentAdded(SingleDocumentModel model) {
         updateTitle(model);
+        ((DefaultSingleDocumentModel)model).addCaretListener(statusBar); // any time a document is added, add the status bar as it's
     }
 
     @Override
