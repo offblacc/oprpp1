@@ -23,6 +23,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     private void initGUI() {
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         setSize(800, 600);
+        setLocation(400, 200);
         setTitle("JNotepad++");
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
@@ -40,11 +41,20 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         toolbar.add(new CloseButton(multipleDocumentModel));
         toolbar.add(new StatsButton(multipleDocumentModel));
         cp.add(toolbar, BorderLayout.NORTH); // neka ovo bude listener na tabovima, odnosno na tabchanged, i onda samo brate lupaj setTitle(model.getCurrentDocument().getFilePath().getFileName().toString());
+
+        JPanel statusBar = new JPanel(new GridLayout(1, 0));
+        statusBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        JLabel lengthLabel = new JLabel("Length: 0");
+        JLabel lnLabel = new JLabel("Ln: 0   Col: 0");
+        statusBar.add(lengthLabel);
+        statusBar.add(lnLabel);
+        cp.add(statusBar, BorderLayout.SOUTH);
     }
 
     @Override
     public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
         updateTitle(currentModel);
+        //
     }
 
     @Override

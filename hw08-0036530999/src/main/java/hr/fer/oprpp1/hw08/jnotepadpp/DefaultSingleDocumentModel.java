@@ -4,6 +4,7 @@ import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentListener;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
 
 import javax.swing.*;
+import javax.swing.event.CaretListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -37,7 +38,8 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
     /**
      * List of listeners that are notified when the modified flag changes.
      */
-    List<SingleDocumentListener> listeners;
+    List<SingleDocumentListener> statusListeners;
+    List<CaretListener> caretListeners;
     private static final Icon modifiedIcon = loadIcon("/icons/modified.png");
     private static final Icon unmodifiedIcon = loadIcon("/icons/unmodified.png");
 
@@ -59,7 +61,7 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
         this.path = path;
         // as it is not saved anywhere, it makes no sense to display the icon that is associated with saved files that have not been modified since last save
         this.modified = false;
-        this.listeners = new ArrayList<>();
+        this.statusListeners = new ArrayList<>();
     }
 
     Icon getIcon() {
@@ -101,30 +103,33 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
         if (notify) notifyListenersModifiedStatusUpdated();
     }
 
+    public void addCaretListener(CaretListener listener) {
+        textArea.addCaretListener(listener);
+    }
+
     @Override
     public void addSingleDocumentListener(SingleDocumentListener l) {
-        listeners.add(l);
+        statusListeners.add(l);
     }
 
     @Override
     public void removeSingleDocumentListener(SingleDocumentListener l) {
-        listeners.remove(l);
+        statusListeners.remove(l);
     }
 
     /**
      * Notifies all listeners that the path to this document model has changed.
      */
     public void notifyListenersPathUpdated() {
-        listeners.forEach(l -> l.documentFilePathUpdated(this));
+        statusListeners.forEach(l -> l.documentFilePathUpdated(this));
     }
 
     /**
      * Notifies all listeners that the modified flag of this document model has changed.
      */
     public void notifyListenersModifiedStatusUpdated() {
-        listeners.forEach(l -> l.documentModifyStatusUpdated(this));
+        statusListeners.forEach(l -> l.documentModifyStatusUpdated(this));
     }
-
 
     @Override
     public void keyTyped(KeyEvent e) {

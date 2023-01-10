@@ -5,7 +5,7 @@ import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentModel;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
-
+// TODO keyboard shortcuts
 public class ButtonActions {
     public static final IButtonAction NEW = (MultipleDocumentModel model, Button parent) -> (ActionListener) e -> model.createNewDocument();
 
