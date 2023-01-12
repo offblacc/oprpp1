@@ -2,6 +2,7 @@ package hr.fer.oprpp1.hw08.jnotepadpp.localization;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public abstract class AbstractLocalizationProvider implements ILocalizationProvider {
     List<ILocalizationListener> listeners;

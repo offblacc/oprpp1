@@ -134,6 +134,7 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
     @Override
     public void keyTyped(KeyEvent e) {
         if (modified) return; // if it was already set to modified, no need to notify listeners on every key press
+        if (e.isControlDown()) return; // ignore control keys, they don't change the text, only mess up the modified flag
         setModified(true);
         notifyListenersModifiedStatusUpdated();
     }

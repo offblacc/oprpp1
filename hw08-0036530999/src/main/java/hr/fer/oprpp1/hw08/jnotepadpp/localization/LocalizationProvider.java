@@ -10,21 +10,23 @@ public class LocalizationProvider extends AbstractLocalizationProvider {
 
     private LocalizationProvider() {
         super();
+        language = "hr";
+        bundle = ResourceBundle.getBundle("localization/translations", Locale.forLanguageTag(language));
     }
 
     @Override
     public String getString(String key) {
-        return null;
+        return bundle.getString(key);
     }
 
     @Override
     public String getCurrentLanguage() {
-        return null;
+        return language == null ? "en" : language;
     }
 
     public void setLanguage(String language) {
         this.language = language;
-        bundle = ResourceBundle.getBundle("hr.fer.oprpp1.hw08.jnotepadpp.localization.prijevodi", Locale.forLanguageTag(language));
+        bundle = ResourceBundle.getBundle("localization/translations", Locale.forLanguageTag(language));
         fire();
     }
 

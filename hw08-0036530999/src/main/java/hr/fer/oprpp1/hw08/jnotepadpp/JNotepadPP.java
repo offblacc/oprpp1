@@ -1,28 +1,34 @@
 package hr.fer.oprpp1.hw08.jnotepadpp;
 
+import hr.fer.oprpp1.hw08.jnotepadpp.localization.*;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentListener;
-import hr.fer.oprpp1.hw08.jnotepadpp.model.MultipleDocumentModel;
 import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
 import hr.fer.oprpp1.hw08.jnotepadpp.statusbar.StatusBar;
-import hr.fer.oprpp1.hw08.jnotepadpp.toolbar.*;
 
 import javax.swing.*;
+import java.util.List;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     private DefaultMultipleDocumentModel multipleDocumentModel;
     private StatusBar statusBar;
+    FormLocalizationProvider flp = new FormLocalizationProvider(LocalizationProvider.getInstance(), this);
+    // language actions
+    private List<Action> languageActions;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new JNotepadPP().setVisible(true));
     }
 
     public JNotepadPP() {
+        super();
         initGUI();
     }
 
@@ -36,44 +42,55 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         statusBar = new StatusBar();
         cp.add(statusBar, BorderLayout.SOUTH);
 
-
         multipleDocumentModel = new DefaultMultipleDocumentModel();
         addWindowListener(multipleDocumentModel);
         addWindowListener(statusBar); // statusbar is the mediator between its clock and the window
         multipleDocumentModel.addMultipleDocumentListener(this); // so that the parent can change the window title on document change
         cp.add(multipleDocumentModel, BorderLayout.CENTER);
 
-//        JToolBar toolbar = new JToolBar();
-//        toolbar.setFloatable(false);
-//        toolbar.add(new NewButton(multipleDocumentModel));
-//        toolbar.add(new OpenButton(multipleDocumentModel));
-//        toolbar.add(new SaveButton(multipleDocumentModel));
-//        toolbar.add(new SaveAsButton(multipleDocumentModel));
-//        toolbar.add(new CloseButton(multipleDocumentModel));
-//        toolbar.add(new StatsButton(multipleDocumentModel));
-//        cp.add(toolbar, BorderLayout.NORTH);
-
-        createMenus();
         createActions();
+        createMenus();
+        createToolbars();
+    }
+
+    private void createToolbars() {
+        JToolBar toolBar = new JToolBar("Alati");
+        toolBar.setFloatable(true);
+
+        toolBar.add(new JButton(openDocumentAction));
+        toolBar.add(new JButton(saveDocumentAction));
+        toolBar.addSeparator();
+        toolBar.add(new JButton(deleteSelectedPartAction));
+        toolBar.add(new JButton(toggleCaseAction));
+
+        this.getContentPane().add(toolBar, BorderLayout.PAGE_START);
     }
 
     private void createMenus() {
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = new LocalizedJMenu("file", flp);
         menuBar.add(fileMenu);
 
-        fileMenu.add(new JMenuItem(openDocumentAction));
-        fileMenu.add(new JMenuItem(saveAsDocumentAction)); // TODO this missing
         fileMenu.add(new JMenuItem(newDocumentAction));
+        fileMenu.add(new JMenuItem(openDocumentAction));
         fileMenu.add(new JMenuItem(saveDocumentAction));
+        fileMenu.add(new JMenuItem(saveAsDocumentAction));
+        fileMenu.add(new JMenuItem(closeDocumentAction));
         fileMenu.addSeparator();
 
-        JMenu editMenu = new JMenu("Edit");
+        JMenu editMenu = new LocalizedJMenu("edit", flp);
         menuBar.add(editMenu);
 
         editMenu.add(new JMenuItem(deleteSelectedPartAction));
         editMenu.add(new JMenuItem(toggleCaseAction));
+
+        JMenu languageMenu = new LocalizedJMenu("language", flp);
+        for (Action action : languageActions) {
+            languageMenu.add(new JMenuItem(action));
+        }
+
+        menuBar.add(languageMenu);
 
         this.setJMenuBar(menuBar);
     }
@@ -106,7 +123,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     }
 
-    private Action openDocumentAction = new AbstractAction() {
+    private LocalizableAction openDocumentAction = new LocalizableAction("open", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var fileChooser = new JFileChooser();
@@ -117,7 +134,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action saveAsDocumentAction = new AbstractAction() {
+    private Action saveAsDocumentAction = new LocalizableAction("saveAs", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var currentDocument = multipleDocumentModel.getCurrentDocument();
@@ -130,7 +147,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action saveDocumentAction = new AbstractAction() {
+    private Action saveDocumentAction = new LocalizableAction("save", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var currentDocument = multipleDocumentModel.getCurrentDocument();
@@ -143,7 +160,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action closeAction = new AbstractAction() {
+    private Action closeDocumentAction = new LocalizableAction("close", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var currentDocument = multipleDocumentModel.getCurrentDocument();
@@ -160,7 +177,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action deleteSelectedPartAction = new AbstractAction() {
+    private Action deleteSelectedPartAction = new LocalizableAction("delete", flp) {
 
         private static final long serialVersionUID = 1L;
 
@@ -180,7 +197,14 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action toggleCaseAction = new AbstractAction() {
+    private Action newDocumentAction = new LocalizableAction("new", flp) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            multipleDocumentModel.createNewDocument();
+        }
+    };
+
+    private Action toggleCaseAction = new LocalizableAction("toggle", flp) {
 
         private static final long serialVersionUID = 1L;
 
@@ -232,6 +256,21 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         saveDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
         saveDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to save current file to disk.");
 
+        saveAsDocumentAction.putValue(Action.NAME, flp.getString("saveAs"));
+        saveAsDocumentAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control alt S"));
+        saveAsDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
+        saveAsDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to save current file to disk with new name.");
+
+        newDocumentAction.putValue(Action.NAME, "New");
+        newDocumentAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control N"));
+        newDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
+        newDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to create new file.");
+
+        closeDocumentAction.putValue(Action.NAME, "Close");
+        closeDocumentAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control W"));
+        closeDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
+        closeDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to close current file.");
+
         deleteSelectedPartAction.putValue(Action.NAME, "Delete selected text");
         deleteSelectedPartAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("F2"));
         deleteSelectedPartAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
@@ -241,5 +280,23 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         toggleCaseAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control F3"));
         toggleCaseAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
         toggleCaseAction.putValue(Action.SHORT_DESCRIPTION, "Used to toggle character case in selected part of text or in entire document.");
+
+        Map<String, String> languages = Languages.getLanguages();
+        System.out.println(languages);
+        languageActions = new ArrayList<>();
+
+        for (var lang : languages.entrySet()) {
+            var tag = lang.getKey();
+            var value = lang.getValue();
+            var newAction = new LocalizableAction(tag, flp) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    LocalizationProvider.getInstance().setLanguage(tag);
+                }
+            };
+            newAction.putValue(Action.NAME, value);
+            newAction.putValue(Action.SHORT_DESCRIPTION, "Used to change language to " + value + ".");
+            languageActions.add(newAction);
+        }
     }
 }

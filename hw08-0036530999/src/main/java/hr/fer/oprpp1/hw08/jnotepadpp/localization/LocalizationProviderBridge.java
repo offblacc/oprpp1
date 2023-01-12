@@ -31,7 +31,7 @@ public class LocalizationProviderBridge extends AbstractLocalizationProvider {
         if (connected) {
             return parent.getCurrentLanguage();
         } else {
-            return "en";
+            return "en"; // if not connected, return english
         }
     }
 }
