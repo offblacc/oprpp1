@@ -35,6 +35,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
 
         multipleDocumentModel = new DefaultMultipleDocumentModel();
         addWindowListener(multipleDocumentModel);
+        addWindowListener(statusBar); // statusbar is the mediator between its clock and the window
         multipleDocumentModel.addMultipleDocumentListener(this); // so that the parent can change the window title on document change
         cp.add(multipleDocumentModel, BorderLayout.CENTER);
 
