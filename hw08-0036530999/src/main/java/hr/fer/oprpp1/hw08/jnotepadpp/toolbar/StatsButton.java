@@ -10,7 +10,7 @@ public class StatsButton extends Button {
 
     public StatsButton(MultipleDocumentModel model) {
         super(buttonText, null, model);
-        addActionListener(ButtonActions.STATS.getActionListener(model, this));
+        addActionListener(OldButtonActions.STATS.getActionListener(model, this));
     }
 }
 

@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
 // TODO keyboard shortcuts
-public class ButtonActions {
+public class OldButtonActions {
     public static final IButtonAction NEW = (MultipleDocumentModel model, Button parent) -> (ActionListener) e -> model.createNewDocument();
 
     public static final IButtonAction OPEN = (MultipleDocumentModel model, Button parent) -> (ActionListener) e -> {
