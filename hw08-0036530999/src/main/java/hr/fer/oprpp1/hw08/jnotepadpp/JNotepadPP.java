@@ -20,7 +20,6 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     private DefaultMultipleDocumentModel multipleDocumentModel;
     private StatusBar statusBar;
     FormLocalizationProvider flp = new FormLocalizationProvider(LocalizationProvider.getInstance(), this);
-    // language actions
     private List<Action> languageActions;
 
     public static void main(String[] args) {
@@ -57,9 +56,10 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         JToolBar toolBar = new JToolBar("Alati");
         toolBar.setFloatable(true);
 
+        toolBar.add(new JButton(newDocumentAction));
         toolBar.add(new JButton(openDocumentAction));
         toolBar.add(new JButton(saveDocumentAction));
-        toolBar.addSeparator();
+        toolBar.add(new JButton(saveAsDocumentAction));
         toolBar.add(new JButton(deleteSelectedPartAction));
         toolBar.add(new JButton(toggleCaseAction));
 
@@ -80,16 +80,18 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         fileMenu.addSeparator();
 
         JMenu editMenu = new LocalizedJMenu("edit", flp);
-        menuBar.add(editMenu);
 
         editMenu.add(new JMenuItem(deleteSelectedPartAction));
         editMenu.add(new JMenuItem(toggleCaseAction));
+        editMenu.addSeparator();
+        menuBar.add(editMenu);
 
         JMenu languageMenu = new LocalizedJMenu("language", flp);
         for (Action action : languageActions) {
             languageMenu.add(new JMenuItem(action));
         }
 
+        languageMenu.addSeparator();
         menuBar.add(languageMenu);
 
         this.setJMenuBar(menuBar);
@@ -184,7 +186,9 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JTextArea editor = multipleDocumentModel.getCurrentDocument().getTextComponent();
+            var currDoc = multipleDocumentModel.getCurrentDocument();
+            if (currDoc == null) return;
+            JTextArea editor = currDoc.getTextComponent();
             Document doc = editor.getDocument();
             int len = Math.abs(editor.getCaret().getDot() - editor.getCaret().getMark());
             if (len == 0) return;
@@ -211,7 +215,9 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JTextArea editor = multipleDocumentModel.getCurrentDocument().getTextComponent();
+            var currDoc = multipleDocumentModel.getCurrentDocument();
+            if (currDoc == null) return;
+            JTextArea editor = currDoc.getTextComponent();
 
             Document doc = editor.getDocument();
             int len = Math.abs(editor.getCaret().getDot() - editor.getCaret().getMark());
@@ -246,12 +252,12 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     };
 
     private void createActions() {
-        openDocumentAction.putValue(Action.NAME, "Open");
+        openDocumentAction.putValue(Action.NAME, flp.getString("open"));
         openDocumentAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control O"));
         openDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_O);
         openDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to open existing file from disk.");
 
-        saveDocumentAction.putValue(Action.NAME, "Save");
+        saveDocumentAction.putValue(Action.NAME, flp.getString("save"));
         saveDocumentAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control S"));
         saveDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
         saveDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to save current file to disk.");
@@ -261,34 +267,33 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         saveAsDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
         saveAsDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to save current file to disk with new name.");
 
-        newDocumentAction.putValue(Action.NAME, "New");
+        newDocumentAction.putValue(Action.NAME, flp.getString("new"));
         newDocumentAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control N"));
         newDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
         newDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to create new file.");
 
-        closeDocumentAction.putValue(Action.NAME, "Close");
+        closeDocumentAction.putValue(Action.NAME, flp.getString("close"));
         closeDocumentAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control W"));
         closeDocumentAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
         closeDocumentAction.putValue(Action.SHORT_DESCRIPTION, "Used to close current file.");
 
-        deleteSelectedPartAction.putValue(Action.NAME, "Delete selected text");
+        deleteSelectedPartAction.putValue(Action.NAME, flp.getString("delete"));
         deleteSelectedPartAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("F2"));
         deleteSelectedPartAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
         deleteSelectedPartAction.putValue(Action.SHORT_DESCRIPTION, "Used to delete the selected part of text.");
 
-        toggleCaseAction.putValue(Action.NAME, "Toggle case");
+        toggleCaseAction.putValue(Action.NAME, flp.getString("toggle"));
         toggleCaseAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control F3"));
         toggleCaseAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_T);
         toggleCaseAction.putValue(Action.SHORT_DESCRIPTION, "Used to toggle character case in selected part of text or in entire document.");
 
         Map<String, String> languages = Languages.getLanguages();
-        System.out.println(languages);
         languageActions = new ArrayList<>();
 
         for (var lang : languages.entrySet()) {
             var tag = lang.getKey();
             var value = lang.getValue();
-            var newAction = new LocalizableAction(tag, flp) {
+            var newAction = new AbstractAction(value) { // change to LocalizableAction if you want to use localization
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     LocalizationProvider.getInstance().setLanguage(tag);

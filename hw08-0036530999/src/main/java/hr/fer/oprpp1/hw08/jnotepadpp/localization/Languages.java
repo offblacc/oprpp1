@@ -6,12 +6,13 @@ import java.util.Map;
 
 public class Languages {
     // let each language have a tag and a name
-    private static HashMap<String, String> languages; // TODO here this is bad
+    private static HashMap<String, String> languages;
 
-    private Languages() {
+    static {
+        languages = new HashMap<>();
         languages.put("en", "English");
-        languages.put("hr", "Croatian");
-        languages.put("de", "German");
+        languages.put("hr", "Hrvatski");
+        languages.put("de", "Deutsch");
     }
 
     public static Map<String, String> getLanguages() {

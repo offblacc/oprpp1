@@ -2,18 +2,13 @@ package hr.fer.oprpp1.hw08.jnotepadpp.localization;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public abstract class AbstractLocalizationProvider implements ILocalizationProvider {
-    List<ILocalizationListener> listeners;
-    public AbstractLocalizationProvider() {
-        listeners = new ArrayList<>();
-    }
+    List<ILocalizationListener> listeners = new ArrayList<>();
 
     @Override
     public void addLocalizationListener(ILocalizationListener l) {
         listeners.add(l);
-
     }
 
     @Override
@@ -31,6 +26,8 @@ public abstract class AbstractLocalizationProvider implements ILocalizationProvi
      * Notifies all listeners that the localization has changed.
      */
     public void fire() {
-        listeners.forEach(ILocalizationListener::localizationChanged);
+        listeners.forEach(l -> l.localizationChanged());
+        System.out.println("Fired");
+        System.out.println(listeners.size());
     }
 }

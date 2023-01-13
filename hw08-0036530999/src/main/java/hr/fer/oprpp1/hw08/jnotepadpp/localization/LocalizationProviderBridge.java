@@ -5,9 +5,11 @@ public class LocalizationProviderBridge extends AbstractLocalizationProvider {
     private boolean connected;
 
     public LocalizationProviderBridge(ILocalizationProvider parent) {
+        super();
         this.parent = parent;
         this.connected = true;
     }
+
 
     public void disconnect() {
         if (!connected) return;
@@ -16,7 +18,9 @@ public class LocalizationProviderBridge extends AbstractLocalizationProvider {
     }
 
     public void connect() {
+        if (connected) return;
         connected = true;
+        parent.addLocalizationListener(this::fire);
     }
 
     public String getString(String key) {
