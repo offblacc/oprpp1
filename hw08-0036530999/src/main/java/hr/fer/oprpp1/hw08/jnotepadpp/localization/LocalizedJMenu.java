@@ -9,7 +9,7 @@ public class LocalizedJMenu extends JMenu implements ILocalizationListener {
         super(lp.getString(key));
         this.lp = lp;
         this.key = key;
-        LocalizationProvider.getInstance().addLocalizationListener(this); // TODO why does it seem like it is not the same instance as you know the other similar bit of code
+        this.lp.addLocalizationListener(this); // TODO why does it seem like it is not the same instance as you know the other similar bit of code
     }
 
     @Override

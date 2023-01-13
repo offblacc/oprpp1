@@ -20,7 +20,7 @@ public class LocalizationProviderBridge extends AbstractLocalizationProvider {
     public void connect() {
         if (connected) return;
         connected = true;
-        parent.addLocalizationListener(this::fire);
+        addLocalizationListener(this::fire);
     }
 
     public String getString(String key) {

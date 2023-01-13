@@ -4,12 +4,13 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 public class LocalizableAction extends AbstractAction implements ILocalizationListener {
-    ILocalizationProvider lp = LocalizationProvider.getInstance();
+    ILocalizationProvider lp; // TODO (deprecated comment) why this, this is not right, should be the one passed in the constructor
     String key;
 
     public LocalizableAction(String key, ILocalizationProvider lp) {
         super(lp.getString(key));
         this.key = key;
+        this.lp = lp;
         this.lp.addLocalizationListener(this); // TODO as you need the FLP's listeners, LP instances' listeners are not needed, bad code?
     }
 

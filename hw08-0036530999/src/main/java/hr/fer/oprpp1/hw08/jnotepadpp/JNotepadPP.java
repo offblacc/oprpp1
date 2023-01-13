@@ -296,7 +296,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
             var newAction = new AbstractAction(value) { // change to LocalizableAction if you want to use localization
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    LocalizationProvider.getInstance().setLanguage(tag);
+                    LocalizationProvider.getInstance().setLanguage(tag); // TODO this will trigger the wrong listeners
                 }
             };
             newAction.putValue(Action.NAME, value);
