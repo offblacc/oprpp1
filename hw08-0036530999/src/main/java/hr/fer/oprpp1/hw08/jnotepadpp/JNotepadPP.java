@@ -16,21 +16,51 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * The main class of the application.
+ */
 public class JNotepadPP extends JFrame implements MultipleDocumentListener {
+
+    /**
+     * The model that holds all the documents.
+     */
     private DefaultMultipleDocumentModel multipleDocumentModel;
+
+    /**
+     * The status bar.
+     */
     private StatusBar statusBar;
+
+    /**
+     * The localization provider.
+     */
     FormLocalizationProvider flp = new FormLocalizationProvider(LocalizationProvider.getInstance(), this);
+
+    /**
+     * List of actions that set the language.
+     */
     private List<Action> languageActions;
 
+    /**
+     * Entry point of the application.
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new JNotepadPP().setVisible(true));
+        SwingUtilities.invokeLater(() -> new JNotepadPP());
     }
 
+    /**
+     * Basic constructor.
+     */
     public JNotepadPP() {
         super();
         initGUI();
+        setVisible(true);
     }
 
+    /**
+     * Initializes the GUI.
+     */
     private void initGUI() {
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         setSize(800, 600);
@@ -52,6 +82,9 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         createToolbars();
     }
 
+    /**
+     * Creates the toolbars.
+     */
     private void createToolbars() {
         JToolBar toolBar = new JToolBar("Alati");
         toolBar.setFloatable(true);
@@ -66,6 +99,9 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         this.getContentPane().add(toolBar, BorderLayout.PAGE_START);
     }
 
+    /**
+     * Creates the menus.
+     */
     private void createMenus() {
         JMenuBar menuBar = new JMenuBar();
 
@@ -98,23 +134,35 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void currentDocumentChanged(SingleDocumentModel previousModel, SingleDocumentModel currentModel) {
         updateTitle(currentModel);
-        //
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void documentAdded(SingleDocumentModel model) {
         updateTitle(model);
         ((DefaultSingleDocumentModel) model).addCaretListener(statusBar); // any time a document is added, add the status bar as it's
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void documentRemoved(SingleDocumentModel model) {
         updateTitle(multipleDocumentModel.getCurrentDocument());
     }
 
+    /**
+     * Updates the title of the window.
+     * @param model the model to get the title from
+     */
     private void updateTitle(SingleDocumentModel model) {
         if (model == null) {
             setTitle("JNotepad++");
@@ -125,7 +173,8 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     }
 
-    private LocalizableAction openDocumentAction = new LocalizableAction("open", flp) {
+    // ====================== CREATING ACTIONS ======================
+    private Action openDocumentAction = new LocalizableAction("open", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var fileChooser = new JFileChooser();
@@ -296,7 +345,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
             var newAction = new AbstractAction(value) { // change to LocalizableAction if you want to use localization
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    LocalizationProvider.getInstance().setLanguage(tag); // TODO this will trigger the wrong listeners
+                    LocalizationProvider.getInstance().setLanguage(tag);
                 }
             };
             newAction.putValue(Action.NAME, value);

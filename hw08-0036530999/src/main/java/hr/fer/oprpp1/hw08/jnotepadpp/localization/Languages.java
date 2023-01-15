@@ -4,8 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class that keeps track of all available languages and their tag names.
+ */
 public class Languages {
-    // let each language have a tag and a name
+    /**
+     * Map of all available languages and their tag names.
+     */
     private static HashMap<String, String> languages;
 
     static {
@@ -15,6 +20,11 @@ public class Languages {
         languages.put("de", "Deutsch");
     }
 
+    /**
+     * Returns an unmodifiable map of all available languages and their tag names.
+     *
+     * @return unmodifiable map of all available languages and their tag names
+     */
     public static Map<String, String> getLanguages() {
         return Collections.unmodifiableMap(languages);
     }

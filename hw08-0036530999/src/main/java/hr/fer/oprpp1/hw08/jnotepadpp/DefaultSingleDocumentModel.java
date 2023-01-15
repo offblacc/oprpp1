@@ -39,10 +39,23 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
      * List of listeners that are notified when the modified flag changes.
      */
     List<SingleDocumentListener> statusListeners;
-    List<CaretListener> caretListeners;
+
+    /**
+     * Icon for modified files.
+     */
     private static final Icon modifiedIcon = loadIcon("/icons/modified.png");
+
+    /**
+     * Icon for unmodified files.
+     */
     private static final Icon unmodifiedIcon = loadIcon("/icons/unmodified.png");
 
+    /**
+     * Loads the static final icons.
+     *
+     * @param path the path to the icon
+     * @return the loaded icon
+     */
     private static Icon loadIcon(String path) {
         try (InputStream is = DefaultSingleDocumentModel.class.getResourceAsStream(path)) {
             if (is == null) throw new NullPointerException();
@@ -55,6 +68,12 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
         }
     }
 
+    /**
+     * Creates a new instance of {@link DefaultSingleDocumentModel} with the given path and text.
+     *
+     * @param textContent the text to be displayed in the text component
+     * @param path        the path to the file represented by this model
+     */
     public DefaultSingleDocumentModel(String textContent, Path path) {
         this.textArea = new JTextArea(textContent);
         this.textArea.addKeyListener(this);
@@ -64,15 +83,30 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
         this.statusListeners = new ArrayList<>();
     }
 
+    /**
+     * Returns the icon for this tab depending on whether the file was modified since last save.
+     *
+     * @return the icon for this tab depending on whether the file was modified since last save
+     */
     Icon getIcon() {
         return modified ? modifiedIcon : unmodifiedIcon;
     }
 
+    /**
+     * Returns the text component that is used to display the text.
+     *
+     * @return the text component that is used to display the text
+     */
     @Override
     public JTextArea getTextComponent() {
         return textArea;
     }
 
+    /**
+     * Returns the path to the file represented by this model.
+     *
+     * @return the path to the file represented by this model
+     */
     @Override
     public Path getFilePath() {
         return path;
@@ -88,6 +122,9 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
         if (notify) notifyListenersPathUpdated();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isModified() {
         return modified;
@@ -103,15 +140,26 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
         if (notify) notifyListenersModifiedStatusUpdated();
     }
 
+    /**
+     * Adds a caret listener
+     *
+     * @param listener the listener to be added
+     */
     public void addCaretListener(CaretListener listener) {
         textArea.addCaretListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addSingleDocumentListener(SingleDocumentListener l) {
         statusListeners.add(l);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeSingleDocumentListener(SingleDocumentListener l) {
         statusListeners.remove(l);
@@ -131,10 +179,15 @@ public class DefaultSingleDocumentModel implements SingleDocumentModel, KeyListe
         statusListeners.forEach(l -> l.documentModifyStatusUpdated(this));
     }
 
+    /**
+     * {@inheritDoc}
+     * Sets the modified flag.
+     */
     @Override
     public void keyTyped(KeyEvent e) {
         if (modified) return; // if it was already set to modified, no need to notify listeners on every key press
-        if (e.isControlDown()) return; // ignore control keys, they don't change the text, only mess up the modified flag
+        if (e.isControlDown())
+            return; // ignore control keys, they don't change the text, only mess up the modified flag
         setModified(true);
         notifyListenersModifiedStatusUpdated();
     }

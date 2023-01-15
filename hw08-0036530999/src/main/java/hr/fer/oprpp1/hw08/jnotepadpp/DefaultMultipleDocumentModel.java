@@ -37,7 +37,9 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
      */
     private int currentTabIndex = 0;
 
-
+    /**
+     * Constructor that initializes the model.
+     */
     public DefaultMultipleDocumentModel() {
         super();
         // fired whenever a tab is selected -> need to update the current document
@@ -64,6 +66,9 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SingleDocumentModel createNewDocument() {
         DefaultSingleDocumentModel newDocument = new DefaultSingleDocumentModel(null, null);
@@ -80,11 +85,17 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         return newDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SingleDocumentModel getCurrentDocument() {
         return currentDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SingleDocumentModel loadDocument(Path path) {
         if (path == null) throw new NullPointerException("Path must not be null.");
@@ -131,6 +142,9 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void saveDocument(SingleDocumentModel model, Path newPath) {
         if (model == null) throw new NullPointerException("Model must not be null.");
@@ -153,6 +167,9 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void closeDocument(SingleDocumentModel model) {
         documents.remove(model);
@@ -160,26 +177,41 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
         listeners.forEach(l -> l.documentRemoved(model));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addMultipleDocumentListener(MultipleDocumentListener l) {
         listeners.add(l);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeMultipleDocumentListener(MultipleDocumentListener l) {
         listeners.remove(l);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfDocuments() {
-        return getTabCount(); // TODO check if this is correct
+        return getTabCount();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SingleDocumentModel getDocument(int index) {
         return documents.get(index);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SingleDocumentModel findForPath(Path path) {
         for (SingleDocumentModel document : documents) {
@@ -240,17 +272,28 @@ public class DefaultMultipleDocumentModel extends JTabbedPane implements Multipl
     }
 
 
+    /**
+     * {@inheritDoc}
+     * Sets the right icon for the tab.
+     */
     @Override
     public void documentModifyStatusUpdated(SingleDocumentModel model) {
         int index = documents.indexOf(model);
         setIconAt(index, ((DefaultSingleDocumentModel) model).getIcon());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void documentFilePathUpdated(SingleDocumentModel model) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     * Checks for unsaved changes and asks the user if they want to save them. Exits the program if the user confirms.
+     */
     @Override
     public void windowClosing(WindowEvent e) {
         for (SingleDocumentModel document : documents) {

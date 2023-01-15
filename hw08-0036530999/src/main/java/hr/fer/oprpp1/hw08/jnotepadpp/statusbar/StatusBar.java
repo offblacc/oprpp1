@@ -8,16 +8,31 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+/**
+ * Class that represents a status bar.
+ */
 public class StatusBar extends JPanel implements CaretListener, WindowListener {
+    /**
+     * Label that shows the length of the document.
+     */
     private JLabel lengthLabel;
+
+    /**
+     * Label showing the caret position.
+     */
     private JLabel positionLabel;
-    private int fontWidth;
+
+    /**
+     * Clock label.
+     */
     private Clock clock;
 
+    /**
+     * Constructor that initializes the status bar.
+     */
     public StatusBar() {
         super(new GridLayout(1, 0));
         lengthLabel = new JLabel();
-        fontWidth = getFontMetrics(this.getFont()).charWidth('0');
         positionLabel = new JLabel();
         clock = new Clock();
         add(lengthLabel);
@@ -25,6 +40,10 @@ public class StatusBar extends JPanel implements CaretListener, WindowListener {
         add(clock);
     }
 
+    /**
+     * {@inheritDoc}
+     * Updates the position label.
+     */
     @Override
     public void caretUpdate(CaretEvent e) {
         JTextComponent textArea = (JTextComponent) e.getSource();
@@ -37,6 +56,10 @@ public class StatusBar extends JPanel implements CaretListener, WindowListener {
     }
 
 
+    /**
+     * {@inheritDoc}
+     * Stops the clock thread.
+     */
     @Override
     public void windowClosing(WindowEvent e) {
         clock.stop();

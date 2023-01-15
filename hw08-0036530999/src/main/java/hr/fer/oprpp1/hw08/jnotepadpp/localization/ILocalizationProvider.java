@@ -34,9 +34,4 @@ public interface ILocalizationProvider {
      * @return current language
      */
     String getCurrentLanguage();
-
-    // TODO and implement
-    // TODO current language cacheing in LocalizationProviderBridge to enable notification dispatching if the
-    // TODO bridge is reconnected to the source which had the language changed while the bridge was disconnected.
-
 }
