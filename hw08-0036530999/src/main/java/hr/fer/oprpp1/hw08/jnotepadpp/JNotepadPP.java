@@ -6,15 +6,15 @@ import hr.fer.oprpp1.hw08.jnotepadpp.model.SingleDocumentModel;
 import hr.fer.oprpp1.hw08.jnotepadpp.statusbar.StatusBar;
 
 import javax.swing.*;
-import java.util.List;
+import java.text.Collator;
+import java.util.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import java.nio.file.Path;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 /**
  * The main class of the application.
@@ -43,6 +43,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
 
     /**
      * Entry point of the application.
+     *
      * @param args command line arguments
      */
     public static void main(String[] args) {
@@ -122,6 +123,23 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         editMenu.addSeparator();
         menuBar.add(editMenu);
 
+        JMenu toolsMenu = new LocalizedJMenu("tools", flp);
+        JMenu changeCaseSubMenu = new LocalizedJMenu("changecase", flp);
+        changeCaseSubMenu.add(new JMenuItem(toUpperCaseAction));
+        changeCaseSubMenu.add(new JMenuItem(toLowerCaseAction));
+        changeCaseSubMenu.add(new JMenuItem(toggleCaseAction));
+        toolsMenu.add(changeCaseSubMenu);
+        toolsMenu.addSeparator();
+        menuBar.add(toolsMenu);
+
+        JMenu sortMenu = new LocalizedJMenu("sort", flp);
+        sortMenu.add(new JMenuItem(ascendingSortAction));
+        sortMenu.add(new JMenuItem(descendingSortAction));
+        toolsMenu.add(sortMenu);
+
+        toolsMenu.add(new JMenuItem(uniqueAction));
+
+
         JMenu languageMenu = new LocalizedJMenu("language", flp);
         for (Action action : languageActions) {
             languageMenu.add(new JMenuItem(action));
@@ -161,6 +179,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
 
     /**
      * Updates the title of the window.
+     *
      * @param model the model to get the title from
      */
     private void updateTitle(SingleDocumentModel model) {
@@ -299,6 +318,151 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
             return new String(znakovi);
         }
     };
+
+    private Action toUpperCaseAction = new LocalizableAction("upper", flp) {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            var currDoc = multipleDocumentModel.getCurrentDocument();
+            if (currDoc == null) return;
+            JTextArea editor = currDoc.getTextComponent();
+
+            Document doc = editor.getDocument();
+            int len = Math.abs(editor.getCaret().getDot() - editor.getCaret().getMark());
+            int offset = 0;
+            if (len != 0) {
+                offset = Math.min(editor.getCaret().getDot(), editor.getCaret().getMark());
+            } else {
+                len = doc.getLength();
+            }
+            try {
+                String text = doc.getText(offset, len);
+                text = text.toUpperCase();
+                doc.remove(offset, len);
+                doc.insertString(offset, text, null);
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    };
+
+    private Action toLowerCaseAction = new LocalizableAction("lower", flp) {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            var currDoc = multipleDocumentModel.getCurrentDocument();
+            if (currDoc == null) return;
+            JTextArea editor = currDoc.getTextComponent();
+
+            Document doc = editor.getDocument();
+            int len = Math.abs(editor.getCaret().getDot() - editor.getCaret().getMark());
+            int offset = 0;
+            if (len != 0) {
+                offset = Math.min(editor.getCaret().getDot(), editor.getCaret().getMark());
+            } else {
+                len = doc.getLength();
+            }
+            try {
+                String text = doc.getText(offset, len);
+                text = text.toLowerCase();
+                doc.remove(offset, len);
+                doc.insertString(offset, text, null);
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    };
+
+    private void sortText(boolean ascending) {
+        var currDoc = multipleDocumentModel.getCurrentDocument();
+        if (currDoc == null) return;
+        JTextArea editor = currDoc.getTextComponent();
+
+        Document doc = editor.getDocument();
+        int len = Math.abs(editor.getCaret().getDot() - editor.getCaret().getMark());
+        int offset = 0;
+        if (len != 0) {
+            offset = Math.min(editor.getCaret().getDot(), editor.getCaret().getMark());
+        } else {
+            len = doc.getLength();
+        }
+        try {
+            String text = doc.getText(offset, len);
+            text = sort(text, ascending);
+            doc.remove(offset, len);
+            doc.insertString(offset, text, null);
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private String sort(String text, boolean ascending) {
+        String[] lines = text.split("\\r?\\n");
+        Arrays.sort(lines, Collator.getInstance(new Locale("hr", "HR")));
+        if (!ascending) {
+            Collections.reverse(Arrays.asList(lines));
+        }
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    private Action ascendingSortAction = new LocalizableAction("ascending", flp) {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            sortText(true);
+        }
+    };
+
+    private Action descendingSortAction = new LocalizableAction("descending", flp) {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            sortText(false);
+        }
+    };
+
+    private Action uniqueAction = new LocalizableAction("unique", flp) {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            var currDoc = multipleDocumentModel.getCurrentDocument();
+            if (currDoc == null) return;
+            JTextArea editor = currDoc.getTextComponent();
+
+            Document doc = editor.getDocument();
+            int len = Math.abs(editor.getCaret().getDot() - editor.getCaret().getMark());
+            int offset = 0;
+            if (len != 0) {
+                offset = Math.min(editor.getCaret().getDot(), editor.getCaret().getMark());
+            } else {
+                len = doc.getLength();
+            }
+            try {
+                String text = doc.getText(offset, len);
+                text = unique(text);
+                doc.remove(offset, len);
+                doc.insertString(offset, text, null);
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        private String unique(String text) {
+            String[] lines = text.split("\\r?\\n");
+            Set<String> set = new LinkedHashSet<>(Arrays.asList(lines));
+            return String.join(System.lineSeparator(), set);
+        }
+    };
+
 
     private void createActions() {
         openDocumentAction.putValue(Action.NAME, flp.getString("open"));
