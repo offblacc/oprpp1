@@ -127,20 +127,16 @@ public class QueryParser {
      * Resolves the field value getter for the given token type, determining its type
      * based on the token type.
      * 
-     * @param type - token's type
+     * @param typ - token's type
      * @return - field value getter for the given token type
      */
     private IFieldValueGetter resolveFieldValueGetter(QueryTokenType typ) {
-        switch (typ) {
-            case LASTNAME:
-                return FieldValueGetters.LAST_NAME;
-            case FIRSTNAME:
-                return FieldValueGetters.FIRST_NAME;
-            case JMBAG:
-                return FieldValueGetters.JMBAG;
-            default:
-                throw new UnsupportedOperationException("Could not resolve FieldValueGetter" + typ);
-        }
+        return switch (typ) {
+            case LASTNAME -> FieldValueGetters.LAST_NAME;
+            case FIRSTNAME -> FieldValueGetters.FIRST_NAME;
+            case JMBAG -> FieldValueGetters.JMBAG;
+            default -> throw new UnsupportedOperationException("Could not resolve FieldValueGetter" + typ);
+        };
     }
 
     /**
@@ -154,22 +150,14 @@ public class QueryParser {
         if (token.getType() == QueryTokenType.LIKE) {
             return ComparisonOperators.LIKE;
         }
-        switch (token.getValue()) {
-            case "<":
-                return ComparisonOperators.LESS;
-            case "<=":
-                return ComparisonOperators.LESS_OR_EQUALS;
-            case ">":
-                return ComparisonOperators.GREATER;
-            case ">=":
-                return ComparisonOperators.GREATER_OR_EQUALS;
-            case "=":
-                return ComparisonOperators.EQUALS;
-            case "!=":
-                return ComparisonOperators.NOT_EQUALS;
-            default:
-                throw new UnsupportedOperationException("Could not resolve ComparisonOperator");
-
-        }
+        return switch (token.getValue()) {
+            case "<" -> ComparisonOperators.LESS;
+            case "<=" -> ComparisonOperators.LESS_OR_EQUALS;
+            case ">" -> ComparisonOperators.GREATER;
+            case ">=" -> ComparisonOperators.GREATER_OR_EQUALS;
+            case "=" -> ComparisonOperators.EQUALS;
+            case "!=" -> ComparisonOperators.NOT_EQUALS;
+            default -> throw new UnsupportedOperationException("Could not resolve ComparisonOperator");
+        };
     }
 }

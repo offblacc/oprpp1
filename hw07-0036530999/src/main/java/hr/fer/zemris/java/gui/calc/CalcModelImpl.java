@@ -7,6 +7,7 @@ import hr.fer.zemris.java.gui.calc.model.CalculatorInputException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.Stack;
 import java.util.function.DoubleBinaryOperator;
 
 /**
@@ -63,6 +64,26 @@ public class CalcModelImpl implements CalcModel {
     List<CalcValueListener> listeners = new ArrayList<>();
 
     /**
+     * Stack of numbers.
+     */
+    Stack<Double> stack = new Stack<>();
+
+    public void push() {
+        stack.push(getValue());
+    }
+
+    public void pop() {
+        if (stack.isEmpty()) {
+            throw new CalculatorInputException("Stack is empty.");
+        }
+        if (frozenDisplayValue != null) {
+            unfreeze();
+            clear();
+        }
+        setValue(stack.pop());
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -109,7 +130,7 @@ public class CalcModelImpl implements CalcModel {
      * {@inheritDoc}
      */
     @Override
-    public void clear() { // TODO not sure this is right
+    public void clear() {
         currentNumber = "";
         currentNumberValue = 0;
         isEditable = true;
@@ -124,6 +145,13 @@ public class CalcModelImpl implements CalcModel {
         clear();
         activeOperand = OptionalDouble.empty();
         binaryOperator = null;
+        frozenDisplayValue = null;
+        hasDecimalPoint = false;
+        stack.clear();
+        listeners.forEach(l -> l.valueChanged(this));
+    }
+
+    public void unfreeze() {
         frozenDisplayValue = null;
         listeners.forEach(l -> l.valueChanged(this));
     }
@@ -145,7 +173,7 @@ public class CalcModelImpl implements CalcModel {
      * {@inheritDoc}
      */
     @Override
-    public void insertDecimalPoint() throws CalculatorInputException { // TODO is this ok? -> myb without ? fr idk
+    public void insertDecimalPoint() throws CalculatorInputException {
         if (!isEditable) throw new CalculatorInputException("Calculator is not editable");
         if (hasDecimalPoint) throw new CalculatorInputException("Number already contains decimal point");
         if (!this.enteredDigit) throw new CalculatorInputException();
@@ -204,7 +232,7 @@ public class CalcModelImpl implements CalcModel {
      */
     @Override
     public void setActiveOperand(double activeOperand) {
-        this.activeOperand = OptionalDouble.of(activeOperand); // TODO no listener here, right?
+        this.activeOperand = OptionalDouble.of(activeOperand);
         frozenDisplayValue = toString();
     }
 
@@ -228,7 +256,7 @@ public class CalcModelImpl implements CalcModel {
      * {@inheritDoc}
      */
     @Override
-    public void setPendingBinaryOperation(DoubleBinaryOperator op) { // TODO no listener here, right?
+    public void setPendingBinaryOperation(DoubleBinaryOperator op) {
         binaryOperator = op;
     }
 
@@ -247,15 +275,15 @@ public class CalcModelImpl implements CalcModel {
      */
     @Override
     public String toString() {
-        if (frozenDisplayValue != null) return frozenDisplayValue;
-        // using a regex removes zeros after the decimal point if there are only zeros
-        boolean hasRelevantDecimal = currentNumber.matches(".*\\.[1-9]+");
-        if (!hasDecimalPoint && !hasRelevantDecimal) {
-            int i = 0;
-            while (i < currentNumber.length() && currentNumber.charAt(i) == '0') i++;
-            currentNumber = currentNumber.substring(i);
+        if (frozenDisplayValue != null) {
+            return frozenDisplayValue;
         }
-        if (currentNumber.equals("")) return "0";
+        if (!currentNumber.contains(".") && !currentNumber.contains("[1-9]")) {
+            currentNumber = currentNumber.replaceFirst("^0+(?!$)", "");
+        }
+        if (currentNumber.isEmpty()) {
+            return "0";
+        }
         return currentNumber;
     }
 }
