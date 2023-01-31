@@ -169,6 +169,7 @@ public class Complex {
 
     /**
      * Returns list of complex numbers which are roots of this complex number.
+     *
      * @param n the root to be taken (e.g. n=2 means square root)
      * @return list of complex numbers which are roots of this complex number
      */
@@ -189,6 +190,7 @@ public class Complex {
 
     /**
      * Returns String representation of this complex number.
+     *
      * @return String representation of this complex number
      */
     @Override
@@ -217,8 +219,9 @@ public class Complex {
     }
 
     /**
-     * Parses given String to complex number, the string be in the format
-     * "a+ib" or "a-ib" or "a" or "ib" or "-a+ib" or "-a-ib" or "-a" or "-ib"
+     * Parses given String to complex number, the string be in the format "a+ib" or "a-ib" or "a" or "ib" or "-a+ib" or
+     * "-a-ib" or "-a" or "-ib". If b is omitted, it is assumed to be 1. If a is omitted, it is assumed to be 0.
+     *
      * @param s String to parse
      * @return Complex number parsed from given String
      */
@@ -266,7 +269,12 @@ public class Complex {
                         im = -Double.parseDouble(s.substring(2));
                     }
                 } else {
-                    re = -Double.parseDouble(s.substring(1));
+                    String[] parts = s.split("-");
+                    if (parts.length != 3) {
+                        throw new IllegalArgumentException("");
+                    }
+                    re = -Double.parseDouble(parts[1]);
+                    im = -Double.parseDouble(parts[2].substring(1)); // to account for the i
                 }
             } else {
                 String[] parts = s.split("-");
@@ -292,8 +300,10 @@ public class Complex {
         return new Complex(re, im);
     }
 
+
     /**
      * Checks if given object is equal to this complex number.
+     *
      * @param o object to check
      * @return true if given object is equal to this complex number, false otherwise
      */
@@ -307,6 +317,7 @@ public class Complex {
 
     /**
      * Returns hash code of this complex number, calculated using re and im.
+     *
      * @return hash code of this complex number
      */
     @Override

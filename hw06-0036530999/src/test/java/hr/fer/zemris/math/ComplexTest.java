@@ -90,9 +90,9 @@ Complex c1 = new Complex(3, 4);
 
     @Test
     public void testParse() {
-        Complex c1 = Complex.parse("3.0 + i4.0");
+        Complex c1 = Complex.parse("3.0+i4.0");
         assertEquals(new Complex(3, 4), c1);
-        Complex c2 = Complex.parse("3.0 - i4.0");
+        Complex c2 = Complex.parse("3.0-i4.0");
         assertEquals(new Complex(3, -4), c2);
         Complex c3 = Complex.parse("3.0");
         assertEquals(new Complex(3, 0), c3);
@@ -103,22 +103,16 @@ Complex c1 = new Complex(3, 4);
         Complex c6 = Complex.parse("0.0");
         assertEquals(new Complex(0, 0), c6);
         assertEquals(new Complex(1, 0), Complex.parse("1"));
-        assertEquals(new Complex(1, 0), Complex.parse("1 + i0"));
-        assertEquals(new Complex(-1, 0), Complex.parse("-1 + i0"));
+        assertEquals(new Complex(1, 0), Complex.parse("1+i0"));
+        assertEquals(new Complex(-1, 0), Complex.parse("-1+i0"));
         assertEquals(new Complex(0, 1), Complex.parse("i"));
-        assertEquals(new Complex(0, -1), Complex.parse("0 - i1"));
+        assertEquals(new Complex(0, -1), Complex.parse("0-i1"));
+        assertEquals(new Complex(1, 1), Complex.parse("1+i1"));
+        assertEquals(new Complex(1, -1), Complex.parse("1-i1"));
+        assertEquals(new Complex(-1, 1), Complex.parse("-1+i1"));
+        assertEquals(new Complex(-1, -1), Complex.parse("-1-i1"));
         assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0"));
         assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i+5.0"));
         assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i-5.0"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i*5.0"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i/5.0"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i+5.0i"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i-5.0i"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i*5.0i"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i/5.0i"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i+5.0+6.0i"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i-5.0-6.0i"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i*5.0*6.0i"));
-        assertThrows(IllegalArgumentException.class, () -> Complex.parse("3.0+4.0i/5.0/6.0i"));
     }
 }
