@@ -69,14 +69,15 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         setTitle("JNotepad++");
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
-        statusBar = new StatusBar();
-        cp.add(statusBar, BorderLayout.SOUTH);
 
         multipleDocumentModel = new DefaultMultipleDocumentModel();
+        statusBar = new StatusBar(multipleDocumentModel);
         addWindowListener(multipleDocumentModel);
         addWindowListener(statusBar); // statusbar is the mediator between its clock and the window
         multipleDocumentModel.addMultipleDocumentListener(this); // so that the parent can change the window title on document change
+        multipleDocumentModel.addMultipleDocumentListener(statusBar); // so that the status bar can update its labels
         cp.add(multipleDocumentModel, BorderLayout.CENTER);
+        cp.add(statusBar, BorderLayout.SOUTH);
 
         createActions();
         createMenus();
@@ -193,7 +194,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
     }
 
     // ====================== CREATING ACTIONS ======================
-    private Action openDocumentAction = new LocalizableAction("open", flp) {
+    private final Action openDocumentAction = new LocalizableAction("open", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var fileChooser = new JFileChooser();
@@ -204,7 +205,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action saveAsDocumentAction = new LocalizableAction("saveAs", flp) {
+    private final Action saveAsDocumentAction = new LocalizableAction("saveAs", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var currentDocument = multipleDocumentModel.getCurrentDocument();
@@ -217,7 +218,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action saveDocumentAction = new LocalizableAction("save", flp) {
+    private final Action saveDocumentAction = new LocalizableAction("save", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var currentDocument = multipleDocumentModel.getCurrentDocument();
@@ -230,7 +231,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action closeDocumentAction = new LocalizableAction("close", flp) {
+    private final Action closeDocumentAction = new LocalizableAction("close", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             var currentDocument = multipleDocumentModel.getCurrentDocument();
@@ -247,7 +248,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action deleteSelectedPartAction = new LocalizableAction("delete", flp) {
+    private final Action deleteSelectedPartAction = new LocalizableAction("delete", flp) {
 
         private static final long serialVersionUID = 1L;
 
@@ -269,14 +270,14 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action newDocumentAction = new LocalizableAction("new", flp) {
+    private final Action newDocumentAction = new LocalizableAction("new", flp) {
         @Override
         public void actionPerformed(ActionEvent e) {
             multipleDocumentModel.createNewDocument();
         }
     };
 
-    private Action toggleCaseAction = new LocalizableAction("toggle", flp) {
+    private final Action toggleCaseAction = new LocalizableAction("toggle", flp) {
 
         private static final long serialVersionUID = 1L;
 
@@ -319,7 +320,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action toUpperCaseAction = new LocalizableAction("upper", flp) {
+    private final Action toUpperCaseAction = new LocalizableAction("upper", flp) {
 
         private static final long serialVersionUID = 1L;
 
@@ -349,7 +350,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
 
     };
 
-    private Action toLowerCaseAction = new LocalizableAction("lower", flp) {
+    private final Action toLowerCaseAction = new LocalizableAction("lower", flp) {
 
         private static final long serialVersionUID = 1L;
 
@@ -411,7 +412,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         return String.join(System.lineSeparator(), lines);
     }
 
-    private Action ascendingSortAction = new LocalizableAction("ascending", flp) {
+    private final Action ascendingSortAction = new LocalizableAction("ascending", flp) {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -420,7 +421,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action descendingSortAction = new LocalizableAction("descending", flp) {
+    private final Action descendingSortAction = new LocalizableAction("descending", flp) {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -429,7 +430,7 @@ public class JNotepadPP extends JFrame implements MultipleDocumentListener {
         }
     };
 
-    private Action uniqueAction = new LocalizableAction("unique", flp) {
+    private final Action uniqueAction = new LocalizableAction("unique", flp) {
         private static final long serialVersionUID = 1L;
 
         @Override
