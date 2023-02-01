@@ -32,9 +32,7 @@ public class LSCommand implements ShellCommand {
     /**
      * Description of the command
      */
-    public static final List<String> DESCRIPTION = List.of(
-            "Command takes a single argument – directory – and writes a directory listing (not recursive)."
-    );
+    public static final List<String> DESCRIPTION = List.of("Command takes a single argument – directory – and writes a directory listing (not recursive).");
 
     /**
      * {@inheritDoc}
@@ -42,8 +40,7 @@ public class LSCommand implements ShellCommand {
     @Override
     public ShellStatus executeCommand(Environment env, String arguments) {
         String[] args = MyShellParser.parseArgumentsSupportingQuotes(arguments);
-
-        if (args.length != 1) {
+        if (args.length != 1) { // TODO this is faulty, "ls" will give \n or " " not sure but this part is useless, fix in parsing args so it returns empty array
             try {
                 env.writeln("Expected 1 argument.");
             } catch (ShellIOException e) {
@@ -53,7 +50,11 @@ public class LSCommand implements ShellCommand {
         }
 
         String pathString = args[0];
+        if (args[0].isBlank()) {
+            pathString = ".";
+        }
         File[] files = new File(pathString).listFiles();
+
 
         if (files == null) {
             try {
@@ -68,9 +69,7 @@ public class LSCommand implements ShellCommand {
         for (File file : files) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Path path = file.toPath();
-            BasicFileAttributeView faView = Files.getFileAttributeView(
-                    path, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS
-            );
+            BasicFileAttributeView faView = Files.getFileAttributeView(path, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
 
             BasicFileAttributes attributes = null;
             try {
@@ -82,17 +81,7 @@ public class LSCommand implements ShellCommand {
             String formattedDateTime = sdf.format(new Date(fileTime.toMillis()));
 
 
-            sb.append(file.isDirectory() ? "d" : "-")
-                    .append(file.canRead() ? "r" : "-")
-                    .append(file.canWrite() ? "w" : "-")
-                    .append(file.canExecute() ? "x" : "-")
-                    .append(" ")
-                    .append(String.format("%10d", file.length()))
-                    .append(" ")
-                    .append(formattedDateTime)
-                    .append(" ")
-                    .append(file.getName())
-                    .append(System.lineSeparator());
+            sb.append(file.isDirectory() ? "d" : "-").append(file.canRead() ? "r" : "-").append(file.canWrite() ? "w" : "-").append(file.canExecute() ? "x" : "-").append(" ").append(String.format("%10d", file.length())).append(" ").append(formattedDateTime).append(" ").append(file.getName()).append(System.lineSeparator());
         }
 
         try {
